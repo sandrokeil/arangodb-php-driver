@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [[ -e deps ]]; then
+    exit 0
+fi
+
+set -e
+
+#avoid to download all boost libs
+#git clone --recursive https://github.com/arangodb/fuerte.git
+
+mkdir -p deps
+
+git clone https://github.com/arangodb/velocypack.git deps/velocypack
+git clone https://github.com/arangodb/fuerte.git deps/fuerte
