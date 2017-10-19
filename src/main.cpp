@@ -9,33 +9,41 @@
 
 #define VELOCYPACK_XXHASH 1
 
-#include <velocypack/vpack.h>
 #include <iostream>
+#include <iomanip>
+#include "velocypack/vpack.h"
+#include "velocypack/velocypack-exception-macros.h"
 
-
-// using namespace arangodb::velocypack;
+using namespace arangodb::velocypack;
 
 Php::Value vpack(Php::Parameters &params)
 {
     // there is one input array, cast the PHP variable to a vector of ints
     std::vector<int> input = params[0];
 
-    // create an object with attributes "b", "a", "l" and "name"
-      // note that the attribute names will be sorted in the target VPack object!
-    //   arangodb::velocypack::Builder b;
+//    VELOCYPACK_GLOBAL_EXCEPTION_TRY
+//
+//    Builder b;
+//
+//    b.add(Value(ValueType::Object));
+//    b.add("b", Value(12));
+//    b.add("a", Value(true));
+//    b.add("l", Value(ValueType::Array));
+//    b.add(Value(1));
+//    b.add(Value(2));
+//    b.add(Value(3));
+//    b.close();
+//    b.add("name", Value("Gustav"));
+//    b.close();
+//
+//    // now dump the resulting VPack value
+//    std::cout << "Resulting VPack:" << std::endl;
+//    std::cout << "Resulting VPack:" << b.slice() << std::endl;
+//    std::cout << HexDump(b.slice()) << std::endl;
+//
+//    VELOCYPACK_GLOBAL_EXCEPTION_CATCH
 
-    //   b.add(Value(ValueType::Object));
-    //   b.add("b", Value(12));
-    //   b.add("a", Value(true));
-    //   b.add("l", Value(ValueType::Array));
-    //   b.add(Value(1));
-    //   b.add(Value(2));
-    //   b.add(Value(3));
-    //   b.close();
-    //   b.add("name", Value("Gustav"));
-    //   b.close();
-    std::cout << arangodb::velocypack::valueTypeName(arangodb::velocypack::ValueType::Object) << std::endl;
-
+    std::cout << valueTypeName(ValueType::Object) << std::endl;
     // done
     return input;
 }

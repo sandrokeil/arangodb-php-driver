@@ -98,7 +98,7 @@ INC = `cat .clang_complete`
 
 COMPILER_FLAGS      =   -Wall -c -O2 ${INC} -fpic -o
 LINKER_FLAGS        =   -shared
-LINKER_DEPENDENCIES =   -lphpcpp -lboost_system
+LINKER_DEPENDENCIES =   -lphpcpp -lboost_system -lvelocypack
 
 #
 #   Command to remove files, copy files and create directories.

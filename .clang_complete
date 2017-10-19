@@ -1,1 +1,1 @@
--std=c++11 -std=gnu++11 -I./deps/fuerte/include -I./deps/velocypack/include -lvelocypack
+-std=c++11 -std=gnu++11 -I./deps/fuerte/include -I./deps/velocypack/include
