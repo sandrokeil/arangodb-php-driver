@@ -97,8 +97,8 @@ LINKER              =   g++
 INC = `cat .clang_complete`
 
 COMPILER_FLAGS      =   -Wall -c -O2 ${INC} -fpic -o
-LINKER_FLAGS        =   -shared -lcurl
-LINKER_DEPENDENCIES =   -lphpcpp -lcurl -lboost_system -lboost_thread -L/root/local/lib -lfuerte -lvelocypack
+LINKER_FLAGS        =   -shared
+LINKER_DEPENDENCIES =   -lphpcpp -lboost_system -lboost_thread -L/root/local/lib -lfuerte -lvelocypack -lcurl
 
 #
 #   Command to remove files, copy files and create directories.
