@@ -97,8 +97,8 @@ LINKER              =   g++
 INC = `cat .clang_complete`
 
 COMPILER_FLAGS      =   -Wall -c -O2 ${INC} -fpic -o
-LINKER_FLAGS        =   -shared
-LINKER_DEPENDENCIES =   -lphpcpp -lboost_system -lvelocypack
+LINKER_FLAGS        =   -shared -lcurl
+LINKER_DEPENDENCIES =   -lphpcpp -lcurl -lboost_system -lboost_thread -L/root/local/lib -lfuerte -lvelocypack
 
 #
 #   Command to remove files, copy files and create directories.
@@ -132,7 +132,7 @@ ${EXTENSION}:           ${OBJECTS}
 						${LINKER} ${LINKER_FLAGS} -o $@ ${OBJECTS} ${LINKER_DEPENDENCIES}
 
 ${OBJECTS}:
-						${COMPILER} ${COMPILER_FLAGS} $@ ${@:%.o=%.cpp}
+						${COMPILER} ${COMPILER_FLAGS} $@ ${@:%.o=%.cpp} -lcurl
 
 install:
 						${CP} ${EXTENSION} ${EXTENSION_DIR}

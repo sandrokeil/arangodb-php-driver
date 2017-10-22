@@ -3,11 +3,10 @@
 /**
  * Test includes, remove if not needed
  */
-#include <fuerte/helper.h>
 #include <fuerte/loop.h>
 #include <fuerte/FuerteLogger.h>
-
-#define VELOCYPACK_XXHASH 1
+#include <fuerte/connection.h>
+#include <fuerte/requests.h>
 
 #include <iostream>
 #include <iomanip>
@@ -15,6 +14,7 @@
 #include "velocypack/velocypack-exception-macros.h"
 
 using namespace arangodb::velocypack;
+namespace f = ::arangodb::fuerte;
 
 Php::Value vpack(Php::Parameters &params)
 {
@@ -44,6 +44,22 @@ Php::Value vpack(Php::Parameters &params)
     VELOCYPACK_GLOBAL_EXCEPTION_CATCH
 
     std::cout << valueTypeName(ValueType::Object) << std::endl;
+
+    auto conn = f::ConnectionBuilder().host("http://localhost:8529")
+    //                                   .async(true)
+                                       .user("hund")
+                                       .password("arfarf")
+                                       .connect(*std::unique_ptr<f::EventLoopService>(new f::EventLoopService()));
+
+    auto request = f::createRequest(f::RestVerb::Get, "/_api/version");
+    auto result = conn->sendRequest(std::move(request));
+
+    std::cout << "Datbase connection status code:" << result->statusCode() << std::endl;
+
+    auto slice = result->slices().front();
+    auto version = slice.get("version").copyString();
+    auto server = slice.get("server").copyString();
+
     // done
     return input;
 }
