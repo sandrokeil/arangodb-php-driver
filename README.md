@@ -32,4 +32,4 @@ $ docker-compose down -v
 
 ### UI
 Open [management UI](http://localhost:8529/). You should see one collection
-named ``.
+named `testobi`.
