@@ -1,0 +1,33 @@
+version: '2'
+services:
+  # To compile run docker-compose run --rm arangodb-php-driver-builder
+  arangodb-php-driver-builder:
+    build:
+      context: ./
+      dockerfile: Dockerfile.builder
+    volumes:
+      - "./:/app"
+    command: bash -c "rm -rf src/main.o && make"
+
+  # To run tests docker-compose run --rm phptester php test.php
+  phptester:
+    depends_on:
+      - arangodb-php-driver-builder
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      arangodb_host: "vst://arangodb:8529"
+      arangodb_username: ""
+      arangodb_password: ""
+      arangodb_dbname: _system
+    volumes:
+      - "./:/app"
+    command: ["php", "test.php"]
+
+  arangodb:
+    image: arangodb:3.2.0
+    ports:
+      - 8529:8529
+    environment:
+      - ARANGO_NO_AUTH=1
