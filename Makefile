@@ -132,7 +132,7 @@ ${EXTENSION}:           ${OBJECTS}
 						${LINKER} ${LINKER_FLAGS} -o $@ ${OBJECTS} ${LINKER_DEPENDENCIES}
 
 ${OBJECTS}:
-						${COMPILER} ${COMPILER_FLAGS} $@ ${@:%.o=%.cpp} -lcurl
+						${COMPILER} ${COMPILER_FLAGS} $@ ${@:%.o=%.cpp}
 
 install:
 						${CP} ${EXTENSION} ${EXTENSION_DIR}
