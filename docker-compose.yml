@@ -2,6 +2,7 @@ version: '2'
 services:
   # To compile run docker-compose run --rm arangodb-php-driver-builder
   arangodb-php-driver-builder:
+    image: arangodb-php-driver-builder
     build:
       context: ./
       dockerfile: Dockerfile.builder
