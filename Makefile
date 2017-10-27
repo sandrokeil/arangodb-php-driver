@@ -96,9 +96,9 @@ LINKER              =   g++
 
 INC = `cat .clang_complete`
 
-COMPILER_FLAGS      =   -Wall -c -O2 ${INC} -fpic -o
+COMPILER_FLAGS      =   -Wall -c -O2 ${INC} go/arangodb.a -fpic -o
 LINKER_FLAGS        =   -shared
-LINKER_DEPENDENCIES =   -lphpcpp -lboost_system -lboost_thread -L/root/local/lib -lfuerte -lvelocypack -lcurl
+LINKER_DEPENDENCIES =   -Bstatic -larangodb -lphpcpp -lboost_system -lboost_thread -L/root/local/lib -lcurl
 
 #
 #   Command to remove files, copy files and create directories.
