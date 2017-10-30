@@ -16,7 +16,11 @@ Php::Value vpack(Php::Parameters &params)
     // there is one input array, cast the PHP variable to a vector of ints
     std::vector<int> input = params[0];
 
+    std::cout << "Before Go" << std::endl;
+
     test();
+
+    std::cout << "After Go" << std::endl;
 
     return input;
 }
