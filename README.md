@@ -6,10 +6,16 @@ Native PHP extension for [ArangoDB](https://arangodb.com/).
 This extension is build with [PHP-CPP](http://www.php-cpp.com/).
 The build is simple with [Docker Compose](https://docs.docker.com/compose/install/).
 
-To build the c archive from go driver run `cd go && docker run --rm -it -v $(pwd):/go golang:1.9.1-stretch make build && ln -s arangodb.a libarangodb.a`
+To build the c archive from go driver run `docker run --rm -it -v $(pwd)/go:/go golang:1.9.1-stretch make build`
 
 ```
-$ docker-compose build
+$ cd go
+$ ln -s arangodb.a libarangodb.a
+$ cd ..
+```
+
+```
+$ docker-compose run --rm arangodb-php-driver-builder
 $ docker-compose up -d --no-recreate
 ```
 
@@ -17,6 +23,7 @@ $ docker-compose up -d --no-recreate
 
 ```
 $ docker-compose run --rm arangodb-php-driver-builder
+$ docker-compose build phptester
 $ docker-compose run --rm phptester php test.php
 ```
 

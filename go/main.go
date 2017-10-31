@@ -19,3 +19,9 @@ func test() {
     b.Close()
 }
 
+//export vpackBuilder
+func vpackBuilder() velocypack.Builder {
+    var b velocypack.Builder
+
+    return b;
+}

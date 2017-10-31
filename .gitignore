@@ -1,3 +1,6 @@
 *.o
 *.so
+go/*.a
+go/*.h
 deps/
+.gobuild

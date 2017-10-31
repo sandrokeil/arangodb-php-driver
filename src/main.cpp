@@ -18,7 +18,7 @@ Php::Value vpack(Php::Parameters &params)
 
     std::cout << "Before Go" << std::endl;
 
-    test();
+    vpackBuilder();
 
     std::cout << "After Go" << std::endl;
 
