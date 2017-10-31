@@ -53,47 +53,39 @@ Php::Value vpack(Php::Parameters &params)
 
     std::cout << vp::valueTypeName(vp::ValueType::Object) << std::endl;
 
+    std::cout << std::endl << std::endl;
 
-    std::cout << "Connection test:" << std::endl;
 
-    auto conn = f::ConnectionBuilder().host("vst://arangodb:8529")
-    //                                   .async(true)
-//                                       .user("hund")
-//                                       .password("arfarf")
-                                       .connect(*std::unique_ptr<f::EventLoopService>(new f::EventLoopService()));
+
+    f::ConnectionBuilder cbuilder;
+    cbuilder.host("vst://arangodb:8529");
+
+    std::unique_ptr<f::EventLoopService> eventLoopService = std::unique_ptr<f::EventLoopService>(new f::EventLoopService(1));
+    std::shared_ptr<f::Connection> connection = cbuilder.connect(*eventLoopService);
 
     VPackBuilder builder;
     builder.openObject();
     builder.add("name" , VPackValue("testobi"));
     builder.close();
-    arangodb::fuerte::Request request = *fu::createRequest(fu::RestVerb::Post, "/_api/collection");
-    request.addVPack(builder.slice());
-    auto result = conn->sendRequest(std::move(request));
-    if (result->header.responseCode.get() >= 400){
-      std::cerr << fu::to_string(request);
-      std::cerr << fu::to_string(*result);
-    }
 
-//    std::cout << "Connection connected:" << std::endl;
-//
-//    auto request = f::createRequest(f::RestVerb::Get, "/_api/version");
-//
-//    std::cout << "request created:" << std::endl;
-//
-//    auto result = conn->sendRequest(std::move(request));
-//
-//    std::cout << "request send:" << std::endl;
-//
-////    std::cout << "Datbase connection status code:" << result->header.responseCode.get() << std::endl;
-//    std::cout << "Datbase connection status code:" << result->header << std::endl;
-//
-//    auto slice = result->slices().front();
-//    auto version = slice.get("version").copyString();
-//    auto server = slice.get("server").copyString();
+    auto request = fu::createRequest(fu::RestVerb::Post, "/_api/collection");
+    request->addVPack(builder.slice());
+    auto result = connection->sendRequest(std::move(request));
 
-    // done
+    std::cout << result->statusCode() << std::endl;
     return input;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  *  tell the compiler that the get_module is a pure C function
