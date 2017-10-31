@@ -29,6 +29,9 @@ namespace f = ::arangodb::fuerte;
 namespace fu = ::arangodb::fuerte;
 namespace vp = ::arangodb::velocypack;
 
+//void createCollection(std::string collectionName, int timeout);
+
+
 Php::Value vpack(Php::Parameters &params)
 {
     // there is one input array, cast the PHP variable to a vector of ints
@@ -54,29 +57,48 @@ Php::Value vpack(Php::Parameters &params)
     std::cout << vp::valueTypeName(vp::ValueType::Object) << std::endl;
 
     std::cout << std::endl << std::endl;
+    //createCollection("testobi", 3);
 
-
-
-    f::ConnectionBuilder cbuilder;
-    cbuilder.host("vst://arangodb:8529");
-
-    std::unique_ptr<f::EventLoopService> eventLoopService = std::unique_ptr<f::EventLoopService>(new f::EventLoopService(1));
-    std::shared_ptr<f::Connection> connection = cbuilder.connect(*eventLoopService);
-
-    VPackBuilder builder;
-    builder.openObject();
-    builder.add("name" , VPackValue("testobi"));
-    builder.close();
-
-    auto request = fu::createRequest(fu::RestVerb::Post, "/_api/collection");
-    request->addVPack(builder.slice());
-    auto result = connection->sendRequest(std::move(request));
-
-    std::cout << result->statusCode() << std::endl;
     return input;
 }
 
 
+Php::Value createCollection(Php::Parameters &params)
+{
+    std::string collectionName = params[0];
+    int timeout = params[1];
+
+    std::shared_ptr<f::Connection> connection;
+    std::unique_ptr<f::EventLoopService> eventLoopService = std::unique_ptr<f::EventLoopService>(new f::EventLoopService(1));
+
+    f::WaitGroup wg;
+    wg.add();
+
+    f::ConnectionBuilder cbuilder;
+    cbuilder.host("vst://arangodb:8529");
+    cbuilder.onFailure([&](f::Error errorCode, const std::string& errorMessage){  });
+    connection = cbuilder.connect(*eventLoopService);
+
+    VPackBuilder builder;
+    builder.openObject();
+    builder.add("name" , VPackValue(collectionName));
+    builder.close();
+
+    auto request = fu::createRequest(fu::RestVerb::Post, "/_api/collection");
+    request->addVPack(builder.slice());
+    connection->sendRequest(std::move(request),[&](f::Error, std::unique_ptr<f::Request>, std::unique_ptr<f::Response> response){
+        std::cout << response->statusCode() << std::endl;
+        wg.done();
+    });
+
+
+    auto success = wg.wait_for(std::chrono::seconds(timeout));
+    if(!success) {
+        throw Php::Exception("Could not connect to arangodb");
+    }
+
+    return true;
+}
 
 
 
@@ -109,6 +131,11 @@ extern "C" {
             Php::ByVal("input", Php::Type::Array)
         });
 
+
+        extension.add<createCollection>("createCollection", {
+            Php::ByVal("collectionName", Php::Type::String),
+            Php::ByVal("timeout", Php::Type::Numeric)
+        });
 
         // return the extension
         return extension;
