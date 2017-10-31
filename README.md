@@ -14,13 +14,14 @@ The build is simple with [Docker Compose](https://docs.docker.com/compose/instal
 
 ```
 $ docker-compose build
-$ docker-compose up -d --no-recreate
+$ docker-compose up -d --no-recreate arangodb
 ```
 
 ### Test
 
 ```
 $ docker-compose run --rm arangodb-php-driver-builder
+$ docker-compose build phptester
 $ docker-compose run --rm phptester php test.php
 ```
 

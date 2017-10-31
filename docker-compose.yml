@@ -12,6 +12,7 @@ services:
 
   # To run tests docker-compose run --rm phptester php test.php
   phptester:
+    image: arangodb-php-driver-tester
     depends_on:
       - arangodb-php-driver-builder
     build:
