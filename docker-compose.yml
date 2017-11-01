@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile.builder
     volumes:
       - "./:/app"
-    command: bash -c "rm -rf src/main.o && make"
+    command: bash -c "rm -rf src/*.o && make"
 
   # To run tests docker-compose run --rm phptester php test.php
   phptester:
@@ -25,7 +25,7 @@ services:
       arangodb_dbname: _system
     volumes:
       - "./:/app"
-    command: ["php", "test.php"]
+    command: ["vendor/bin/phpunit"]
 
   arangodb:
     image: arangodb:3.2.0

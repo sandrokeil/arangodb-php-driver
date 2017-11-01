@@ -13,3 +13,4 @@ mkdir -p deps
 
 git clone https://github.com/arangodb/velocypack.git deps/velocypack
 git clone https://github.com/arangodb/fuerte.git deps/fuerte
+git clone https://github.com/CopernicaMarketingSoftware/PHP-CPP.git deps/phpcpp

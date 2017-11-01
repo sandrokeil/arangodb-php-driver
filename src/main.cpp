@@ -25,6 +25,10 @@
 #include <boost/asio/io_service.hpp>
 #include <thread>
 
+#include "connection.h"
+
+
+
 namespace f = ::arangodb::fuerte;
 namespace fu = ::arangodb::fuerte;
 namespace vp = ::arangodb::velocypack;
@@ -131,11 +135,27 @@ extern "C" {
             Php::ByVal("input", Php::Type::Array)
         });
 
-
         extension.add<createCollection>("createCollection", {
             Php::ByVal("collectionName", Php::Type::String),
             Php::ByVal("timeout", Php::Type::Numeric)
         });
+
+        // description of the class so that PHP knows which methods are accessible
+        Php::Class<ArangoDb::Connection> connection("ArangoDb\\Connection");
+        connection.method<&ArangoDb::Connection::__construct>("__construct",{
+            Php::ByVal("options", Php::Type::Array, true),
+        });
+        connection.method<&ArangoDb::Connection::connect>("connect");
+        connection.property("HOST", "host", Php::Const);
+        connection.property("USER", "user", Php::Const);
+        connection.property("PASSWORD", "password", Php::Const);
+        connection.property("MAX_CHUNK_SIZE", "max_chunk_size", Php::Const);
+        connection.property("VST_VERSION", "vst_version", Php::Const);
+        connection.property("ON_FAILURE", "on_failure", Php::Const);
+
+        // add the class to the extension
+        extension.add(std::move(connection));
+
 
         // return the extension
         return extension;

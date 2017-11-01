@@ -3,6 +3,11 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
+$connection = new \ArangoDb\Connection(['host' => 'vst://arangodb:8529']);
+$connection->connect();
+
+var_dump($connection);
+
 // fill an array with random numbers
 $count = 10000;
 $x = array();
