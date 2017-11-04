@@ -26,7 +26,7 @@
 #include <thread>
 
 #include "connection.h"
-
+#include "vpack.h"
 
 
 namespace f = ::arangodb::fuerte;
@@ -155,6 +155,21 @@ extern "C" {
 
         // add the class to the extension
         extension.add(std::move(connection));
+
+
+
+        Php::Class<ArangoDb::Vpack> vpack("ArangoDb\\Vpack");
+        vpack.method<&ArangoDb::Vpack::__construct>("__construct");
+        vpack.method<&ArangoDb::Vpack::fromArray>("fromArray", {
+            Php::ByVal("array", Php::Type::Array, true)
+        });
+        vpack.method<&ArangoDb::Vpack::fromJson>("fromJson", {
+            Php::ByVal("json", Php::Type::String, true)
+        });
+        vpack.method<&ArangoDb::Vpack::toHex>("toHex");
+
+        extension.add(std::move(vpack));
+
 
 
         // return the extension
