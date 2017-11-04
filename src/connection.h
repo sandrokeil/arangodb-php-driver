@@ -3,6 +3,8 @@
 #include <phpcpp.h>
 #include <stdlib.h>
 #include <fuerte/fuerte.h>
+#include <fuerte/types.h>
+#include <velocypack/vpack.h>
 
 namespace f = ::arangodb::fuerte;
 
@@ -16,27 +18,30 @@ namespace ArangoDb {
         VST_VERSION = 4
     };
 
-
     class Connection :
-        public Php::Base
-    {
+            public Php::Base {
     private:
         /**
          *  The underlying connection object
          *  @var    std::shared_ptr<f::Connection>
          */
-        std::shared_ptr<f::Connection> _connection;
+        std::shared_ptr<f::Connection> connection;
 
         /**
          *  The underlying event loop service object
          *  @var    std::unique_ptr<f::EventLoopService>
          */
-        std::unique_ptr<f::EventLoopService> _eventLoopService;
+        std::unique_ptr<f::EventLoopService> eventLoopService{};
 
-    //    Php::Array _options;
-        std::map<std::string,std::string> _options;
+        /**
+         * We use PHP::Array here because it makes type mapping easier
+         *
+         * @var Php::Array
+         */
+        Php::Array options;
 
         f::ConnectionBuilder createConnectionBuilder();
+
     public:
         Connection() = default;
 
