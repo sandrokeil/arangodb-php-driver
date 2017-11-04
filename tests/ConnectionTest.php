@@ -6,7 +6,6 @@ namespace ArangoDbDriverTest;
 
 use PHPUnit\Framework\TestCase;
 use ArangoDb\Connection;
-use ArangoDb\Vpack;
 
 class ConnectionTest extends TestCase
 {

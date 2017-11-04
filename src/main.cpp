@@ -118,6 +118,9 @@ Php::Value createCollection(Php::Parameters &params)
  */
 extern "C" {
 
+    void exportClassConnection(Php::Extension* extension);
+    void exportClassVpack(Php::Extension* extension);
+
     /**
      *  Function that is called by PHP right after the PHP process
      *  has started, and that returns an address of an internal PHP
@@ -140,12 +143,23 @@ extern "C" {
             Php::ByVal("timeout", Php::Type::Numeric)
         });
 
+        exportClassConnection(&extension);
+        exportClassVpack(&extension);
+
+        return extension;
+    }
+
+
+    void exportClassConnection(Php::Extension* extension)
+    {
         // description of the class so that PHP knows which methods are accessible
         Php::Class<ArangoDb::Connection> connection("ArangoDb\\Connection");
+
         connection.method<&ArangoDb::Connection::__construct>("__construct",{
-            Php::ByVal("options", Php::Type::Array, true),
+                Php::ByVal("options", Php::Type::Array, true),
         });
         connection.method<&ArangoDb::Connection::connect>("connect");
+
         connection.property("HOST", "host", Php::Const);
         connection.property("USER", "user", Php::Const);
         connection.property("PASSWORD", "password", Php::Const);
@@ -155,25 +169,23 @@ extern "C" {
         connection.property("VST_VERSION_11", 1, Php::Const);
 
         // add the class to the extension
-        extension.add(std::move(connection));
+        extension->add(std::move(connection));
+    }
 
 
-
+    void exportClassVpack(Php::Extension* extension)
+    {
         Php::Class<ArangoDb::Vpack> vpack("ArangoDb\\Vpack");
+
         vpack.method<&ArangoDb::Vpack::__construct>("__construct");
         vpack.method<&ArangoDb::Vpack::fromArray>("fromArray", {
-            Php::ByVal("array", Php::Type::Array, true)
+                Php::ByVal("array", Php::Type::Array, true)
         });
         vpack.method<&ArangoDb::Vpack::fromJson>("fromJson", {
-            Php::ByVal("json", Php::Type::String, true)
+                Php::ByVal("json", Php::Type::String, true)
         });
         vpack.method<&ArangoDb::Vpack::toHex>("toHex");
 
-        extension.add(std::move(vpack));
-
-
-
-        // return the extension
-        return extension;
+        extension->add(std::move(vpack));
     }
 }
