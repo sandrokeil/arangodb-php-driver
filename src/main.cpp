@@ -151,7 +151,8 @@ extern "C" {
         connection.property("PASSWORD", "password", Php::Const);
         connection.property("MAX_CHUNK_SIZE", "max_chunk_size", Php::Const);
         connection.property("VST_VERSION", "vst_version", Php::Const);
-        connection.property("ON_FAILURE", "on_failure", Php::Const);
+        connection.property("VST_VERSION_10", 0, Php::Const);
+        connection.property("VST_VERSION_11", 1, Php::Const);
 
         // add the class to the extension
         extension.add(std::move(connection));

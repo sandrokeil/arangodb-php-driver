@@ -21,7 +21,7 @@ class ConnectionTest extends TestCase
                 Connection::USER => 'myUser',
                 Connection::PASSWORD => 'myPassword',
                 Connection::MAX_CHUNK_SIZE => 64,
-                Connection::VST_VERSION => '1',
+                Connection::VST_VERSION => Connection::VST_VERSION_11,
             ]
         );
         $connection->connect();
@@ -40,7 +40,7 @@ class ConnectionTest extends TestCase
                 Connection::USER => 'myUser',
                 Connection::PASSWORD => 'myPassword',
                 Connection::MAX_CHUNK_SIZE => 64,
-                Connection::VST_VERSION => '1',
+                Connection::VST_VERSION => Connection::VST_VERSION_11,
                 'unknown' => 'error',
             ]
         );
