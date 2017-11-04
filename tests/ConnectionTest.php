@@ -58,20 +58,19 @@ class ConnectionTest extends TestCase
     {
         echo PHP_EOL;
 
-        $vpack = new Vpack();
-        $vpack->fromArray(["b"]);
+        $vpack = Vpack::fromArray(["b"]);
+        echo $vpack->toHex() . PHP_EOL;
+
+        $vpack = Vpack::fromArray(["a" => "b"]);
+        echo $vpack->toHex() . PHP_EOL;
+
+        $vpack = Vpack::fromJson("{\"0\": \"b\"}");
+        echo $vpack->toHex() . PHP_EOL;
+
+        $vpack = Vpack::fromJson("{\"a\": \"b\"}");
         echo $vpack->toHex() . PHP_EOL;
 
         $vpack = new Vpack();
-        $vpack->fromArray(["a" => "b"]);
-        echo $vpack->toHex() . PHP_EOL;
-
-        $vpack = new Vpack();
-        $vpack->fromJson("{\"0\": \"b\"}");
-        echo $vpack->toHex() . PHP_EOL;
-
-        $vpack = new Vpack();
-        $vpack->fromJson("{\"a\": \"b\"}");
         echo $vpack->toHex() . PHP_EOL;
 
         $this->assertTrue(true);

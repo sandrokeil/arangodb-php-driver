@@ -20,8 +20,8 @@ namespace ArangoDb {
         Vpack() = default;
 
         void __construct();
-        void fromArray(Php::Parameters &params);
-        void fromJson(Php::Parameters &params);
+        static Php::Value fromArray(Php::Parameters &params);
+        static Php::Value fromJson(Php::Parameters &params);
         Php::Value toHex();
 
         vp::Slice getSlice();

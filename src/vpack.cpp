@@ -2,20 +2,24 @@
 
 namespace ArangoDb {
 
-    void Vpack::fromArray(Php::Parameters &params)
+    Php::Value Vpack::fromArray(Php::Parameters &params)
     {
         std::map<std::string, std::string> array = params[0];
 
-        this->builder.openObject();
+        Vpack* instance = new Vpack();
+        instance->builder.openObject();
         for(auto const& entry : array) {
-            this->builder.add(entry.first, vp::Value(entry.second));
+            instance->builder.add(entry.first, vp::Value(entry.second));
         }
 
-        this->builder.close();
+        instance->builder.close();
+        return Php::Object("ArangoDb\\Vpack", instance);
     }
 
-    void Vpack::fromJson(Php::Parameters &params)
+    Php::Value Vpack::fromJson(Php::Parameters &params)
     {
+        Vpack* instance = new Vpack();
+
         vp::Parser parser;
         try {
             parser.parse(params[0]);
@@ -27,7 +31,8 @@ namespace ArangoDb {
             throw Php::Exception(e.what());
         }
 
-        this->builder = *parser.steal();
+        instance->builder = *parser.steal();
+        return Php::Object("ArangoDb\\Vpack", instance);
     }
 
     void Vpack::__construct()
