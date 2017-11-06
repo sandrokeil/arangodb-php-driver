@@ -2,20 +2,32 @@
 
 namespace ArangoDb {
 
-    void Vpack::fromArray(Php::Parameters &params)
+    //temporary: replace it with either a c++ json parser (to save overhead from calling json_encode())
+    //or a native php array to vpack conversion
+    Php::Value Vpack::fromArray(Php::Parameters &params)
     {
-        std::map<std::string, std::string> array = params[0];
+        auto json = Php::call("json_encode", params[0]);
+        Vpack* instance = new Vpack();
 
-        this->builder.openObject();
-        for(auto const& entry : array) {
-            this->builder.add(entry.first, vp::Value(entry.second));
+        vp::Parser parser;
+        try {
+            parser.parse(json);
+        }
+        catch (std::bad_alloc const& e) {
+            throw Php::Exception("Out of memory");
+        }
+        catch (vp::Exception const& e) {
+            throw Php::Exception(e.what());
         }
 
-        this->builder.close();
+        instance->builder = *parser.steal();
+        return Php::Object("ArangoDb\\Vpack", instance);
     }
 
-    void Vpack::fromJson(Php::Parameters &params)
+    Php::Value Vpack::fromJson(Php::Parameters &params)
     {
+        Vpack* instance = new Vpack();
+
         vp::Parser parser;
         try {
             parser.parse(params[0]);
@@ -27,7 +39,8 @@ namespace ArangoDb {
             throw Php::Exception(e.what());
         }
 
-        this->builder = *parser.steal();
+        instance->builder = *parser.steal();
+        return Php::Object("ArangoDb\\Vpack", instance);
     }
 
     void Vpack::__construct()
@@ -38,6 +51,21 @@ namespace ArangoDb {
     Php::Value Vpack::toHex()
     {
         return vp::HexDump(this->builder.slice()).toString();
+    }
+
+    Php::Value Vpack::toJson()
+    {
+        try {
+            std::string json;
+
+            vp::StringSink sink(&json);
+            vp::Dumper dumper(&sink, &this->dumperOptions);
+            dumper.dump(this->builder.slice());
+
+            return json;
+        } catch(vp::Exception const& e) {
+            throw Php::Exception(e.what());
+        }
     }
 
     vp::Slice Vpack::getSlice()

@@ -6,7 +6,6 @@ namespace ArangoDbDriverTest;
 
 use PHPUnit\Framework\TestCase;
 use ArangoDb\Connection;
-use ArangoDb\Vpack;
 
 class ConnectionTest extends TestCase
 {
@@ -49,44 +48,5 @@ class ConnectionTest extends TestCase
         $this->expectExceptionMessage('Unknown option provided');
 
         $connection->connect();
-    }
-
-    /**
-     * @test
-     */
-    public function it_creates_vpack_from_array(): void
-    {
-        echo PHP_EOL;
-
-        $vpack = new Vpack();
-        $vpack->fromArray(["b"]);
-        echo $vpack->toHex() . PHP_EOL;
-
-        $vpack = new Vpack();
-        $vpack->fromArray(["a" => "b"]);
-        echo $vpack->toHex() . PHP_EOL;
-
-        $vpack = new Vpack();
-        $vpack->fromJson("{\"0\": \"b\"}");
-        echo $vpack->toHex() . PHP_EOL;
-
-        $vpack = new Vpack();
-        $vpack->fromJson("{\"a\": \"b\"}");
-        echo $vpack->toHex() . PHP_EOL;
-
-        $this->assertTrue(true);
-    }
-
-
-    /**
-     * @test
-     */
-    public function it_fails_creating_vpack_from_invalid_json(): void
-    {
-        $this->expectException(\Exception::class);
-
-        $vpack = new Vpack();
-        $vpack->fromJson("{a:\"b\"}");
-        echo $vpack->toHex();
     }
 }
