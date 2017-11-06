@@ -14,24 +14,15 @@ class VpackTest extends TestCase
      */
     public function it_creates_vpack_from_array(): void
     {
-        echo PHP_EOL;
+        $arr = ["1" => 100, "2" => 1000000, "c" => "d", "test" => true];
 
-        $vpack = Vpack::fromArray(["b"]);
-        echo $vpack->toHex() . PHP_EOL;
+        $vpack = Vpack::fromArray($arr);
+        $vpack1 = $vpack->toHex();
 
-        $vpack = Vpack::fromArray(["a" => "b"]);
-        echo $vpack->toHex() . PHP_EOL;
+        $vpack = Vpack::fromJson('{"1": 100, "2": 1000000, "c": "d", "test": true}');
+        $vpack2 = $vpack->toHex();
 
-        $vpack = Vpack::fromJson("{\"0\": \"b\"}");
-        echo $vpack->toHex() . PHP_EOL;
-
-        $vpack = Vpack::fromJson("{\"a\": \"b\"}");
-        echo $vpack->toHex() . PHP_EOL;
-
-        $vpack = new Vpack();
-        echo $vpack->toHex() . PHP_EOL;
-
-        $this->assertTrue(true);
+        $this->assertTrue($vpack1 === $vpack2);
     }
 
 
@@ -44,6 +35,5 @@ class VpackTest extends TestCase
 
         $vpack = new Vpack();
         $vpack->fromJson("{a:\"b\"}");
-        echo $vpack->toHex();
     }
 }

@@ -2,17 +2,25 @@
 
 namespace ArangoDb {
 
+    //temporary: replace it with either a c++ json parser (to save overhead from calling json_encode())
+    //or a native php array to vpack conversion
     Php::Value Vpack::fromArray(Php::Parameters &params)
     {
-        std::map<std::string, std::string> array = params[0];
-
+        auto json = Php::call("json_encode", params[0]);
         Vpack* instance = new Vpack();
-        instance->builder.openObject();
-        for(auto const& entry : array) {
-            instance->builder.add(entry.first, vp::Value(entry.second));
+
+        vp::Parser parser;
+        try {
+            parser.parse(json);
+        }
+        catch (std::bad_alloc const& e) {
+            throw Php::Exception("Out of memory");
+        }
+        catch (vp::Exception const& e) {
+            throw Php::Exception(e.what());
         }
 
-        instance->builder.close();
+        instance->builder = *parser.steal();
         return Php::Object("ArangoDb\\Vpack", instance);
     }
 
