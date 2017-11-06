@@ -6,6 +6,8 @@
 #include <fuerte/types.h>
 #include <velocypack/vpack.h>
 
+#include "request.h"
+
 namespace f = ::arangodb::fuerte;
 
 
@@ -42,6 +44,8 @@ namespace ArangoDb {
 
         f::ConnectionBuilder createConnectionBuilder();
 
+        short defaultTimeout = 3;
+
     public:
         Connection() = default;
 
@@ -56,6 +60,8 @@ namespace ArangoDb {
          * Connect to database
          */
         void connect();
+
+        void send(Php::Parameters &params);
 
         virtual ~Connection() = default;
     };

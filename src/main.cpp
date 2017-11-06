@@ -27,6 +27,7 @@
 
 #include "connection.h"
 #include "vpack.h"
+#include "request.h"
 
 
 namespace f = ::arangodb::fuerte;
@@ -120,6 +121,7 @@ extern "C" {
 
     void exportClassConnection(Php::Extension* extension);
     void exportClassVpack(Php::Extension* extension);
+    void exportClassRequest(Php::Extension* extension);
 
     /**
      *  Function that is called by PHP right after the PHP process
@@ -145,6 +147,7 @@ extern "C" {
 
         exportClassConnection(&extension);
         exportClassVpack(&extension);
+        exportClassRequest(&extension);
 
         return extension;
     }
@@ -156,9 +159,12 @@ extern "C" {
         Php::Class<ArangoDb::Connection> connection("ArangoDb\\Connection");
 
         connection.method<&ArangoDb::Connection::__construct>("__construct",{
-                Php::ByVal("options", Php::Type::Array, true),
+            Php::ByVal("options", Php::Type::Array, true),
         });
         connection.method<&ArangoDb::Connection::connect>("connect");
+        connection.method<&ArangoDb::Connection::send>("send", {
+            Php::ByVal("request", "ArangoDb\\Request", true)
+        });
 
         connection.property("HOST", "host", Php::Const);
         connection.property("USER", "user", Php::Const);
@@ -179,14 +185,36 @@ extern "C" {
 
         vpack.method<&ArangoDb::Vpack::__construct>("__construct");
         vpack.method<&ArangoDb::Vpack::fromArray>("fromArray", {
-                Php::ByVal("array", Php::Type::Array, true)
+            Php::ByVal("array", Php::Type::Array, true)
         });
         vpack.method<&ArangoDb::Vpack::fromJson>("fromJson", {
-                Php::ByVal("json", Php::Type::String, true)
+            Php::ByVal("json", Php::Type::String, true)
         });
         vpack.method<&ArangoDb::Vpack::toHex>("toHex");
         vpack.method<&ArangoDb::Vpack::toJson>("toJson");
 
         extension->add(std::move(vpack));
+    }
+
+
+    void exportClassRequest(Php::Extension* extension)
+    {
+        Php::Class<ArangoDb::Request> request("ArangoDb\\Request");
+
+        request.method<&ArangoDb::Request::__construct>("__construct", {
+            Php::ByVal("method", Php::Type::Numeric, true),
+            Php::ByVal("path", Php::Type::String, true),
+            Php::ByVal("vpack", "ArangoDb\\Vpack", true)
+        });
+
+        request.property("METHOD_DELETE", ArangoDb::Request::METHOD_DELETE, Php::Const);
+        request.property("METHOD_GET", ArangoDb::Request::METHOD_GET, Php::Const);
+        request.property("METHOD_POST", ArangoDb::Request::METHOD_POST, Php::Const);
+        request.property("METHOD_PUT", ArangoDb::Request::METHOD_PUT, Php::Const);
+        request.property("METHOD_HEAD", ArangoDb::Request::METHOD_HEAD, Php::Const);
+        request.property("METHOD_PATCH", ArangoDb::Request::METHOD_PATCH, Php::Const);
+        request.property("METHOD_OPTIONS", ArangoDb::Request::METHOD_OPTIONS, Php::Const);
+
+        extension->add(std::move(request));
     }
 }
