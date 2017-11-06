@@ -53,6 +53,21 @@ namespace ArangoDb {
         return vp::HexDump(this->builder.slice()).toString();
     }
 
+    Php::Value Vpack::toJson()
+    {
+        try {
+            std::string json;
+
+            vp::StringSink sink(&json);
+            vp::Dumper dumper(&sink, &this->dumperOptions);
+            dumper.dump(this->builder.slice());
+
+            return json;
+        } catch(vp::Exception const& e) {
+            throw Php::Exception(e.what());
+        }
+    }
+
     vp::Slice Vpack::getSlice()
     {
         return this->builder.slice();

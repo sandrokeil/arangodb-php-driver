@@ -15,6 +15,7 @@ namespace ArangoDb {
     {
     private:
         vp::Builder builder;
+        vp::Options dumperOptions;
 
     public:
         Vpack() = default;
@@ -23,6 +24,7 @@ namespace ArangoDb {
         static Php::Value fromArray(Php::Parameters &params);
         static Php::Value fromJson(Php::Parameters &params);
         Php::Value toHex();
+        Php::Value toJson();
 
         vp::Slice getSlice();
 

@@ -185,6 +185,7 @@ extern "C" {
                 Php::ByVal("json", Php::Type::String, true)
         });
         vpack.method<&ArangoDb::Vpack::toHex>("toHex");
+        vpack.method<&ArangoDb::Vpack::toJson>("toJson");
 
         extension->add(std::move(vpack));
     }
