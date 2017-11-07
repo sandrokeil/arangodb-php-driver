@@ -7,6 +7,7 @@
 #include <velocypack/vpack.h>
 
 #include "request.h"
+#include "response.h"
 
 namespace f = ::arangodb::fuerte;
 
@@ -61,7 +62,7 @@ namespace ArangoDb {
          */
         void connect();
 
-        void send(Php::Parameters &params);
+        Php::Value send(Php::Parameters &params);
 
         virtual ~Connection() = default;
     };

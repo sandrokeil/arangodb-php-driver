@@ -1,0 +1,33 @@
+#include "response.h"
+
+namespace ArangoDb {
+
+    Response::Response(const fu::Response &response): response(response)
+    {
+
+    }
+
+    Php::Value Response::getStatusCode()
+    {
+        return static_cast<int>(this->response.statusCode());
+    }
+
+    Php::Value Response::getBody()
+    {
+        std::string body;
+
+        try {
+            vp::Slice slice = this->response.slices().front();
+            vp::Options dumperOptions;
+
+            vp::StringSink sink(&body);
+            vp::Dumper dumper(&sink, &dumperOptions);
+            dumper.dump(slice);
+        } catch(vp::Exception const& e) {
+            throw Php::Exception(e.what());
+        }
+
+        return body;
+    }
+
+}
