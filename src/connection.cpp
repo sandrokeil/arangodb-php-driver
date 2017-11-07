@@ -70,7 +70,7 @@ namespace ArangoDb {
     }
 
 
-    void Connection::send(Php::Parameters &params) {
+    Php::Value Connection::send(Php::Parameters &params) {
         if(!params[0].instanceOf("ArangoDb\\Request"))
             throw Php::Exception("Expected request to be of type Request");
 
@@ -79,10 +79,13 @@ namespace ArangoDb {
         fu::WaitGroup wg;
         wg.add();
 
+        ArangoDb::Response* response;
+
         this->connection->sendRequest(
             std::move(request->getFuerteRequest()),
-            [&](f::Error, std::unique_ptr<f::Request>, std::unique_ptr<f::Response> response){
-                std::cout << response->statusCode() << std::endl;
+            [&](f::Error, std::unique_ptr<f::Request>, std::unique_ptr<f::Response> res){
+                response = new ArangoDb::Response(*res);
+
                 wg.done();
             }
         );
@@ -91,5 +94,7 @@ namespace ArangoDb {
         if(!success) {
             throw Php::Exception("Sending request to ArangoDB failed");
         }
+
+        return Php::Object("ArangoDb\\Response", response);
     }
 }

@@ -122,6 +122,7 @@ extern "C" {
     void exportClassConnection(Php::Extension* extension);
     void exportClassVpack(Php::Extension* extension);
     void exportClassRequest(Php::Extension* extension);
+    void exportClassResponse(Php::Extension* extension);
 
     /**
      *  Function that is called by PHP right after the PHP process
@@ -148,6 +149,7 @@ extern "C" {
         exportClassConnection(&extension);
         exportClassVpack(&extension);
         exportClassRequest(&extension);
+        exportClassResponse(&extension);
 
         return extension;
     }
@@ -216,5 +218,16 @@ extern "C" {
         request.property("METHOD_OPTIONS", ArangoDb::Request::METHOD_OPTIONS, Php::Const);
 
         extension->add(std::move(request));
+    }
+
+
+    void exportClassResponse(Php::Extension* extension)
+    {
+        Php::Class<ArangoDb::Response> response("ArangoDb\\Response");
+
+        response.method<&ArangoDb::Response::getStatusCode>("getStatusCode");
+        response.method<&ArangoDb::Response::getBody>("getBody");
+
+        extension->add(std::move(response));
     }
 }
