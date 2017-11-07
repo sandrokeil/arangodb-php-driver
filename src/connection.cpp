@@ -52,21 +52,13 @@ namespace ArangoDb {
     }
 
     void Connection::connect() {
-        f::WaitGroup wg;
-        wg.add();
-
         f::ConnectionBuilder cbuilder = createConnectionBuilder();
         cbuilder.onFailure([&](f::Error errorCode, const std::string &errorMessage) {
-            wg.done();
+            //connection failed - do something
         });
 
         this->eventLoopService = std::unique_ptr<f::EventLoopService>(new f::EventLoopService(1));
         this->connection = cbuilder.connect(*eventLoopService);
-
-        auto failure = wg.wait_for(std::chrono::seconds(1));
-        if (failure) {
-            throw Php::Exception("Could not connect to ArangoDB");
-        }
     }
 
 
