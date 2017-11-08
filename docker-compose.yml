@@ -1,20 +1,19 @@
 version: '2'
 services:
-  # To compile run docker-compose run --rm arangodb-php-driver-builder
-  arangodb-php-driver-builder:
-    image: arangodb-php-driver-builder
+  # To compile run: docker-compose run --rm arangodb-builder
+  arangodb-builder:
+    image: arangodb-builder
     build:
       context: ./
       dockerfile: Dockerfile.builder
     volumes:
       - "./:/app"
-    command: bash -c "rm -rf src/*.o && make"
+    command: bash -c "cd /app/build && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-fPIC && make"
 
-  # To run tests docker-compose run --rm phptester php test.php
-  phptester:
-    image: arangodb-php-driver-tester
+  # To test run: docker-compose run --rm php
+  php:
     depends_on:
-      - arangodb-php-driver-builder
+      - arangodb-builder
     build:
       context: ./
       dockerfile: Dockerfile

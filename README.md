@@ -19,7 +19,7 @@ This extension is build with [PHP-CPP](http://www.php-cpp.com/).
 The build is simple with [Docker Compose](https://docs.docker.com/compose/install/).
 
 ```
-$ docker-compose build
+$ docker-compose build arangodb-builder
 $ docker-compose up -d --no-recreate arangodb
 ```
 
@@ -27,14 +27,8 @@ $ docker-compose up -d --no-recreate arangodb
 
 ```
 $ docker-compose run --rm arangodb-php-driver-builder
-$ docker-compose build phptester
-$ docker-compose run --rm phptester vendor/bin/phpunit
-```
-
-or in one line
-
-```
-$ docker-compose run --rm arangodb-php-driver-builder && docker-compose build phptester && docker-compose run --rm phptester vendor/bin/phpunit
+$ docker-compose build php
+$ docker-compose run --rm php vendor/bin/phpunit
 ```
 
 Cleanup
@@ -44,10 +38,11 @@ $ docker-compose down -v
 ```
 
 ### Debugging
-Check which symbols are in `arangodb.so`
+Check which symbols are in `build/libarangodb.so`. See [nm docs](https://linux.die.net/man/1/nm).
 
 ```
-$ nm -g arangodb.so | grep ArangoDb
+$ nm -g build/libarangodb.so | grep ArangoDb
+$ ldd build/libarangodb.so
 ```
 
 ### UI

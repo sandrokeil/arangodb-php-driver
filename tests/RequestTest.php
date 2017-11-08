@@ -9,6 +9,9 @@ use ArangoDb\Request;
 use ArangoDb\Vpack;
 use ArangoDb\Connection;
 
+/**
+ * @group request
+ */
 class RequestTest extends TestCase
 {
     /**

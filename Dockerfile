@@ -1,10 +1,8 @@
-FROM arangodb-php-driver-builder
+FROM arangodb-builder
 
-RUN apt-get update && apt-get install -y \
-    php-xdebug \
-    php7.1-dom
+COPY docker-entrypoint.sh /usr/local/bin/
 
-COPY arangodb.ini /etc/php/7.1/cli/conf.d/
-COPY arangodb.so /tmp
+RUN echo "extension=libarangodb.so" > /usr/local/etc/php/conf.d/arangodb.ini \
+    && ln -s usr/local/bin/docker-entrypoint.sh /entrypoint.sh # backwards compat
 
-RUN mv /tmp/arangodb.so $(php-config --extension-dir)
+ENTRYPOINT ["docker-entrypoint.sh"]

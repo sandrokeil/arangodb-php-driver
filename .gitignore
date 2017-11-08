@@ -1,4 +1,6 @@
 *.o
 *.so
-deps/
+deps/*
 vendor/
+composer.lock
+compile_commands.json
