@@ -49,4 +49,27 @@ class ConnectionTest extends TestCase
 
         $connection->connect();
     }
+
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_on_attempt_to_set_invalid_thread_count(): void
+    {
+        $this->expectException(\Exception::class);
+
+        $connection = new Connection(
+            [
+                Connection::HOST => 'vst://arangodb:8529',
+                Connection::USER => 'myUser',
+                Connection::PASSWORD => 'myPassword',
+                Connection::MAX_CHUNK_SIZE => 64,
+                Connection::VST_VERSION => Connection::VST_VERSION_11,
+            ]
+        );
+
+        $connection->setThreadCount(0);
+
+        $connection->connect();
+    }
 }

@@ -167,6 +167,9 @@ extern "C" {
         connection.method<&ArangoDb::Connection::send>("send", {
             Php::ByVal("request", "ArangoDb\\Request", true)
         });
+        connection.method<&ArangoDb::Connection::setThreadCount>("setThreadCount", {
+            Php::ByVal("threadCount", Php::Type::Numeric, true)
+        });
 
         connection.property("HOST", "host", Php::Const);
         connection.property("USER", "user", Php::Const);
