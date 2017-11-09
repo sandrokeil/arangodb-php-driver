@@ -2,6 +2,8 @@
 
 #include <phpcpp.h>
 #include <stdlib.h>
+#include <thread>
+
 #include <fuerte/fuerte.h>
 #include <fuerte/types.h>
 #include <velocypack/vpack.h>
@@ -46,9 +48,10 @@ namespace ArangoDb {
         f::ConnectionBuilder createConnectionBuilder();
 
         short defaultTimeout = 3;
+        int threadCount;
 
     public:
-        Connection() = default;
+        Connection();
 
         /**
          *  Constructor
@@ -57,9 +60,8 @@ namespace ArangoDb {
          */
         void __construct(Php::Parameters &params);
 
-        /**
-         * Connect to database
-         */
+        void setThreadCount(Php::Parameters &params);
+
         void connect();
 
         Php::Value send(Php::Parameters &params);

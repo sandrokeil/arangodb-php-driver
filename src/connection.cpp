@@ -13,11 +13,31 @@ namespace ArangoDb {
                     {"vst_version",    ConnectionOptions::VST_VERSION}
             };
 
-    void Connection::__construct(Php::Parameters &params) {
+    Connection::Connection(): threadCount(std::thread::hardware_concurrency())
+    {
+        if(this->threadCount < 1) {
+            this->threadCount = 1;
+        }
+    }
+
+    void Connection::__construct(Php::Parameters &params)
+    {
         this->options = params[0];
     }
 
-    f::ConnectionBuilder Connection::createConnectionBuilder() {
+    void Connection::setThreadCount(Php::Parameters &params)
+    {
+        int threadCount = params[0];
+
+        if(threadCount < 1) {
+            throw Php::Exception("Invalid threadCount provided, must be >= 1");
+        }
+
+        this->threadCount = threadCount;
+    }
+
+    f::ConnectionBuilder Connection::createConnectionBuilder()
+    {
         try {
             f::ConnectionBuilder cbuilder{};
 
@@ -51,18 +71,23 @@ namespace ArangoDb {
         }
     }
 
-    void Connection::connect() {
+    void Connection::connect()
+    {
         f::ConnectionBuilder cbuilder = createConnectionBuilder();
         cbuilder.onFailure([&](f::Error errorCode, const std::string &errorMessage) {
             //connection failed - do something
         });
 
-        this->eventLoopService = std::unique_ptr<f::EventLoopService>(new f::EventLoopService(1));
+        this->eventLoopService = std::unique_ptr<f::EventLoopService>(
+            new f::EventLoopService(this->threadCount)
+        );
+
         this->connection = cbuilder.connect(*eventLoopService);
     }
 
 
-    Php::Value Connection::send(Php::Parameters &params) {
+    Php::Value Connection::send(Php::Parameters &params)
+    {
         if(!params[0].instanceOf("ArangoDb\\Request"))
             throw Php::Exception("Expected request to be of type Request");
 
