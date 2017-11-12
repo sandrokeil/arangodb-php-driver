@@ -21,10 +21,33 @@ namespace ArangoDb {
         fu::Response response;
 
     public:
-        Response(const fu::Response &response);
+        Response(const fu::Response &response): response(response)
+        {
 
-        Php::Value getStatusCode();
-        Php::Value getBody();
+        }
+
+        Php::Value getStatusCode()
+        {
+            return static_cast<int>(this->response.statusCode());
+        }
+
+        Php::Value getBody()
+        {
+            std::string body;
+
+            try {
+                vp::Slice slice = this->response.slices().front();
+                vp::Options dumperOptions;
+
+                vp::StringSink sink(&body);
+                vp::Dumper dumper(&sink, &dumperOptions);
+                dumper.dump(slice);
+            } catch(vp::Exception const& e) {
+                throw Php::Exception(e.what());
+            }
+
+            return body;
+        }
 
         virtual ~Response() = default;
 
