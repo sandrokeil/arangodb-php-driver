@@ -1,8 +1,6 @@
 #include "connection.h"
 
-namespace f = ::arangodb::fuerte;
-
-namespace ArangoDb {
+namespace arangodb { namespace fuerte { namespace php {
 
     const std::map<std::string, ConnectionOptions> connectionOptions =
             {
@@ -36,10 +34,10 @@ namespace ArangoDb {
         this->threadCount = threadCount;
     }
 
-    f::ConnectionBuilder Connection::createConnectionBuilder()
+    fu::ConnectionBuilder Connection::createConnectionBuilder()
     {
         try {
-            f::ConnectionBuilder cbuilder{};
+            fu::ConnectionBuilder cbuilder{};
 
             for (const auto &p : this->options) {
                 switch (connectionOptions.at(p.first)) {
@@ -56,7 +54,7 @@ namespace ArangoDb {
                         cbuilder.maxChunkSize(static_cast<size_t>(p.second.numericValue()));
                         break;
                     case ConnectionOptions::VST_VERSION:
-                        cbuilder.vstVersion((f::vst::VSTVersion) p.second.numericValue());
+                        cbuilder.vstVersion((fu::vst::VSTVersion) p.second.numericValue());
                         break;
                     default:
                         // map ensures integrity
@@ -73,13 +71,13 @@ namespace ArangoDb {
 
     void Connection::connect()
     {
-        f::ConnectionBuilder cbuilder = createConnectionBuilder();
-        cbuilder.onFailure([&](f::Error errorCode, const std::string &errorMessage) {
+        fu::ConnectionBuilder cbuilder = createConnectionBuilder();
+        cbuilder.onFailure([&](fu::Error errorCode, const std::string &errorMessage) {
             //connection failed - do something
         });
 
-        this->eventLoopService = std::unique_ptr<f::EventLoopService>(
-            new f::EventLoopService(this->threadCount)
+        this->eventLoopService = std::unique_ptr<fu::EventLoopService>(
+            new fu::EventLoopService(this->threadCount)
         );
 
         this->connection = cbuilder.connect(*eventLoopService);
@@ -91,17 +89,17 @@ namespace ArangoDb {
         if(!params[0].instanceOf("ArangoDb\\Request"))
             throw Php::Exception("Expected request to be of type Request");
 
-        ArangoDb::Request* request = (ArangoDb::Request*)params[0].implementation();
+        Request* request = (Request*)params[0].implementation();
 
         fu::WaitGroup wg;
         wg.add();
 
-        ArangoDb::Response* response;
+        Response* response;
 
         this->connection->sendRequest(
             std::move(request->getFuerteRequest()),
-            [&](f::Error, std::unique_ptr<f::Request>, std::unique_ptr<f::Response> res){
-                response = new ArangoDb::Response(*res);
+            [&](fu::Error, std::unique_ptr<fu::Request>, std::unique_ptr<fu::Response> res){
+                response = new Response(*res);
 
                 wg.done();
             }
@@ -114,4 +112,5 @@ namespace ArangoDb {
 
         return Php::Object("ArangoDb\\Response", response);
     }
-}
+
+}}}

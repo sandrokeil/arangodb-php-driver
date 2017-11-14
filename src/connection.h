@@ -1,20 +1,15 @@
 #pragma once
 
 #include <phpcpp.h>
-#include <stdlib.h>
 #include <thread>
-
-#include <fuerte/fuerte.h>
-#include <fuerte/types.h>
-#include <velocypack/vpack.h>
 
 #include "request.h"
 #include "response.h"
 
-namespace f = ::arangodb::fuerte;
+namespace fu = ::arangodb::fuerte;
 
+namespace arangodb { namespace fuerte { namespace php {
 
-namespace ArangoDb {
     enum ConnectionOptions {
         HOST = 0,
         USER = 1,
@@ -28,15 +23,15 @@ namespace ArangoDb {
     private:
         /**
          *  The underlying connection object
-         *  @var    std::shared_ptr<f::Connection>
+         *  @var    std::shared_ptr<fu::Connection>
          */
-        std::shared_ptr<f::Connection> connection;
+        std::shared_ptr<fu::Connection> connection;
 
         /**
          *  The underlying event loop service object
-         *  @var    std::unique_ptr<f::EventLoopService>
+         *  @var    std::unique_ptr<fu::EventLoopService>
          */
-        std::unique_ptr<f::EventLoopService> eventLoopService{};
+        std::unique_ptr<fu::EventLoopService> eventLoopService{};
 
         /**
          * We use PHP::Array here because it makes type mapping easier
@@ -45,7 +40,7 @@ namespace ArangoDb {
          */
         Php::Array options;
 
-        f::ConnectionBuilder createConnectionBuilder();
+        fu::ConnectionBuilder createConnectionBuilder();
 
         short defaultTimeout = 3;
         int threadCount;
@@ -68,4 +63,5 @@ namespace ArangoDb {
 
         virtual ~Connection() = default;
     };
-}
+
+}}}

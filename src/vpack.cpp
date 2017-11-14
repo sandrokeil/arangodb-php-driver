@@ -1,6 +1,6 @@
 #include "vpack.h"
 
-namespace ArangoDb {
+namespace arangodb { namespace fuerte { namespace php {
 
     //temporary: replace it with either a c++ json parser (to save overhead from calling json_encode())
     //or a native php array to vpack conversion
@@ -73,4 +73,4 @@ namespace ArangoDb {
         return this->builder.slice();
     }
 
-}
+}}}

@@ -1,6 +1,6 @@
 #include "request.h"
 
-namespace ArangoDb {
+namespace arangodb { namespace fuerte { namespace php {
 
     void Request::__construct(Php::Parameters &params)
     {
@@ -8,7 +8,7 @@ namespace ArangoDb {
             throw Php::Exception("Expected vpack to be of type Vpack");
 
         this->request = fu::createRequest(static_cast<fu::RestVerb>(params[0].numericValue()), params[1]);
-        this->vpack = (ArangoDb::Vpack*)params[2].implementation();
+        this->vpack = (Vpack*)params[2].implementation();
 
         this->request->addVPack(this->vpack->getSlice());
     }
@@ -18,4 +18,5 @@ namespace ArangoDb {
     {
         return *this->request;
     }
-}
+
+}}}

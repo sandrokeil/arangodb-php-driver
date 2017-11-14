@@ -1,8 +1,6 @@
 #pragma once
 
 #include <phpcpp.h>
-#include <stdlib.h>
-#include <iostream>
 
 #include <fuerte/fuerte.h>
 #include <fuerte/types.h>
@@ -13,7 +11,7 @@
 namespace vp = ::arangodb::velocypack;
 namespace fu = ::arangodb::fuerte;
 
-namespace ArangoDb {
+namespace arangodb { namespace fuerte { namespace php {
 
     class Response : public Php::Base
     {
@@ -23,7 +21,6 @@ namespace ArangoDb {
     public:
         Response(const fu::Response &response): response(response)
         {
-
         }
 
         Php::Value getStatusCode()
@@ -53,4 +50,4 @@ namespace ArangoDb {
 
     };
 
-}
+}}}
