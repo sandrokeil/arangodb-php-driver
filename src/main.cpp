@@ -199,7 +199,7 @@ extern "C" {
     {
         Php::Class<arangodb::fuerte::php::Response> response("ArangoDb\\Response");
 
-        response.method<&arangodb::fuerte::php::Response::getStatusCode>("getStatusCode");
+        response.method<&arangodb::fuerte::php::Response::getHttpCode>("getHttpCode");
         response.method<&arangodb::fuerte::php::Response::getBody>("getBody");
 
         extension->add(std::move(response));

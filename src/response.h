@@ -23,7 +23,7 @@ namespace arangodb { namespace fuerte { namespace php {
         {
         }
 
-        Php::Value getStatusCode()
+        Php::Value getHttpCode()
         {
             return static_cast<int>(this->response.statusCode());
         }

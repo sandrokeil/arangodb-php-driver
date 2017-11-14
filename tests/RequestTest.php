@@ -38,7 +38,7 @@ class RequestTest extends TestCase
         $connection->connect();
 
         $response = $connection->send($request);
-        $statusCode = $response->getStatusCode();
+        $statusCode = $response->getHttpCode();
         $body = json_decode($response->getBody(), true);
 
         $this->assertNotNull($body);
