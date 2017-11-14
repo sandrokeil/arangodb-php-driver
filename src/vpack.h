@@ -1,15 +1,13 @@
 #pragma once
 
 #include <phpcpp.h>
-#include <stdlib.h>
-#include <iostream>
 
 #include "velocypack/vpack.h"
 #include "velocypack/velocypack-exception-macros.h"
 
 namespace vp = ::arangodb::velocypack;
 
-namespace ArangoDb {
+namespace arangodb { namespace fuerte { namespace php {
 
     class Vpack : public Php::Base
     {
@@ -32,4 +30,4 @@ namespace ArangoDb {
 
     };
 
-}
+}}}

@@ -1,21 +1,17 @@
 #pragma once
 
 #include <phpcpp.h>
-#include <stdlib.h>
-#include <iostream>
 
 #include <fuerte/fuerte.h>
 #include <fuerte/types.h>
-
-#include "velocypack/vpack.h"
-#include "velocypack/velocypack-exception-macros.h"
 
 #include "vpack.h"
 
 namespace vp = ::arangodb::velocypack;
 namespace fu = ::arangodb::fuerte;
 
-namespace ArangoDb {
+namespace arangodb { namespace fuerte { namespace php {
+
     class Request : public Php::Base
     {
     private:
@@ -41,4 +37,4 @@ namespace ArangoDb {
 
     };
 
-}
+}}}

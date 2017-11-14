@@ -9,6 +9,9 @@ use ArangoDb\Request;
 use ArangoDb\Vpack;
 use ArangoDb\Connection;
 
+/**
+ * @group request
+ */
 class RequestTest extends TestCase
 {
     /**
@@ -35,7 +38,7 @@ class RequestTest extends TestCase
         $connection->connect();
 
         $response = $connection->send($request);
-        $statusCode = $response->getStatusCode();
+        $statusCode = $response->getHttpCode();
         $body = json_decode($response->getBody(), true);
 
         $this->assertNotNull($body);

@@ -1,41 +1,15 @@
 #include <phpcpp.h>
 
-#include <algorithm>
-#include <stdlib.h>
-
-#include <fuerte/fuerte.h>
-#include <fuerte/loop.h>
-#include <fuerte/FuerteLogger.h>
-#include <fuerte/connection.h>
-#include <fuerte/requests.h>
-
-#include <iostream>
-#include <iomanip>
-#include "velocypack/vpack.h"
-#include "velocypack/velocypack-exception-macros.h"
-
 #include <velocypack/Parser.h>
 #include <velocypack/Iterator.h>
 #include <velocypack/velocypack-aliases.h>
-
-#include <chrono>
-#include <iostream>
-#include <fstream>
-#include <boost/thread.hpp>
-#include <boost/asio/io_service.hpp>
-#include <thread>
 
 #include "connection.h"
 #include "vpack.h"
 #include "request.h"
 
-
-namespace f = ::arangodb::fuerte;
 namespace fu = ::arangodb::fuerte;
 namespace vp = ::arangodb::velocypack;
-
-//void createCollection(std::string collectionName, int timeout);
-
 
 Php::Value vpack(Php::Parameters &params)
 {
@@ -73,15 +47,15 @@ Php::Value createCollection(Php::Parameters &params)
     std::string collectionName = params[0];
     int timeout = params[1];
 
-    std::shared_ptr<f::Connection> connection;
-    std::unique_ptr<f::EventLoopService> eventLoopService = std::unique_ptr<f::EventLoopService>(new f::EventLoopService(1));
+    std::shared_ptr<fu::Connection> connection;
+    std::unique_ptr<fu::EventLoopService> eventLoopService = std::unique_ptr<fu::EventLoopService>(new fu::EventLoopService(1));
 
-    f::WaitGroup wg;
+    fu::WaitGroup wg;
     wg.add();
 
-    f::ConnectionBuilder cbuilder;
+    fu::ConnectionBuilder cbuilder;
     cbuilder.host("vst://arangodb:8529");
-    cbuilder.onFailure([&](f::Error errorCode, const std::string& errorMessage){  });
+    cbuilder.onFailure([&](fu::Error errorCode, const std::string& errorMessage){  });
     connection = cbuilder.connect(*eventLoopService);
 
     VPackBuilder builder;
@@ -91,7 +65,7 @@ Php::Value createCollection(Php::Parameters &params)
 
     auto request = fu::createRequest(fu::RestVerb::Post, "/_api/collection");
     request->addVPack(builder.slice());
-    connection->sendRequest(std::move(request),[&](f::Error, std::unique_ptr<f::Request>, std::unique_ptr<f::Response> response){
+    connection->sendRequest(std::move(request),[&](fu::Error, std::unique_ptr<fu::Request>, std::unique_ptr<fu::Response> response){
         std::cout << response->statusCode() << std::endl;
         wg.done();
     });
@@ -114,9 +88,7 @@ Php::Value createCollection(Php::Parameters &params)
 
 
 
-/**
- *  tell the compiler that the get_module is a pure C function
- */
+
 extern "C" {
 
     void exportClassConnection(Php::Extension* extension);
@@ -157,17 +129,16 @@ extern "C" {
 
     void exportClassConnection(Php::Extension* extension)
     {
-        // description of the class so that PHP knows which methods are accessible
-        Php::Class<ArangoDb::Connection> connection("ArangoDb\\Connection");
+        Php::Class<arangodb::fuerte::php::Connection> connection("ArangoDb\\Connection");
 
-        connection.method<&ArangoDb::Connection::__construct>("__construct",{
+        connection.method<&arangodb::fuerte::php::Connection::__construct>("__construct",{
             Php::ByVal("options", Php::Type::Array, true),
         });
-        connection.method<&ArangoDb::Connection::connect>("connect");
-        connection.method<&ArangoDb::Connection::send>("send", {
+        connection.method<&arangodb::fuerte::php::Connection::connect>("connect");
+        connection.method<&arangodb::fuerte::php::Connection::send>("send", {
             Php::ByVal("request", "ArangoDb\\Request", true)
         });
-        connection.method<&ArangoDb::Connection::setThreadCount>("setThreadCount", {
+        connection.method<&arangodb::fuerte::php::Connection::setThreadCount>("setThreadCount", {
             Php::ByVal("threadCount", Php::Type::Numeric, true)
         });
 
@@ -186,17 +157,17 @@ extern "C" {
 
     void exportClassVpack(Php::Extension* extension)
     {
-        Php::Class<ArangoDb::Vpack> vpack("ArangoDb\\Vpack");
+        Php::Class<arangodb::fuerte::php::Vpack> vpack("ArangoDb\\Vpack");
 
-        vpack.method<&ArangoDb::Vpack::__construct>("__construct");
-        vpack.method<&ArangoDb::Vpack::fromArray>("fromArray", {
+        vpack.method<&arangodb::fuerte::php::Vpack::__construct>("__construct");
+        vpack.method<&arangodb::fuerte::php::Vpack::fromArray>("fromArray", {
             Php::ByVal("array", Php::Type::Array, true)
         });
-        vpack.method<&ArangoDb::Vpack::fromJson>("fromJson", {
+        vpack.method<&arangodb::fuerte::php::Vpack::fromJson>("fromJson", {
             Php::ByVal("json", Php::Type::String, true)
         });
-        vpack.method<&ArangoDb::Vpack::toHex>("toHex");
-        vpack.method<&ArangoDb::Vpack::toJson>("toJson");
+        vpack.method<&arangodb::fuerte::php::Vpack::toHex>("toHex");
+        vpack.method<&arangodb::fuerte::php::Vpack::toJson>("toJson");
 
         extension->add(std::move(vpack));
     }
@@ -204,21 +175,21 @@ extern "C" {
 
     void exportClassRequest(Php::Extension* extension)
     {
-        Php::Class<ArangoDb::Request> request("ArangoDb\\Request");
+        Php::Class<arangodb::fuerte::php::Request> request("ArangoDb\\Request");
 
-        request.method<&ArangoDb::Request::__construct>("__construct", {
+        request.method<&arangodb::fuerte::php::Request::__construct>("__construct", {
             Php::ByVal("method", Php::Type::Numeric, true),
             Php::ByVal("path", Php::Type::String, true),
             Php::ByVal("vpack", "ArangoDb\\Vpack", true)
         });
 
-        request.property("METHOD_DELETE", ArangoDb::Request::METHOD_DELETE, Php::Const);
-        request.property("METHOD_GET", ArangoDb::Request::METHOD_GET, Php::Const);
-        request.property("METHOD_POST", ArangoDb::Request::METHOD_POST, Php::Const);
-        request.property("METHOD_PUT", ArangoDb::Request::METHOD_PUT, Php::Const);
-        request.property("METHOD_HEAD", ArangoDb::Request::METHOD_HEAD, Php::Const);
-        request.property("METHOD_PATCH", ArangoDb::Request::METHOD_PATCH, Php::Const);
-        request.property("METHOD_OPTIONS", ArangoDb::Request::METHOD_OPTIONS, Php::Const);
+        request.property("METHOD_DELETE", arangodb::fuerte::php::Request::METHOD_DELETE, Php::Const);
+        request.property("METHOD_GET", arangodb::fuerte::php::Request::METHOD_GET, Php::Const);
+        request.property("METHOD_POST", arangodb::fuerte::php::Request::METHOD_POST, Php::Const);
+        request.property("METHOD_PUT", arangodb::fuerte::php::Request::METHOD_PUT, Php::Const);
+        request.property("METHOD_HEAD", arangodb::fuerte::php::Request::METHOD_HEAD, Php::Const);
+        request.property("METHOD_PATCH", arangodb::fuerte::php::Request::METHOD_PATCH, Php::Const);
+        request.property("METHOD_OPTIONS", arangodb::fuerte::php::Request::METHOD_OPTIONS, Php::Const);
 
         extension->add(std::move(request));
     }
@@ -226,10 +197,10 @@ extern "C" {
 
     void exportClassResponse(Php::Extension* extension)
     {
-        Php::Class<ArangoDb::Response> response("ArangoDb\\Response");
+        Php::Class<arangodb::fuerte::php::Response> response("ArangoDb\\Response");
 
-        response.method<&ArangoDb::Response::getStatusCode>("getStatusCode");
-        response.method<&ArangoDb::Response::getBody>("getBody");
+        response.method<&arangodb::fuerte::php::Response::getHttpCode>("getHttpCode");
+        response.method<&arangodb::fuerte::php::Response::getBody>("getBody");
 
         extension->add(std::move(response));
     }

@@ -1,8 +1,6 @@
 #pragma once
 
 #include <phpcpp.h>
-#include <stdlib.h>
-#include <iostream>
 
 #include <fuerte/fuerte.h>
 #include <fuerte/types.h>
@@ -13,7 +11,7 @@
 namespace vp = ::arangodb::velocypack;
 namespace fu = ::arangodb::fuerte;
 
-namespace ArangoDb {
+namespace arangodb { namespace fuerte { namespace php {
 
     class Response : public Php::Base
     {
@@ -21,13 +19,35 @@ namespace ArangoDb {
         fu::Response response;
 
     public:
-        Response(const fu::Response &response);
+        Response(const fu::Response &response): response(response)
+        {
+        }
 
-        Php::Value getStatusCode();
-        Php::Value getBody();
+        Php::Value getHttpCode()
+        {
+            return static_cast<int>(this->response.statusCode());
+        }
+
+        Php::Value getBody()
+        {
+            std::string body;
+
+            try {
+                vp::Slice slice = this->response.slices().front();
+                vp::Options dumperOptions;
+
+                vp::StringSink sink(&body);
+                vp::Dumper dumper(&sink, &dumperOptions);
+                dumper.dump(slice);
+            } catch(vp::Exception const& e) {
+                throw Php::Exception(e.what());
+            }
+
+            return body;
+        }
 
         virtual ~Response() = default;
 
     };
 
-}
+}}}

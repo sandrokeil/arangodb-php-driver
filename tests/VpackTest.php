@@ -7,6 +7,9 @@ namespace ArangoDbDriverTest;
 use PHPUnit\Framework\TestCase;
 use ArangoDb\Vpack;
 
+/**
+ * @group vpack
+ */
 class VpackTest extends TestCase
 {
     /**

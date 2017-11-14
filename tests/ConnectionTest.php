@@ -7,6 +7,9 @@ namespace ArangoDbDriverTest;
 use PHPUnit\Framework\TestCase;
 use ArangoDb\Connection;
 
+/**
+ * @group connection
+ */
 class ConnectionTest extends TestCase
 {
     /**
