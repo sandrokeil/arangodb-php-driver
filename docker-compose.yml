@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile.builder
     volumes:
       - "./:/app"
-    command: bash -c "cd /app/build && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-fPIC && make"
+    #command: bash -c "cd /app/build && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-fPIC && make"
 
   # To test run: docker-compose run --rm php
   php:
@@ -27,7 +27,7 @@ services:
     command: ["vendor/bin/phpunit"]
 
   arangodb:
-    image: arangodb:3.2.0
+    image: arangodb:3.2
     ports:
       - 8529:8529
     environment:
