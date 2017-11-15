@@ -41,6 +41,7 @@ add_library(arangodb SHARED
     src/connection.cpp
     src/main.cpp
     src/request.cpp
+    src/response.cpp
     src/vpack.cpp
 )
 
