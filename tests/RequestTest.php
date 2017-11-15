@@ -45,6 +45,30 @@ class RequestTest extends TestCase
         $this->assertTrue($statusCode === 409 || $statusCode === 200);
     }
 
+
+    /**
+     * @test
+     */
+    public function it_internally_creates_request_through_calling_http_method(): void
+    {
+        $connection = new Connection([
+            Connection::HOST => 'vst://arangodb:8529',
+            Connection::USER => 'myUser',
+            Connection::PASSWORD => 'myPassword',
+            Connection::MAX_CHUNK_SIZE => 64,
+            Connection::VST_VERSION => Connection::VST_VERSION_11,
+        ]);
+
+        $connection->connect();
+        $response = $connection->post('/_api/collection', Vpack::fromArray([
+            "name" => "myNewCollection"
+        ]));
+
+        $statusCode = $response->getHttpCode();
+        $this->assertTrue($statusCode === 409 || $statusCode === 200);
+    }
+
+
     /**
      * @test
      */

@@ -142,6 +142,20 @@ extern "C" {
             Php::ByVal("threadCount", Php::Type::Numeric, true)
         });
 
+        Php::Arguments methodArgs = {
+            Php::ByVal("path", Php::Type::String, true),
+            Php::ByVal("vpack", "ArangoDb\\Vpack", true)
+        };
+
+        connection.method<&arangodb::fuerte::php::Connection::methodDelete>("delete", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodGet>("get", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodPost>("post", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodPut>("put", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodHead>("head", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodPatch>("patch", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodOptions>("options", methodArgs);
+
+
         connection.property("HOST", "host", Php::Const);
         connection.property("USER", "user", Php::Const);
         connection.property("PASSWORD", "password", Php::Const);

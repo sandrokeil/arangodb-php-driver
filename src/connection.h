@@ -48,18 +48,23 @@ namespace arangodb { namespace fuerte { namespace php {
     public:
         Connection();
 
-        /**
-         *  Constructor
-         *
-         *  @param  Php::Parameters  connection options
-         */
         void __construct(Php::Parameters &params);
 
         void setThreadCount(Php::Parameters &params);
 
         void connect();
+        Response* sendRequest(Request* request);
 
         Php::Value send(Php::Parameters &params);
+
+        Php::Value methodDelete(Php::Parameters &params);
+        Php::Value methodGet(Php::Parameters &params);
+        Php::Value methodPost(Php::Parameters &params);
+        Php::Value methodPut(Php::Parameters &params);
+        Php::Value methodHead(Php::Parameters &params);
+        Php::Value methodPatch(Php::Parameters &params);
+        Php::Value methodOptions(Php::Parameters &params);
+
 
         virtual ~Connection() = default;
     };
