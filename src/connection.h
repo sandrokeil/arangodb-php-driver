@@ -45,8 +45,11 @@ namespace arangodb { namespace fuerte { namespace php {
         short defaultTimeout = 3;
         int threadCount;
 
+        fu::WaitGroup* asyncWaitGroup;
+
     public:
         Connection();
+        ~Connection();
 
         void __construct(Php::Parameters &params);
 
@@ -54,8 +57,10 @@ namespace arangodb { namespace fuerte { namespace php {
 
         void connect();
         Response* sendRequest(Request* request);
+        void sendRequestAsync(Request* request, Php::Value& callback);
 
         Php::Value send(Php::Parameters &params);
+        void sendAsync(Php::Parameters &params);
 
         Php::Value methodDelete(Php::Parameters &params);
         Php::Value methodGet(Php::Parameters &params);
@@ -65,8 +70,8 @@ namespace arangodb { namespace fuerte { namespace php {
         Php::Value methodPatch(Php::Parameters &params);
         Php::Value methodOptions(Php::Parameters &params);
 
+        void wait();
 
-        virtual ~Connection() = default;
     };
 
 }}}

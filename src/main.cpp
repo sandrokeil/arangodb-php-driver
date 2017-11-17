@@ -138,6 +138,10 @@ extern "C" {
         connection.method<&arangodb::fuerte::php::Connection::send>("send", {
             Php::ByVal("request", "ArangoDb\\Request", true)
         });
+        connection.method<&arangodb::fuerte::php::Connection::sendAsync>("sendAsync", {
+            Php::ByVal("request", "ArangoDb\\Request", true),
+            Php::ByVal("callback", Php::Type::Callable, true)
+        });
         connection.method<&arangodb::fuerte::php::Connection::setThreadCount>("setThreadCount", {
             Php::ByVal("threadCount", Php::Type::Numeric, true)
         });
@@ -155,6 +159,7 @@ extern "C" {
         connection.method<&arangodb::fuerte::php::Connection::methodPatch>("patch", methodArgs);
         connection.method<&arangodb::fuerte::php::Connection::methodOptions>("options", methodArgs);
 
+        connection.method<&arangodb::fuerte::php::Connection::wait>("wait");
 
         connection.property("HOST", "host", Php::Const);
         connection.property("USER", "user", Php::Const);

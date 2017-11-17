@@ -11,11 +11,18 @@ namespace arangodb { namespace fuerte { namespace php {
                     {"vst_version",    ConnectionOptions::VST_VERSION}
             };
 
-    Connection::Connection(): threadCount(std::thread::hardware_concurrency())
+    Connection::Connection():
+        threadCount(std::thread::hardware_concurrency()),
+        asyncWaitGroup(new fu::WaitGroup())
     {
         if(this->threadCount < 1) {
             this->threadCount = 1;
         }
+    }
+
+    Connection::~Connection()
+    {
+        delete this->asyncWaitGroup;
     }
 
     void Connection::__construct(Php::Parameters &params)
@@ -108,6 +115,20 @@ namespace arangodb { namespace fuerte { namespace php {
         return response;
     }
 
+    void Connection::sendRequestAsync(Request* request, Php::Value& callback)
+    {
+        this->asyncWaitGroup->add();
+
+        this->connection->sendRequest(
+            std::move(request->getFuerteRequest()),
+            [=](fu::Error, std::unique_ptr<fu::Request>, std::unique_ptr<fu::Response> res){
+                callback(Php::Object("ArangoDb\\Response", new Response(*res)));
+
+                this->asyncWaitGroup->done();
+            }
+        );
+    }
+
 
     Php::Value Connection::send(Php::Parameters &params)
     {
@@ -119,6 +140,19 @@ namespace arangodb { namespace fuerte { namespace php {
         Response* response = this->sendRequest(request);
         return Php::Object("ArangoDb\\Response", response);
     }
+
+    void Connection::sendAsync(Php::Parameters &params)
+    {
+        if(!params[0].instanceOf("ArangoDb\\Request"))
+            throw Php::Exception("Expected request to be of type Request");
+
+        if(!params[1].isCallable())
+            throw Php::Exception("Expected callback to be of type Callable");
+
+        Request* request = (Request*)params[0].implementation();
+        this->sendRequestAsync(request, params[1]);
+    }
+
 
     Php::Value Connection::methodDelete(Php::Parameters &params)
     {
@@ -188,6 +222,18 @@ namespace arangodb { namespace fuerte { namespace php {
         Request request(params[0].stringValue(), (Vpack*)params[1].implementation());
         request.setHttpMethod(Request::METHOD_OPTIONS);
         return Php::Object("ArangoDb\\Response", this->sendRequest(&request));
+    }
+
+    void Connection::wait()
+    {
+        auto success = this->asyncWaitGroup->wait_for(std::chrono::seconds(this->defaultTimeout));
+
+        delete this->asyncWaitGroup;
+        this->asyncWaitGroup = new fu::WaitGroup();
+
+        if(!success) {
+            throw Php::Exception("Sending request to ArangoDB failed");
+        }
     }
 
 }}}
