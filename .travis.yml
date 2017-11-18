@@ -1,0 +1,28 @@
+sudo: required
+language: php
+php:
+  - 7.1
+
+services:
+  - docker
+
+jobs:
+  include:
+    - stage: build and test extension
+      env:
+        - DOCKER_COMPOSE_VERSION=1.16.1
+        - DEPENDENCIES="--prefer-lowest --prefer-stable"
+      script:
+      - docker info
+      - sudo rm /usr/local/bin/docker-compose
+      - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+      - chmod +x docker-compose
+      - sudo mv docker-compose /usr/local/bin
+      - docker-compose up -d --no-recreate arangodb
+      - ./get_fuerte
+      - docker-compose build arangodb-builder
+      - docker-compose run --rm arangodb-builder
+      - docker-compose build php
+      - docker run --rm -it --volume $(pwd):/app prooph/composer:7.1 update --prefer-dist $DEPENDENCIES
+      - docker-compose run --rm php vendor/bin/phpunit
+      - docker-compose down -v

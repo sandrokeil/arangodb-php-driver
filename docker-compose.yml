@@ -12,6 +12,7 @@ services:
 
   # To test run: docker-compose run --rm php
   php:
+    image: arangodb-php
     depends_on:
       - arangodb-builder
     build:
