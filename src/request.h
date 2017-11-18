@@ -15,8 +15,11 @@ namespace arangodb { namespace fuerte { namespace php {
     class Request : public Php::Base
     {
     private:
-        Vpack* vpack;
         std::unique_ptr<fu::Request> request;
+
+        fu::RestVerb httpMethod;
+        std::string path;
+        vp::Builder builder;
 
     public:
         static const int8_t METHOD_DELETE = 0;
@@ -27,11 +30,13 @@ namespace arangodb { namespace fuerte { namespace php {
         static const int8_t METHOD_PATCH = 5;
         static const int8_t METHOD_OPTIONS = 6;
 
-        Request() = default;
+        Request(std::string path, const Vpack* vpack);
+        Request();
 
         void __construct(Php::Parameters &params);
+        void setHttpMethod(int8_t httpMethod);
 
-        const fu::Request& getFuerteRequest();
+        std::unique_ptr<fu::Request> getFuerteRequest();
 
         virtual ~Request() = default;
 

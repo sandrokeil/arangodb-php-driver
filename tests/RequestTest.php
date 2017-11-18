@@ -45,6 +45,30 @@ class RequestTest extends TestCase
         $this->assertTrue($statusCode === 409 || $statusCode === 200);
     }
 
+
+    /**
+     * @test
+     */
+    public function it_internally_creates_request_through_calling_http_method(): void
+    {
+        $connection = new Connection([
+            Connection::HOST => 'vst://arangodb:8529',
+            Connection::USER => 'myUser',
+            Connection::PASSWORD => 'myPassword',
+            Connection::MAX_CHUNK_SIZE => 64,
+            Connection::VST_VERSION => Connection::VST_VERSION_11,
+        ]);
+
+        $connection->connect();
+        $response = $connection->post('/_api/collection', Vpack::fromArray([
+            "name" => "myNewCollection"
+        ]));
+
+        $statusCode = $response->getHttpCode();
+        $this->assertTrue($statusCode === 409 || $statusCode === 200);
+    }
+
+
     /**
      * @test
      */
@@ -91,5 +115,44 @@ class RequestTest extends TestCase
         $connection->send($transaction);
 
         $this->assertTrue(true);
+    }
+
+
+    /**
+     * @test
+     */
+    public function it_sends_multiple_requests_async(): void
+    {
+        $connection = new Connection([
+            Connection::HOST => 'vst://arangodb:8529',
+            Connection::USER => 'myUser',
+            Connection::PASSWORD => 'myPassword',
+            Connection::MAX_CHUNK_SIZE => 64,
+            Connection::VST_VERSION => Connection::VST_VERSION_11,
+        ]);
+
+        $connection->connect();
+
+        $successfulRequests = 0;
+        for ($i = 0; $i < 10; $i++) {
+            $request = new Request(
+                Request::METHOD_POST,
+                '/_api/collection',
+                Vpack::fromArray([
+                    'name' => "testcollection_{$i}"
+                ])
+            );
+
+            $connection->sendAsync($request, function (\ArangoDb\Response $response) use(&$successfulRequests) {
+                $httpCode = $response->getHttpCode();
+                if($httpCode === 200 || $httpCode === 409) {
+                    $successfulRequests++;
+                }
+            });
+        }
+
+        $connection->wait();
+
+        $this->assertEquals(10, $successfulRequests);
     }
 }

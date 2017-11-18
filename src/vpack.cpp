@@ -73,4 +73,9 @@ namespace arangodb { namespace fuerte { namespace php {
         return this->builder.slice();
     }
 
+    const vp::Builder& Vpack::getBuilder() const
+    {
+        return this->builder;
+    }
+
 }}}

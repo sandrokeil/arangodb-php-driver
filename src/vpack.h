@@ -25,6 +25,7 @@ namespace arangodb { namespace fuerte { namespace php {
         Php::Value toJson();
 
         vp::Slice getSlice();
+        const vp::Builder& getBuilder() const;
 
         virtual ~Vpack() = default;
 

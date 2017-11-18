@@ -138,9 +138,28 @@ extern "C" {
         connection.method<&arangodb::fuerte::php::Connection::send>("send", {
             Php::ByVal("request", "ArangoDb\\Request", true)
         });
+        connection.method<&arangodb::fuerte::php::Connection::sendAsync>("sendAsync", {
+            Php::ByVal("request", "ArangoDb\\Request", true),
+            Php::ByVal("callback", Php::Type::Callable, true)
+        });
         connection.method<&arangodb::fuerte::php::Connection::setThreadCount>("setThreadCount", {
             Php::ByVal("threadCount", Php::Type::Numeric, true)
         });
+
+        Php::Arguments methodArgs = {
+            Php::ByVal("path", Php::Type::String, true),
+            Php::ByVal("vpack", "ArangoDb\\Vpack", true)
+        };
+
+        connection.method<&arangodb::fuerte::php::Connection::methodDelete>("delete", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodGet>("get", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodPost>("post", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodPut>("put", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodHead>("head", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodPatch>("patch", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodOptions>("options", methodArgs);
+
+        connection.method<&arangodb::fuerte::php::Connection::wait>("wait");
 
         connection.property("HOST", "host", Php::Const);
         connection.property("USER", "user", Php::Const);
