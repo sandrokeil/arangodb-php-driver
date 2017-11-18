@@ -41,6 +41,17 @@ namespace arangodb { namespace fuerte { namespace php {
         this->threadCount = threadCount;
     }
 
+    void Connection::setDefaultTimeout(Php::Parameters &params)
+    {
+        int defaultTimeout = params[0];
+
+        if(defaultTimeout < 1) {
+            throw Php::Exception("Invalid defaultTimeout provided, must be >= 1");
+        }
+
+        this->defaultTimeout = defaultTimeout;
+    }
+
     fu::ConnectionBuilder Connection::createConnectionBuilder()
     {
         try {

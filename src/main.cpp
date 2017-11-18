@@ -145,6 +145,9 @@ extern "C" {
         connection.method<&arangodb::fuerte::php::Connection::setThreadCount>("setThreadCount", {
             Php::ByVal("threadCount", Php::Type::Numeric, true)
         });
+        connection.method<&arangodb::fuerte::php::Connection::setDefaultTimeout>("setDefaultTimeout", {
+            Php::ByVal("defaultTimeout", Php::Type::Numeric, true)
+        });
 
         Php::Arguments methodArgs = {
             Php::ByVal("path", Php::Type::String, true),

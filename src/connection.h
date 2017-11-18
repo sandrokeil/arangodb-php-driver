@@ -54,6 +54,7 @@ namespace arangodb { namespace fuerte { namespace php {
         void __construct(Php::Parameters &params);
 
         void setThreadCount(Php::Parameters &params);
+        void setDefaultTimeout(Php::Parameters &params);
 
         void connect();
         Response* sendRequest(Request* request);
