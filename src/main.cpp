@@ -1,93 +1,9 @@
 #include <phpcpp.h>
 
-#include <velocypack/Parser.h>
-#include <velocypack/Iterator.h>
-#include <velocypack/velocypack-aliases.h>
-
 #include "connection.h"
-#include "vpack.h"
 #include "request.h"
-
-namespace fu = ::arangodb::fuerte;
-namespace vp = ::arangodb::velocypack;
-
-Php::Value vpack(Php::Parameters &params)
-{
-    // there is one input array, cast the PHP variable to a vector of ints
-    std::vector<int> input = params[0];
-
-    vp::Builder b;
-
-    b.add(vp::Value(vp::ValueType::Object));
-    b.add("b", vp::Value(12));
-    b.add("a", vp::Value(true));
-    b.add("l", vp::Value(vp::ValueType::Array));
-    b.add(vp::Value(1));
-    b.add(vp::Value(2));
-    b.add(vp::Value(3));
-    b.close();
-    b.add("name", vp::Value("Gustav"));
-    b.close();
-
-    // now dump the resulting VPack value
-    std::cout << "Resulting VPack:" << b.slice() << std::endl;
-    std::cout << vp::HexDump(b.slice()) << std::endl;
-
-    std::cout << vp::valueTypeName(vp::ValueType::Object) << std::endl;
-
-    std::cout << std::endl << std::endl;
-    //createCollection("testobi", 3);
-
-    return input;
-}
-
-
-Php::Value createCollection(Php::Parameters &params)
-{
-    std::string collectionName = params[0];
-    int timeout = params[1];
-
-    std::shared_ptr<fu::Connection> connection;
-    std::unique_ptr<fu::EventLoopService> eventLoopService = std::unique_ptr<fu::EventLoopService>(new fu::EventLoopService(1));
-
-    fu::WaitGroup wg;
-    wg.add();
-
-    fu::ConnectionBuilder cbuilder;
-    cbuilder.host("vst://arangodb:8529");
-    cbuilder.onFailure([&](fu::Error errorCode, const std::string& errorMessage){  });
-    connection = cbuilder.connect(*eventLoopService);
-
-    VPackBuilder builder;
-    builder.openObject();
-    builder.add("name" , VPackValue(collectionName));
-    builder.close();
-
-    auto request = fu::createRequest(fu::RestVerb::Post, "/_api/collection");
-    request->addVPack(builder.slice());
-    connection->sendRequest(std::move(request),[&](fu::Error, std::unique_ptr<fu::Request>, std::unique_ptr<fu::Response> response){
-        std::cout << response->statusCode() << std::endl;
-        wg.done();
-    });
-
-
-    auto success = wg.wait_for(std::chrono::seconds(timeout));
-    if(!success) {
-        throw Php::Exception("Could not connect to arangodb");
-    }
-
-    return true;
-}
-
-
-
-
-
-
-
-
-
-
+#include "response.h"
+#include "vpack.h"
 
 extern "C" {
 
@@ -108,15 +24,6 @@ extern "C" {
         // static(!) Php::Extension object that should stay in memory
         // for the entire duration of the process (that's why it's static)
         static Php::Extension extension("arangodb", "0.1");
-
-        extension.add<vpack>("vpack", {
-            Php::ByVal("input", Php::Type::Array)
-        });
-
-        extension.add<createCollection>("createCollection", {
-            Php::ByVal("collectionName", Php::Type::String),
-            Php::ByVal("timeout", Php::Type::Numeric)
-        });
 
         exportClassConnection(&extension);
         exportClassVpack(&extension);
@@ -151,7 +58,8 @@ extern "C" {
 
         Php::Arguments methodArgs = {
             Php::ByVal("path", Php::Type::String, true),
-            Php::ByVal("vpack", "ArangoDb\\Vpack", true)
+            Php::ByVal("vpack", "ArangoDb\\Vpack", true),
+            Php::ByVal("queryParams", Php::Type::Array, false)
         };
 
         connection.method<&arangodb::fuerte::php::Connection::methodDelete>("delete", methodArgs);
@@ -202,7 +110,8 @@ extern "C" {
         request.method<&arangodb::fuerte::php::Request::__construct>("__construct", {
             Php::ByVal("method", Php::Type::Numeric, true),
             Php::ByVal("path", Php::Type::String, true),
-            Php::ByVal("vpack", "ArangoDb\\Vpack", true)
+            Php::ByVal("vpack", "ArangoDb\\Vpack", true),
+            Php::ByVal("queryParams", Php::Type::Array, false)
         });
 
         request.property("METHOD_DELETE", arangodb::fuerte::php::Request::METHOD_DELETE, Php::Const);

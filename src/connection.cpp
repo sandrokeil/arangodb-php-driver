@@ -140,7 +140,6 @@ namespace arangodb { namespace fuerte { namespace php {
         );
     }
 
-
     Php::Value Connection::send(Php::Parameters &params)
     {
         if(!params[0].instanceOf("ArangoDb\\Request"))
@@ -164,74 +163,59 @@ namespace arangodb { namespace fuerte { namespace php {
         this->sendRequestAsync(request, params[1]);
     }
 
-
     Php::Value Connection::methodDelete(Php::Parameters &params)
     {
-        if(!params[1].instanceOf("ArangoDb\\Vpack"))
-            throw Php::Exception("Expected vpack to be of type Vpack");
-
-        Request request(params[0].stringValue(), (Vpack*)params[1].implementation());
+        Request request(params);
         request.setHttpMethod(Request::METHOD_DELETE);
+
         return Php::Object("ArangoDb\\Response", this->sendRequest(&request));
     }
 
     Php::Value Connection::methodGet(Php::Parameters &params)
     {
-        if(!params[1].instanceOf("ArangoDb\\Vpack"))
-            throw Php::Exception("Expected vpack to be of type Vpack");
-
-        Request request(params[0].stringValue(), (Vpack*)params[1].implementation());
+        Request request(params);
         request.setHttpMethod(Request::METHOD_GET);
+
         return Php::Object("ArangoDb\\Response", this->sendRequest(&request));
     }
 
     Php::Value Connection::methodPost(Php::Parameters &params)
     {
-        if(!params[1].instanceOf("ArangoDb\\Vpack"))
-            throw Php::Exception("Expected vpack to be of type Vpack");
-
-        Request request(params[0].stringValue(), (Vpack*)params[1].implementation());
+        Request request(params);
         request.setHttpMethod(Request::METHOD_POST);
+
         return Php::Object("ArangoDb\\Response", this->sendRequest(&request));
     }
 
     Php::Value Connection::methodPut(Php::Parameters &params)
     {
-        if(!params[1].instanceOf("ArangoDb\\Vpack"))
-            throw Php::Exception("Expected vpack to be of type Vpack");
-
-        Request request(params[0].stringValue(), (Vpack*)params[1].implementation());
+        Request request(params);
         request.setHttpMethod(Request::METHOD_PUT);
+
         return Php::Object("ArangoDb\\Response", this->sendRequest(&request));
     }
 
     Php::Value Connection::methodHead(Php::Parameters &params)
     {
-        if(!params[1].instanceOf("ArangoDb\\Vpack"))
-            throw Php::Exception("Expected vpack to be of type Vpack");
-
-        Request request(params[0].stringValue(), (Vpack*)params[1].implementation());
+        Request request(params);
         request.setHttpMethod(Request::METHOD_HEAD);
+
         return Php::Object("ArangoDb\\Response", this->sendRequest(&request));
     }
 
     Php::Value Connection::methodPatch(Php::Parameters &params)
     {
-        if(!params[1].instanceOf("ArangoDb\\Vpack"))
-            throw Php::Exception("Expected vpack to be of type Vpack");
-
-        Request request(params[0].stringValue(), (Vpack*)params[1].implementation());
+        Request request(params);
         request.setHttpMethod(Request::METHOD_PATCH);
+
         return Php::Object("ArangoDb\\Response", this->sendRequest(&request));
     }
 
     Php::Value Connection::methodOptions(Php::Parameters &params)
     {
-        if(!params[1].instanceOf("ArangoDb\\Vpack"))
-            throw Php::Exception("Expected vpack to be of type Vpack");
-
-        Request request(params[0].stringValue(), (Vpack*)params[1].implementation());
+        Request request(params);
         request.setHttpMethod(Request::METHOD_OPTIONS);
+
         return Php::Object("ArangoDb\\Response", this->sendRequest(&request));
     }
 
