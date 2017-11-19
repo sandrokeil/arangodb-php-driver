@@ -10,16 +10,18 @@ use ArangoDb\Vpack;
 
 final class TestUtil
 {
-    public static function getConnection(): Connection
+    public static function getConnection(bool $connect = true): Connection
     {
         $connection = new Connection(self::getConnectionParams());
-        $connection->connect();
+        if ($connect) {
+            $connection->connect();
+        }
         return $connection;
     }
 
     public static function getDatabaseName(): string
     {
-        if (! self::hasRequiredConnectionParams()) {
+        if (!self::hasRequiredConnectionParams()) {
             throw new \RuntimeException('No connection params given');
         }
 
@@ -28,7 +30,7 @@ final class TestUtil
 
     public static function getConnectionParams(): array
     {
-        if (! self::hasRequiredConnectionParams()) {
+        if (!self::hasRequiredConnectionParams()) {
             throw new \RuntimeException('No connection params given');
         }
 
@@ -49,6 +51,32 @@ final class TestUtil
         $statusCode = $response->getHttpCode();
 
         return $statusCode === 201 || $statusCode === 200;
+    }
+
+    public static function getVpackCreateCollection(string $collectionName): Vpack
+    {
+        return Vpack::fromArray([
+            'name' => $collectionName,
+            'keyOptions' => [
+                'allowUserKeys' => false,
+                'type' => 'autoincrement',
+                'increment' => 1,
+                'offset' => 1,
+            ],
+        ]);
+    }
+
+    public static function getVpackCreateIndex(): Vpack
+    {
+        return Vpack::fromArray([
+            'type' => 'hash',
+            'fields' => [
+                'real_stream_name',
+            ],
+            'selectivityEstimate' => 1,
+            'unique' => true,
+            'sparse' => false,
+        ]);
     }
 
     private static function hasRequiredConnectionParams(): bool

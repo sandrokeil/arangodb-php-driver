@@ -55,7 +55,8 @@ extern "C" {
 
         Php::Arguments methodArgs = {
             Php::ByVal("path", Php::Type::String, true),
-            Php::ByVal("vpack", "ArangoDb\\Vpack", true)
+            Php::ByVal("vpack", "ArangoDb\\Vpack", true),
+            Php::ByVal("queryParams", Php::Type::Array, false)
         };
 
         connection.method<&arangodb::fuerte::php::Connection::methodDelete>("delete", methodArgs);
