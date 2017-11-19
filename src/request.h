@@ -19,6 +19,7 @@ namespace arangodb { namespace fuerte { namespace php {
 
         fu::RestVerb httpMethod;
         std::string path;
+        std::map<std::string, std::string> queryParams;
         vp::Builder builder;
 
     public:
@@ -31,6 +32,7 @@ namespace arangodb { namespace fuerte { namespace php {
         static const int8_t METHOD_OPTIONS = 6;
 
         Request(std::string path, const Vpack* vpack);
+        Request(std::string path, const Vpack* vpack, std::map<std::string, std::string> queryParams);
         Request();
 
         void __construct(Php::Parameters &params);

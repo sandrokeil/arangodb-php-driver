@@ -156,8 +156,9 @@ namespace arangodb { namespace fuerte { namespace php {
 
     Php::Value Connection::methodDelete(Php::Parameters &params)
     {
-        if(!params[1].instanceOf("ArangoDb\\Vpack"))
+        if(!params[1].instanceOf("ArangoDb\\Vpack")) {
             throw Php::Exception("Expected vpack to be of type Vpack");
+        }
 
         Request request(params[0].stringValue(), (Vpack*)params[1].implementation());
         request.setHttpMethod(Request::METHOD_DELETE);
