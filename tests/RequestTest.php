@@ -28,6 +28,11 @@ class RequestTest extends TestCase
     public function tearDown()
     {
         TestUtil::deleteCollection($this->connection, 'event_streams');
+        TestUtil::deleteCollection($this->connection, 'c878c0b7e51ecaab95c511fc816ad2a70c9418208');
+
+        for ($i = 0; $i < 10; $i++) {
+            TestUtil::deleteCollection($this->connection, 'testcollection_' . $i);
+        }
     }
 
     /**
