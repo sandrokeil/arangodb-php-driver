@@ -1,4 +1,5 @@
 #include "connection.h"
+#include "cursor.h"
 
 namespace arangodb { namespace fuerte { namespace php {
 
@@ -229,6 +230,15 @@ namespace arangodb { namespace fuerte { namespace php {
         if(!success) {
             throw Php::Exception("Sending request to ArangoDB failed");
         }
+    }
+
+    Php::Value Connection::query(Php::Parameters &params)
+    {
+        if(!params[0].instanceOf("ArangoDb\\Vpack"))
+            throw Php::Exception("Expected vpack to be of type Vpack");
+
+        Cursor* cursor = new Cursor(this, (Vpack*)params[0].implementation());
+        return Php::Object("ArangoDb\\Cursor", cursor);
     }
 
 }}}

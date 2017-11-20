@@ -73,6 +73,8 @@ namespace arangodb { namespace fuerte { namespace php {
 
         void wait();
 
+        Php::Value query(Php::Parameters &params);
+
     };
 
 }}}
