@@ -120,4 +120,61 @@ class ConnectionTest extends TestCase
         $this->assertNotNull($body);
         $this->assertTrue(TestUtil::wasSuccessful($response), var_export($body, true));
     }
+
+    /**
+     * @test
+     */
+    public function it_sends_query()
+    {
+        $this->connection = TestUtil::getConnection();
+
+        $cursor = $this->connection->query(Vpack::fromArray([
+            'query' => 'FOR i IN 1..100 RETURN [i, i+1]',
+            'batchSize' => 10
+        ]));
+
+        $iterations = 0;
+
+        foreach($cursor as $test) {
+            $this->assertArrayHasKey(0, json_decode($test));
+            $iterations++;
+        }
+
+        $this->assertSame(100, $iterations);
+        $this->assertInstanceOf(\Traversable::class, $cursor);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sends_query_with_bind_params()
+    {
+        $collection = 'event_streams';
+        $this->connection = TestUtil::getConnection();
+
+        $response = $this->connection->post(
+            '/_api/collection',
+            TestUtil::getVpackCreateCollection($collection)
+        );
+
+        $body = json_decode($response->getBody(), true);
+
+        $this->assertNotNull($body);
+        $this->assertTrue(TestUtil::wasSuccessful($response), var_export($body, true));
+
+        $cursor = $this->connection->query(Vpack::fromArray([
+            'query' => 'FOR c IN @@collection RETURN c',
+            'bindVars' => ['@collection' => $collection],
+            'batchSize' => 10
+        ]));
+
+        $iterations = 0;
+
+        foreach($cursor as $test) {
+            $iterations++;
+        }
+
+        $this->assertSame(1, $iterations);
+        $this->assertInstanceOf(\Traversable::class, $cursor);
+    }
 }
