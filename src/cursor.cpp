@@ -25,8 +25,11 @@ namespace arangodb { namespace fuerte { namespace php {
         }
 
         this->hasMore = this->response->getFuerteResponse()->slices().front().get("hasMore").getBool();
-        this->id = this->response->getFuerteResponse()->slices().front().get("id").copyString();
         this->batchSize = this->response->getFuerteResponse()->slices().front().get("result").length();
+
+        if(this->hasMore) {
+            this->id = this->response->getFuerteResponse()->slices().front().get("id").copyString();
+        }
     }
 
 
