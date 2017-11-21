@@ -15,8 +15,15 @@ namespace arangodb { namespace fuerte { namespace php {
         request.setHttpMethod(Request::METHOD_POST);
 
         Response* response = this->connection->sendRequest(&request);
-
         this->response = response;
+
+        if(this->response->getFuerteResponse()->slices().front().get("error").getBool()) {
+            throw Php::Exception(
+                "Error while executing query: " +
+                this->response->getFuerteResponse()->slices().front().get("errorMessage").copyString()
+            );
+        }
+
         this->hasMore = this->response->getFuerteResponse()->slices().front().get("hasMore").getBool();
         this->id = this->response->getFuerteResponse()->slices().front().get("id").copyString();
         this->batchSize = this->response->getFuerteResponse()->slices().front().get("result").length();
