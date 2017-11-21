@@ -162,19 +162,29 @@ class ConnectionTest extends TestCase
         $this->assertNotNull($body);
         $this->assertTrue(TestUtil::wasSuccessful($response), var_export($body, true));
 
+        $response = $this->connection->post(
+            '/_api/document/' . $collection,
+            Vpack::fromJson('[{"Hello":"Earth"}, {"Hello":"Venus"}, {"Hello":"Mars"}]')
+        );
+
+        $body = json_decode($response->getBody(), true);
+
+        $this->assertNotNull($body);
+        $this->assertTrue(TestUtil::wasSuccessful($response), var_export($body, true));
+
         $cursor = $this->connection->query(Vpack::fromArray([
             'query' => 'FOR c IN @@collection RETURN c',
-            'bindVars' => ['@collection' => $collection],
-            'batchSize' => 10
+            'bindVars' => ['@collection' => $collection]
         ]));
 
         $iterations = 0;
 
         foreach($cursor as $test) {
+            $this->assertArrayHasKey('_id', json_decode($test, true));
             $iterations++;
         }
 
-        $this->assertSame(1, $iterations);
+        $this->assertSame(3, $iterations);
         $this->assertInstanceOf(\Traversable::class, $cursor);
     }
 }
