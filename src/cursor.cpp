@@ -8,7 +8,6 @@ namespace arangodb { namespace fuerte { namespace php {
         this->loadFirstBatch();
     }
 
-
     void Cursor::loadFirstBatch()
     {
         Request request("/_api/cursor", this->vpack);
@@ -26,12 +25,16 @@ namespace arangodb { namespace fuerte { namespace php {
 
         this->hasMore = this->response->getFuerteResponse()->slices().front().get("hasMore").getBool();
         this->batchSize = this->response->getFuerteResponse()->slices().front().get("result").length();
+        this->number = this->batchSize;
+
+        if (this->response->getFuerteResponse()->slices().front().hasKey("count")) {
+            this->number = this->response->getFuerteResponse()->slices().front().get("count").getInt();
+        }
 
         if(this->hasMore) {
             this->id = this->response->getFuerteResponse()->slices().front().get("id").copyString();
         }
     }
-
 
     void Cursor::loadMore()
     {
@@ -45,12 +48,24 @@ namespace arangodb { namespace fuerte { namespace php {
         this->response = response;
         this->hasMore = this->response->getFuerteResponse()->slices().front().get("hasMore").getBool();
         this->batchSize = this->response->getFuerteResponse()->slices().front().get("result").length();
-    }
+        this->number = this->batchSize;
 
+        if (this->response->getFuerteResponse()->slices().front().hasKey("count")) {
+            this->number = this->response->getFuerteResponse()->slices().front().get("count").getInt();
+        }
+    }
 
     Php::Iterator* Cursor::getIterator()
     {
         return new CursorIterator(this);
+    }
+
+    long Cursor::count() {
+        return static_cast<int>(this->number);
+    }
+
+    Php::Value Cursor::getCount() {
+        return static_cast<int>(this->number);
     }
 
 }}}

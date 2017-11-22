@@ -12,7 +12,7 @@ namespace fu = ::arangodb::fuerte;
 
 namespace arangodb { namespace fuerte { namespace php {
 
-    class Cursor : public Php::Base, public Php::Traversable
+    class Cursor : public Php::Base, public Php::Traversable, public Php::Countable
     {
     private:
         friend class CursorIterator;
@@ -22,7 +22,8 @@ namespace arangodb { namespace fuerte { namespace php {
 
         bool hasMore;
         std::string id;
-        int batchSize;
+        unsigned long batchSize;
+        int_fast64_t number;
 
         Response* response;
 
@@ -33,6 +34,17 @@ namespace arangodb { namespace fuerte { namespace php {
         Cursor(Connection* connection, Vpack* vpack);
 
         virtual Php::Iterator *getIterator() override;
+
+        /**
+         *  Method from the Php::Countable interface, that
+         *  is used when a Counter instance is passed to the
+         *  PHP count() function
+         *
+         *  @return long
+         */
+        virtual long count() override;
+
+        Php::Value getCount();
 
         virtual ~Cursor() = default;
     };

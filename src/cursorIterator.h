@@ -12,7 +12,7 @@ namespace fu = ::arangodb::fuerte;
 
 namespace arangodb { namespace fuerte { namespace php {
 
-    class CursorIterator : public Php::Base, public Php::Iterator
+    class CursorIterator : public Php::Base, public Php::Iterator, public Php::Countable
     {
     private:
         Cursor* cursor;
@@ -27,6 +27,7 @@ namespace arangodb { namespace fuerte { namespace php {
         virtual Php::Value key() override;
         virtual void next() override;
         virtual void rewind() override;
+        virtual long count() override;
     };
 
 }}}

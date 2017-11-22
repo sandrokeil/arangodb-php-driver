@@ -146,6 +146,8 @@ extern "C" {
     {
         Php::Class<arangodb::fuerte::php::Cursor> cursor("ArangoDb\\Cursor");
 
+        cursor.method<&arangodb::fuerte::php::Cursor::getCount>("count");
+
         extension->add(std::move(cursor));
     }
 }

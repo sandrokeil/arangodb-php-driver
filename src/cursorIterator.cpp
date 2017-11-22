@@ -51,4 +51,8 @@ namespace arangodb { namespace fuerte { namespace php {
     {
     }
 
+    long CursorIterator::count() {
+        return this->cursor->number;
+    }
+
 }}}

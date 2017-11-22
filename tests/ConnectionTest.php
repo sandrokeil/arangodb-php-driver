@@ -130,10 +130,17 @@ class ConnectionTest extends TestCase
 
         $cursor = $this->connection->query(Vpack::fromArray([
             'query' => 'FOR i IN 1..100 RETURN [i, i+1]',
-            'batchSize' => 10
+            'batchSize' => 10,
+            'count' => true,
+            'options' => [
+                'fullCount' => true
+            ]
         ]));
 
         $iterations = 0;
+
+        $this->assertSame(100, $cursor->count());
+        $this->assertSame(100, count($cursor));
 
         foreach($cursor as $test) {
             $this->assertArrayHasKey(0, json_decode($test));
@@ -178,6 +185,9 @@ class ConnectionTest extends TestCase
         ]));
 
         $iterations = 0;
+
+        $this->assertSame(3, $cursor->count());
+        $this->assertSame(3, count($cursor));
 
         foreach($cursor as $test) {
             $this->assertArrayHasKey('_id', json_decode($test, true));
