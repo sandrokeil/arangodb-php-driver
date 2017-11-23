@@ -125,4 +125,16 @@ namespace arangodb { namespace fuerte { namespace php {
         return static_cast<int>(this->number);
     }
 
+    Php::Value Cursor::toArray() {
+        Php::Array result;
+
+        int counter = 0;
+        while(this->valid()) {
+            result[counter++] = this->current();
+            this->next();
+        }
+
+        return result;
+    }
+
 }}}

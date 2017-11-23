@@ -225,4 +225,25 @@ class ConnectionTest extends TestCase
 
         $this->assertSame(100, $iterations);
     }
+
+    /**
+     * @test
+     */
+    public function it_creates_array_from_cursor()
+    {
+        $this->connection = TestUtil::getConnection();
+
+        $cursor = $this->connection->query(
+            Vpack::fromArray([
+                'query' => 'FOR i IN 1..100 RETURN [i, i+1]',
+                'batchSize' => 10
+            ]), [
+                Cursor::ENTRY_TYPE => Cursor::ENTRY_TYPE_ARRAY
+            ]
+        );
+
+        $data = $cursor->toArray();
+
+        $this->assertCount(100, $data);
+    }
 }

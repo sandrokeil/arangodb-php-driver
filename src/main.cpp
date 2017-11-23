@@ -156,6 +156,8 @@ extern "C" {
         cursor.method<&arangodb::fuerte::php::Cursor::rewind>("rewind");
         cursor.method<&arangodb::fuerte::php::Cursor::getCount>("count");
 
+        cursor.method<&arangodb::fuerte::php::Cursor::toArray>("toArray");
+
         cursor.property("ENTRY_TYPE", arangodb::fuerte::php::Cursor::ENTRY_TYPE, Php::Const);
         cursor.property("ENTRY_TYPE_JSON", arangodb::fuerte::php::Cursor::ENTRY_TYPE_JSON, Php::Const);
         cursor.property("ENTRY_TYPE_ARRAY", arangodb::fuerte::php::Cursor::ENTRY_TYPE_ARRAY, Php::Const);
