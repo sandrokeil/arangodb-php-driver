@@ -30,8 +30,20 @@ namespace arangodb { namespace fuerte { namespace php {
         void loadFirstBatch();
         void loadMore();
 
+        std::vector<int> options = {
+            { Cursor::ENTRY_TYPE, Cursor::ENTRY_TYPE_JSON }
+        };
+
     public:
+        static const int ENTRY_TYPE = 0;
+
+        static const int ENTRY_TYPE_JSON = 100;
+        static const int ENTRY_TYPE_ARRAY = 101;
+        static const int ENTRY_TYPE_OBJECT = 102;
+
         Cursor(Connection* connection, Vpack* vpack);
+
+        void setOption(int option, int value);
 
         virtual long count() override;
         Php::Value getCount();

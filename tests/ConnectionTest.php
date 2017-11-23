@@ -7,6 +7,7 @@ namespace ArangoDbDriverTest;
 use PHPUnit\Framework\TestCase;
 use ArangoDb\Connection;
 use ArangoDb\Vpack;
+use ArangoDb\Cursor;
 
 /**
  * @group connection
@@ -194,5 +195,34 @@ class ConnectionTest extends TestCase
         }
 
         $this->assertSame(3, $iterations);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sends_query_and_returns_result_as_array()
+    {
+        $this->connection = TestUtil::getConnection();
+
+        $cursor = $this->connection->query(
+            Vpack::fromArray([
+                'query' => 'FOR i IN 1..100 RETURN [i, i+1]',
+                'batchSize' => 10
+            ]), [
+                Cursor::ENTRY_TYPE => Cursor::ENTRY_TYPE_ARRAY
+            ]
+        );
+
+        $cursor->rewind();
+        $iterations = 0;
+
+        while ($cursor->valid()) {
+            $data = $cursor->current();
+            $this->assertArrayHasKey(0, $data);
+            $iterations++;
+            $cursor->next();
+        }
+
+        $this->assertSame(100, $iterations);
     }
 }

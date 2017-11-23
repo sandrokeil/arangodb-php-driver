@@ -75,7 +75,10 @@ extern "C" {
 
         connection.method<&arangodb::fuerte::php::Connection::wait>("wait");
 
-        connection.method<&arangodb::fuerte::php::Connection::query>("query");
+        connection.method<&arangodb::fuerte::php::Connection::query>("query", {
+            Php::ByVal("vpack", "ArangoDb\\Vpack", true),
+            Php::ByVal("options", Php::Type::Array, false)
+        });
 
         connection.property("HOST", "host", Php::Const);
         connection.property("USER", "user", Php::Const);
@@ -152,6 +155,11 @@ extern "C" {
         cursor.method<&arangodb::fuerte::php::Cursor::next>("next");
         cursor.method<&arangodb::fuerte::php::Cursor::rewind>("rewind");
         cursor.method<&arangodb::fuerte::php::Cursor::getCount>("count");
+
+        cursor.property("ENTRY_TYPE", arangodb::fuerte::php::Cursor::ENTRY_TYPE, Php::Const);
+        cursor.property("ENTRY_TYPE_JSON", arangodb::fuerte::php::Cursor::ENTRY_TYPE_JSON, Php::Const);
+        cursor.property("ENTRY_TYPE_ARRAY", arangodb::fuerte::php::Cursor::ENTRY_TYPE_ARRAY, Php::Const);
+        cursor.property("ENTRY_TYPE_OBJECT", arangodb::fuerte::php::Cursor::ENTRY_TYPE_OBJECT, Php::Const);
 
         extension->add(std::move(cursor));
     }

@@ -7,6 +7,15 @@ namespace arangodb { namespace fuerte { namespace php {
         this->loadFirstBatch();
     }
 
+    void Cursor::setOption(int option, int value)
+    {
+        if(this->options.size() <= option) {
+            throw Php::Exception("Invalid option provided for Cursor");
+        }
+
+        this->options[option] = value;
+    }
+
     void Cursor::loadFirstBatch()
     {
         Request request("/_api/cursor", this->vpack);
@@ -82,7 +91,16 @@ namespace arangodb { namespace fuerte { namespace php {
             throw Php::Exception(e.what());
         }
 
-        return body;
+        switch(this->options[Cursor::ENTRY_TYPE]) {
+            case Cursor::ENTRY_TYPE_JSON:
+                return body;
+            case Cursor::ENTRY_TYPE_ARRAY:
+                return Php::call("json_decode", body, true);
+            case Cursor::ENTRY_TYPE_OBJECT:
+                return Php::call("json_decode", body, false);
+            default:
+                return body;
+        }
     }
 
     Php::Value Cursor::key()

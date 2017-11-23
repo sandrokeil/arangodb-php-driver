@@ -238,6 +238,11 @@ namespace arangodb { namespace fuerte { namespace php {
             throw Php::Exception("Expected vpack to be of type Vpack");
 
         Cursor* cursor = new Cursor(this, (Vpack*)params[0].implementation());
+
+        for(auto option : params[1]) {
+            cursor->setOption(option.first, option.second);
+        }
+
         return Php::Object("ArangoDb\\Cursor", cursor);
     }
 
