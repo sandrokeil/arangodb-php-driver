@@ -146,6 +146,11 @@ extern "C" {
     {
         Php::Class<arangodb::fuerte::php::Cursor> cursor("ArangoDb\\Cursor");
 
+        cursor.method<&arangodb::fuerte::php::Cursor::valid>("valid");
+        cursor.method<&arangodb::fuerte::php::Cursor::current>("current");
+        cursor.method<&arangodb::fuerte::php::Cursor::key>("key");
+        cursor.method<&arangodb::fuerte::php::Cursor::next>("next");
+        cursor.method<&arangodb::fuerte::php::Cursor::rewind>("rewind");
         cursor.method<&arangodb::fuerte::php::Cursor::getCount>("count");
 
         extension->add(std::move(cursor));

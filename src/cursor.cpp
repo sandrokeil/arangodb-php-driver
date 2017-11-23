@@ -1,5 +1,4 @@
 #include "cursor.h"
-#include "cursorIterator.h"
 
 namespace arangodb { namespace fuerte { namespace php {
 
@@ -55,9 +54,49 @@ namespace arangodb { namespace fuerte { namespace php {
         }
     }
 
-    Php::Iterator* Cursor::getIterator()
+    Php::Value Cursor::valid()
     {
-        return new CursorIterator(this);
+        if(this->batchSize > this->position) {
+            return true;
+        } else if(this->hasMore) {
+            this->loadMore();
+            this->position = 0;
+            return true;
+        }
+
+        return false;
+    }
+
+    Php::Value Cursor::current()
+    {
+        std::string body;
+
+        try {
+            vp::Slice slice = this->response->getFuerteResponse()->slices().front().get("result").at(this->position);
+            vp::Options dumperOptions;
+
+            vp::StringSink sink(&body);
+            vp::Dumper dumper(&sink, &dumperOptions);
+            dumper.dump(slice);
+        } catch(vp::Exception const& e) {
+            throw Php::Exception(e.what());
+        }
+
+        return body;
+    }
+
+    Php::Value Cursor::key()
+    {
+        return this->position;
+    }
+
+    void Cursor::next()
+    {
+        this->position++;
+    }
+
+    void Cursor::rewind()
+    {
     }
 
     long Cursor::count() {

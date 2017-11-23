@@ -40,7 +40,6 @@ add_subdirectory(deps/fuerte)
 add_library(arangodb SHARED
     src/connection.cpp
     src/cursor.cpp
-    src/cursorIterator.cpp
     src/main.cpp
     src/request.cpp
     src/response.cpp

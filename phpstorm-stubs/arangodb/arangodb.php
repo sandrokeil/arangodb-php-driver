@@ -237,7 +237,7 @@ namespace ArangoDb {
      *
      * @link https://github.com/sandrokeil/arangodb-php-driver/blob/master/src/cursorIterator.h
      */
-    final class Cursor implements \Traversable, \Countable
+    final class Cursor implements \Countable
     {
         /**
          * Returns the number of results
@@ -247,6 +247,54 @@ namespace ArangoDb {
          * @return int
          */
         public function count()
+        {
+        }
+        /**
+         * Return the current element
+         * @link http://php.net/manual/en/iterator.current.php
+         * @return mixed Can return any type.
+         */
+        public function current()
+        {
+        }
+
+        /**
+         * Move forward to next element
+         * @link http://php.net/manual/en/iterator.next.php
+         * @return void Any returned value is ignored.
+         */
+        public function next()
+        {
+        }
+
+        /**
+         * Return the key of the current element
+         * @link http://php.net/manual/en/iterator.key.php
+         * @return mixed scalar on success, or null on failure.
+         */
+        public function key()
+        {
+        }
+
+        /**
+         * Checks if current position is valid
+         * @link http://php.net/manual/en/iterator.valid.php
+         * @return boolean The return value will be casted to boolean and then evaluated.
+         * Returns true on success or false on failure.
+         */
+        public function valid()
+        {
+        }
+
+        /**
+         * Rewind the Iterator to the first element
+         *
+         * If iteration has already begun, this will throw an exception.
+         *
+         * @link http://php.net/manual/en/iterator.rewind.php
+         * @return void Any returned value is ignored.
+         */
+        public function rewind()
         {
         }
     }
