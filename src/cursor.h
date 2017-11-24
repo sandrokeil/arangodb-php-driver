@@ -17,7 +17,7 @@ namespace arangodb { namespace fuerte { namespace php {
     {
     private:
         Connection* connection;
-        Vpack* vpack;
+        Vpack vpack;
 
         bool hasMore;
         int position = 0;

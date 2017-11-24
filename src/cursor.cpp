@@ -2,9 +2,9 @@
 
 namespace arangodb { namespace fuerte { namespace php {
 
-    Cursor::Cursor(Connection* connection, Vpack* vpack): vpack(vpack), connection(connection)
+    Cursor::Cursor(Connection* connection, Vpack* vpack): vpack(*vpack), connection(connection)
     {
-        this->loadFirstBatch();
+        this->rewind();
     }
 
     void Cursor::setOption(int option, int value)
@@ -18,7 +18,7 @@ namespace arangodb { namespace fuerte { namespace php {
 
     void Cursor::loadFirstBatch()
     {
-        Request request("/_api/cursor", this->vpack);
+        Request request("/_api/cursor", &this->vpack);
         request.setHttpMethod(Request::METHOD_POST);
 
         Response* response = this->connection->sendRequest(&request);
@@ -115,6 +115,8 @@ namespace arangodb { namespace fuerte { namespace php {
 
     void Cursor::rewind()
     {
+        this->position = 0;
+        this->loadFirstBatch();
     }
 
     long Cursor::count() {

@@ -246,4 +246,39 @@ class ConnectionTest extends TestCase
 
         $this->assertCount(100, $data);
     }
+
+
+    /**
+     * @test
+     */
+    public function it_rewinds_cursor_multiple_times()
+    {
+        $this->connection = TestUtil::getConnection();
+
+        $cursor = $this->connection->query(Vpack::fromArray([
+            'query' => 'FOR i IN 1..100 RETURN [i, i+1]',
+            'batchSize' => 10
+        ]));
+
+        $iterations = 0;
+        $dataSet1 = [];
+        $dataSet2 = [];
+
+        while($cursor->valid()) {
+            $dataSet1[] = $cursor->current();
+            $cursor->next();
+            $iterations++;
+        }
+
+        $cursor->rewind();
+
+        while($cursor->valid()) {
+            $dataSet2[] = $cursor->current();
+            $cursor->next();
+            $iterations++;
+        }
+
+        $this->assertSame(200, $iterations);
+        $this->assertTrue($dataSet1 === $dataSet2);
+    }
 }
