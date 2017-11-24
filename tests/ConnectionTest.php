@@ -281,4 +281,61 @@ class ConnectionTest extends TestCase
         $this->assertSame(200, $iterations);
         $this->assertTrue($dataSet1 === $dataSet2);
     }
+
+
+    /**
+     * @test
+     */
+    public function it_gets_raw_response_from_cursor()
+    {
+        $this->connection = TestUtil::getConnection();
+
+        $cursor = $this->connection->query(Vpack::fromArray([
+            'query' => 'FOR i IN 1..100 RETURN [i, i+1]',
+            'batchSize' => 10
+        ]));
+
+        $response = $cursor->getResponse();
+
+        $this->assertInstanceOf(\ArangoDb\Response::class, $response);
+        $this->assertTrue(TestUtil::wasSuccessful($response));
+    }
+
+
+    /**
+     * @test
+     */
+    public function it_rewinds_cursor_half_way_through()
+    {
+        $this->connection = TestUtil::getConnection();
+
+        $cursor = $this->connection->query(Vpack::fromArray([
+            'query' => 'FOR i IN 1..100 RETURN [i, i+1]',
+            'batchSize' => 10
+        ]));
+
+        $iterations = 0;
+        $dataSet1 = [];
+        $dataSet2 = [];
+
+        for($i = 0; $i < 50; $i++) {
+            $cursor->valid();
+            $dataSet1[] = $cursor->current();
+            $cursor->next();
+            $iterations++;
+        }
+
+        $cursor->rewind();
+
+        while($cursor->valid()) {
+            $dataSet2[] = $cursor->current();
+            $cursor->next();
+            $iterations++;
+        }
+
+        $this->assertSame(150, $iterations);
+        $this->assertCount(50, $dataSet1);
+        $this->assertCount(100, $dataSet2);
+        $this->assertTrue($dataSet1 === array_slice($dataSet2, 0, 50));
+    }
 }

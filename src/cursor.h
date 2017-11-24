@@ -55,6 +55,7 @@ namespace arangodb { namespace fuerte { namespace php {
         void rewind();
 
         Php::Value toArray();
+        Php::Value getResponse();
 
         virtual ~Cursor() = default;
     };

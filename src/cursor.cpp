@@ -139,4 +139,8 @@ namespace arangodb { namespace fuerte { namespace php {
         return result;
     }
 
+    Php::Value Cursor::getResponse() {
+        return Php::Object("ArangoDb\\Response", this->response);
+    }
+
 }}}
