@@ -24,6 +24,8 @@ namespace arangodb { namespace fuerte { namespace php {
         Php::Value getHttpCode();
 
         Php::Value getBody();
+
+        fu::Response* getFuerteResponse();
     };
 
 }}}

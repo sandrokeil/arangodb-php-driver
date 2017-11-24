@@ -50,7 +50,7 @@ final class TestUtil
     {
         $statusCode = $response->getHttpCode();
 
-        return $statusCode === 201 || $statusCode === 200;
+        return $statusCode >= 200 && $statusCode <= 299;
     }
 
     public static function getVpackCreateCollection(string $collectionName): Vpack

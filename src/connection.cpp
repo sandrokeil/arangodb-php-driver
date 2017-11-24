@@ -1,4 +1,5 @@
 #include "connection.h"
+#include "cursor.h"
 
 namespace arangodb { namespace fuerte { namespace php {
 
@@ -39,6 +40,17 @@ namespace arangodb { namespace fuerte { namespace php {
         }
 
         this->threadCount = threadCount;
+    }
+
+    void Connection::setDefaultTimeout(Php::Parameters &params)
+    {
+        int defaultTimeout = params[0];
+
+        if(defaultTimeout < 1) {
+            throw Php::Exception("Invalid defaultTimeout provided, must be >= 1");
+        }
+
+        this->defaultTimeout = defaultTimeout;
     }
 
     fu::ConnectionBuilder Connection::createConnectionBuilder()
@@ -218,6 +230,20 @@ namespace arangodb { namespace fuerte { namespace php {
         if(!success) {
             throw Php::Exception("Sending request to ArangoDB failed");
         }
+    }
+
+    Php::Value Connection::query(Php::Parameters &params)
+    {
+        if(!params[0].instanceOf("ArangoDb\\Vpack"))
+            throw Php::Exception("Expected vpack to be of type Vpack");
+
+        Cursor* cursor = new Cursor(this, (Vpack*)params[0].implementation());
+
+        for(auto option : params[1]) {
+            cursor->setOption(option.first, option.second);
+        }
+
+        return Php::Object("ArangoDb\\Cursor", cursor);
     }
 
 }}}

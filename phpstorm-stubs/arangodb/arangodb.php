@@ -137,6 +137,17 @@ namespace ArangoDb {
         public function options(string $path, Vpack $vpack, array $queryParams = null): Response
         {
         }
+
+        /**
+         * Sends a query
+         *
+         * @param Vpack $vpack
+         * @return Cursor
+         */
+        public function query(Vpack $vpack): Cursor
+        {
+
+        }
     }
 
     /**
@@ -217,6 +228,86 @@ namespace ArangoDb {
          * @return Vpack
          */
         public static function fromJson(string $json): Vpack
+        {
+        }
+    }
+
+    /**
+     * Handles queries
+     *
+     * You must call rewind first to get a result
+     *
+     * @link https://github.com/sandrokeil/arangodb-php-driver/blob/master/src/cursorIterator.h
+     */
+    final class Cursor implements \Countable
+    {
+        public CONST ENTRY_TYPE = 0;
+        public CONST ENTRY_TYPE_JSON = 100;
+        public CONST ENTRY_TYPE_ARRAY = 101;
+        public CONST ENTRY_TYPE_OBJECT = 102;
+
+        /**
+         * Returns the number of results
+         *
+         * Query must be run with count and fullCount = true
+         *
+         * @return int
+         */
+        public function count()
+        {
+        }
+
+        /**
+         * Return the current element
+         * @link http://php.net/manual/en/iterator.current.php
+         * @return mixed Can return any type.
+         */
+        public function current()
+        {
+        }
+
+        /**
+         * Move forward to next element
+         * @link http://php.net/manual/en/iterator.next.php
+         * @return void Any returned value is ignored.
+         */
+        public function next()
+        {
+        }
+
+        /**
+         * Return the key of the current element
+         * @link http://php.net/manual/en/iterator.key.php
+         * @return mixed scalar on success, or null on failure.
+         */
+        public function key()
+        {
+        }
+
+        /**
+         * Checks if current position is valid
+         * @link http://php.net/manual/en/iterator.valid.php
+         * @return boolean The return value will be casted to boolean and then evaluated.
+         * Returns true on success or false on failure.
+         */
+        public function valid()
+        {
+        }
+
+        /**
+         * Rewind the Iterator to the first element and resets the cursor
+         *
+         * @link http://php.net/manual/en/iterator.rewind.php
+         * @return void Any returned value is ignored.
+         */
+        public function rewind()
+        {
+        }
+
+        /**
+        * Rewinds the cursor and returns the result
+        */
+        public function toArray(): array
         {
         }
     }

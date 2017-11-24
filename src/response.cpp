@@ -29,4 +29,9 @@ namespace arangodb { namespace fuerte { namespace php {
         return body;
     }
 
+    fu::Response* Response::getFuerteResponse()
+    {
+        return &this->response;
+    }
+
 }}}
