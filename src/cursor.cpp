@@ -4,7 +4,6 @@ namespace arangodb { namespace fuerte { namespace php {
 
     Cursor::Cursor(Connection* connection, Vpack* vpack): vpack(*vpack), connection(connection)
     {
-        this->rewind();
     }
 
     void Cursor::setOption(int option, int value)
@@ -128,8 +127,8 @@ namespace arangodb { namespace fuerte { namespace php {
     }
 
     Php::Value Cursor::toArray() {
+        this->rewind();
         Php::Array result;
-
         int counter = 0;
         while(this->valid()) {
             result[counter++] = this->current();

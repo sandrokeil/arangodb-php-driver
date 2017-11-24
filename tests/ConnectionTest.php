@@ -260,6 +260,7 @@ class ConnectionTest extends TestCase
             'batchSize' => 10
         ]));
 
+        $cursor->rewind();
         $iterations = 0;
         $dataSet1 = [];
         $dataSet2 = [];
@@ -295,6 +296,7 @@ class ConnectionTest extends TestCase
             'batchSize' => 10
         ]));
 
+        $cursor->rewind();
         $response = $cursor->getResponse();
 
         $this->assertInstanceOf(\ArangoDb\Response::class, $response);
@@ -314,6 +316,7 @@ class ConnectionTest extends TestCase
             'batchSize' => 10
         ]));
 
+        $cursor->rewind();
         $iterations = 0;
         $dataSet1 = [];
         $dataSet2 = [];

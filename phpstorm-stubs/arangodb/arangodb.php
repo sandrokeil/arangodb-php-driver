@@ -235,10 +235,17 @@ namespace ArangoDb {
     /**
      * Handles queries
      *
+     * You must call rewind first to get a result
+     *
      * @link https://github.com/sandrokeil/arangodb-php-driver/blob/master/src/cursorIterator.h
      */
     final class Cursor implements \Countable
     {
+        public CONST ENTRY_TYPE = 0;
+        public CONST ENTRY_TYPE_JSON = 100;
+        public CONST ENTRY_TYPE_ARRAY = 101;
+        public CONST ENTRY_TYPE_OBJECT = 102;
+
         /**
          * Returns the number of results
          *
@@ -249,6 +256,7 @@ namespace ArangoDb {
         public function count()
         {
         }
+
         /**
          * Return the current element
          * @link http://php.net/manual/en/iterator.current.php
@@ -287,14 +295,19 @@ namespace ArangoDb {
         }
 
         /**
-         * Rewind the Iterator to the first element
-         *
-         * If iteration has already begun, this will throw an exception.
+         * Rewind the Iterator to the first element and resets the cursor
          *
          * @link http://php.net/manual/en/iterator.rewind.php
          * @return void Any returned value is ignored.
          */
         public function rewind()
+        {
+        }
+
+        /**
+        * Rewinds the cursor and returns the result
+        */
+        public function toArray(): array
         {
         }
     }
