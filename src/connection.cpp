@@ -110,9 +110,13 @@ namespace arangodb { namespace fuerte { namespace php {
 
         Response* response;
 
+
+        std::cout << "Retquest: " << fu::to_string(*request->getFuerteRequest());
+
         this->connection->sendRequest(
             std::move(request->getFuerteRequest()),
             [&](fu::Error, std::unique_ptr<fu::Request>, std::unique_ptr<fu::Response> res){
+                std::cout << "Response: " << fu::to_string(*res);
                 response = new Response(*res);
 
                 wg.done();
