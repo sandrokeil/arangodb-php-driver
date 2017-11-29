@@ -125,6 +125,39 @@ class ConnectionTest extends TestCase
     /**
      * @test
      */
+    public function it_sends_large_request_via_post()
+    {
+        $collection = 'event_streams';
+
+        $this->connection = TestUtil::getConnection();
+
+        $response = $this->connection->post(
+            '/_api/collection',
+            TestUtil::getVpackCreateCollection($collection)
+        );
+        $response = $this->connection->post(
+            '/_api/collection',
+            TestUtil::getVpackCreateCollection('c6f955fd5efbc2cedbb5f97cfd8890bb98b364c1d')
+        );
+
+        $data = file_get_contents(__DIR__ . '/_files/insert.json');
+
+        $vpack = \ArangoDb\Vpack::fromJson(trim($data));
+
+        $response = $this->connection->post(
+            '/_api/transaction',
+            $vpack
+        );
+
+        $body = json_decode($response->getBody(), true);
+
+        $this->assertNotNull($body);
+        $this->assertTrue(TestUtil::wasSuccessful($response), var_export($body, true));
+    }
+
+    /**
+     * @test
+     */
     public function it_sends_query()
     {
         $this->connection = TestUtil::getConnection();

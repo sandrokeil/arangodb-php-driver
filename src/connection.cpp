@@ -105,30 +105,14 @@ namespace arangodb { namespace fuerte { namespace php {
 
     Response* Connection::sendRequest(Request* request)
     {
-        fu::WaitGroup wg;
-        wg.add();
+        std::cout << "Request: " << fu::to_string(*request->getFuerteRequest());
 
-        Response* response;
-
-
-        std::cout << "Retquest: " << fu::to_string(*request->getFuerteRequest());
-
-        this->connection->sendRequest(
-            std::move(request->getFuerteRequest()),
-            [&](fu::Error, std::unique_ptr<fu::Request>, std::unique_ptr<fu::Response> res){
-                std::cout << "Response: " << fu::to_string(*res);
-                response = new Response(*res);
-
-                wg.done();
-            }
+        auto result = this->connection->sendRequest(
+            std::move(request->getFuerteRequest())
         );
+        std::cout << "Response: " << fu::to_string(*result);
 
-        auto success = wg.wait_for(std::chrono::seconds(this->defaultTimeout));
-        if(!success) {
-            throw Php::Exception("Sending request to ArangoDB failed");
-        }
-
-        return response;
+        return new Response(*result);
     }
 
     void Connection::sendRequestAsync(Request* request, Php::Value& callback)
