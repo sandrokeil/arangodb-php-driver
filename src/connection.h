@@ -2,7 +2,6 @@
 
 #include <phpcpp.h>
 #include <thread>
-#include <fuerte/helper.h>
 
 #include "request.h"
 #include "response.h"
