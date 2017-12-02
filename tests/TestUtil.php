@@ -96,7 +96,7 @@ final class TestUtil
         return [
             Connection::HOST => getenv('arangodb_host'),
             Connection::MAX_CHUNK_SIZE => 64,
-            Connection::VST_VERSION => Connection::VST_VERSION_11,
+            Connection::VST_VERSION => Connection::VST_VERSION_10,
         ];
     }
 }
