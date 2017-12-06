@@ -30,5 +30,7 @@ VOLUME ["/app"]
 
 RUN apk add --update bash && rm -rf /tmp/*
 
+RUN docker-php-source extract
+
 ENTRYPOINT []
 CMD bash -c "cd /app/build && cmake .. -DPHPCPP_ARCH=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-fPIC && make"

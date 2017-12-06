@@ -5,6 +5,7 @@
 #include "response.h"
 #include "vpack.h"
 #include "cursor.h"
+#include "exception.h"
 
 extern "C" {
 
@@ -32,6 +33,10 @@ extern "C" {
         exportClassRequest(&extension);
         exportClassResponse(&extension);
         exportClassCursor(&extension);
+
+        extension.onStartup([]() {
+            arangodb::fuerte::php::registerCustomExceptions();
+        });
 
         return extension;
     }

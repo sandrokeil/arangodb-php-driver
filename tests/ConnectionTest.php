@@ -61,8 +61,7 @@ class ConnectionTest extends TestCase
                 'unknown' => 'error',
             ]
         );
-
-        $this->expectException(\Exception::class);
+        $this->expectException(\ArangoDb\InvalidOptionException::class);
         $this->expectExceptionMessage('Unknown option provided');
 
         $connection->connect();

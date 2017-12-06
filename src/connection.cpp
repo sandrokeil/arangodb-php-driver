@@ -55,9 +55,9 @@ namespace arangodb { namespace fuerte { namespace php {
 
     fu::ConnectionBuilder Connection::createConnectionBuilder()
     {
-        try {
-            fu::ConnectionBuilder cbuilder{};
+        fu::ConnectionBuilder cbuilder{};
 
+        try {
             for (const auto &p : this->options) {
                 switch (connectionOptions.at(p.first)) {
                     case ConnectionOptions::HOST:
@@ -80,12 +80,12 @@ namespace arangodb { namespace fuerte { namespace php {
                         break;
                 }
             }
-
-            return cbuilder;
         }
         catch (const std::exception &ex) {
-            throw Php::Exception("Unknown option provided.");
+            ARANGODB_THROW(InvalidOptionException(), "Unknown option provided in %s on line %d");
         }
+
+        return cbuilder;
     }
 
     void Connection::connect()
