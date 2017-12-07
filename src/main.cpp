@@ -5,6 +5,7 @@
 #include "response.h"
 #include "vpack.h"
 #include "cursor.h"
+#include "InsertDocument.h"
 
 extern "C" {
 
@@ -13,6 +14,7 @@ extern "C" {
     void exportClassRequest(Php::Extension* extension);
     void exportClassResponse(Php::Extension* extension);
     void exportClassCursor(Php::Extension* extension);
+    void exportClassInsertDocument(Php::Extension* extension);
 
     /**
      *  Function that is called by PHP right after the PHP process
@@ -32,6 +34,7 @@ extern "C" {
         exportClassRequest(&extension);
         exportClassResponse(&extension);
         exportClassCursor(&extension);
+        exportClassInsertDocument(&extension);
 
         return extension;
     }
@@ -165,5 +168,18 @@ extern "C" {
         cursor.property("ENTRY_TYPE_OBJECT", arangodb::fuerte::php::Cursor::ENTRY_TYPE_OBJECT, Php::Const);
 
         extension->add(std::move(cursor));
+    }
+
+    void exportClassInsertDocument(Php::Extension* extension)
+    {
+        Php::Class<arangodb::fuerte::php::InsertDocument> insertDocument("ArangoDb\\Type\\InsertDocument");
+
+        insertDocument.method<&arangodb::fuerte::php::InsertDocument::with>("with", {
+                Php::ByVal("collectionName", Php::Type::String, true),
+                Php::ByVal("eventStreams", Php::Type::Array, true),
+                Php::ByVal("options", Php::Type::Array, false)
+        });
+
+        extension->add(std::move(insertDocument));
     }
 }

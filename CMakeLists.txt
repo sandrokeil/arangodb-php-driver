@@ -44,6 +44,7 @@ add_library(arangodb SHARED
     src/request.cpp
     src/response.cpp
     src/vpack.cpp
+    src/InsertDocument.cpp
 )
 
 # Gives our library file a .node extension without any "lib" prefix
