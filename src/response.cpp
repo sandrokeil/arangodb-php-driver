@@ -23,7 +23,8 @@ namespace arangodb { namespace fuerte { namespace php {
             vp::Dumper dumper(&sink, &dumperOptions);
             dumper.dump(slice);
         } catch(vp::Exception const& e) {
-            throw Php::Exception(e.what());
+            ARANGODB_THROW(InvalidArgumentException(), e.what());
+            return NULL;
         }
 
         return body;

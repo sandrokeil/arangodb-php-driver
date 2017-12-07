@@ -17,7 +17,8 @@ namespace arangodb { namespace fuerte { namespace php {
     Request::Request(Php::Parameters params)
     {
         if(!params[1].instanceOf("ArangoDb\\Vpack")) {
-            throw Php::Exception("Expected vpack to be of type Vpack");
+            ARANGODB_THROW(InvalidArgumentException(), "Expected vpack to be of type Vpack in %s on line %d");
+            return;
         }
 
         if(params.size() == 3 && params[2].size() > 0) {
@@ -31,7 +32,8 @@ namespace arangodb { namespace fuerte { namespace php {
     void Request::__construct(Php::Parameters &params)
     {
         if(!params[2].instanceOf("ArangoDb\\Vpack")) {
-            throw Php::Exception("Expected vpack to be of type Vpack");
+            ARANGODB_THROW(InvalidArgumentException(), "Expected vpack to be of type Vpack in %s on line %d");
+            return;
         }
 
         if(params.size() == 4 && params[3].size() > 0) {

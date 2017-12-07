@@ -5,6 +5,7 @@
 
 #include "request.h"
 #include "response.h"
+#include "exception.h"
 
 namespace fu = ::arangodb::fuerte;
 

@@ -31,7 +31,7 @@ endif()
 option(BuildVelocyPackExamples "Build examples" OFF)
 option(BuildTools "Build support programs and tools" OFF)
 
-#include_directories(/usr/local/include/php /usr/local/include/php/TSRM /usr/local/include/php/main /usr/local/include/php/Zend)
+include_directories(/usr/local/include/php /usr/local/include/php/TSRM /usr/local/include/php/main /usr/local/include/php/Zend)
 
 add_subdirectory(deps/fuerte)
 #add_subdirectory(deps/phpcpp)

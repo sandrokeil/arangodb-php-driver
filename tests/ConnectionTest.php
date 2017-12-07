@@ -61,8 +61,7 @@ class ConnectionTest extends TestCase
                 'unknown' => 'error',
             ]
         );
-
-        $this->expectException(\Exception::class);
+        $this->expectException(\ArangoDb\InvalidOptionException::class);
         $this->expectExceptionMessage('Unknown option provided');
 
         $connection->connect();
@@ -74,7 +73,8 @@ class ConnectionTest extends TestCase
      */
     public function it_throws_exception_on_attempt_to_set_invalid_thread_count(): void
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(\ArangoDb\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid threadCount provided, must be >= 1');
 
         $connection = new Connection(
             [

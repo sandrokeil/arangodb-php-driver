@@ -8,6 +8,8 @@
 #include "velocypack/vpack.h"
 #include "velocypack/velocypack-exception-macros.h"
 
+#include "exception.h"
+
 namespace vp = ::arangodb::velocypack;
 namespace fu = ::arangodb::fuerte;
 

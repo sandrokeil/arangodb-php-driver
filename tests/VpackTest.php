@@ -34,7 +34,7 @@ class VpackTest extends TestCase
      */
     public function it_fails_creating_vpack_from_invalid_json(): void
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(\ArangoDb\RuntimeException::class);
 
         $vpack = new Vpack();
         $vpack->fromJson("{a:\"b\"}");
@@ -60,7 +60,7 @@ class VpackTest extends TestCase
      */
     public function it_throws_exception_on_serializing_unsupported_types_to_json(): void
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(\ArangoDb\RuntimeException::class);
         $this->expectExceptionMessage('Type has no equivalent in JSON');
 
         $vpack = new Vpack(); //empty vpack

@@ -36,7 +36,8 @@ namespace arangodb { namespace fuerte { namespace php {
         int threadCount = params[0];
 
         if(threadCount < 1) {
-            throw Php::Exception("Invalid threadCount provided, must be >= 1");
+            ARANGODB_THROW(InvalidArgumentException(), "Invalid threadCount provided, must be >= 1 in %s on line %d");
+            return;
         }
 
         this->threadCount = threadCount;
@@ -47,7 +48,8 @@ namespace arangodb { namespace fuerte { namespace php {
         int defaultTimeout = params[0];
 
         if(defaultTimeout < 1) {
-            throw Php::Exception("Invalid defaultTimeout provided, must be >= 1");
+            ARANGODB_THROW(InvalidArgumentException(), "Invalid defaultTimeout provided, must be >= 1 in %s on line %d");
+            return;
         }
 
         this->defaultTimeout = defaultTimeout;
@@ -55,9 +57,9 @@ namespace arangodb { namespace fuerte { namespace php {
 
     fu::ConnectionBuilder Connection::createConnectionBuilder()
     {
-        try {
-            fu::ConnectionBuilder cbuilder{};
+        fu::ConnectionBuilder cbuilder{};
 
+        try {
             for (const auto &p : this->options) {
                 switch (connectionOptions.at(p.first)) {
                     case ConnectionOptions::HOST:
@@ -80,12 +82,12 @@ namespace arangodb { namespace fuerte { namespace php {
                         break;
                 }
             }
-
-            return cbuilder;
         }
         catch (const std::exception &ex) {
-            throw Php::Exception("Unknown option provided.");
+            ARANGODB_THROW(InvalidOptionException(), "Unknown option provided in %s on line %d");
         }
+
+        return cbuilder;
     }
 
     void Connection::connect()
@@ -128,8 +130,10 @@ namespace arangodb { namespace fuerte { namespace php {
 
     Php::Value Connection::send(Php::Parameters &params)
     {
-        if(!params[0].instanceOf("ArangoDb\\Request"))
-            throw Php::Exception("Expected request to be of type Request");
+        if(!params[0].instanceOf("ArangoDb\\Request")) {
+            ARANGODB_THROW(InvalidArgumentException(), "Expected request to be of type Request in %s on line %d");
+            return NULL;
+        }
 
         Request* request = (Request*)params[0].implementation();
 
@@ -139,11 +143,15 @@ namespace arangodb { namespace fuerte { namespace php {
 
     void Connection::sendAsync(Php::Parameters &params)
     {
-        if(!params[0].instanceOf("ArangoDb\\Request"))
-            throw Php::Exception("Expected request to be of type Request");
+        if(!params[0].instanceOf("ArangoDb\\Request")) {
+            ARANGODB_THROW(InvalidArgumentException(), "Expected request to be of type Request in %s on line %d");
+            return;
+        }
 
-        if(!params[1].isCallable())
-            throw Php::Exception("Expected callback to be of type Callable");
+        if(!params[1].isCallable()) {
+            ARANGODB_THROW(InvalidArgumentException(), "Expected callback to be of type Callable in %s on line %d");
+            return;
+        }
 
         Request* request = (Request*)params[0].implementation();
         this->sendRequestAsync(request, params[1]);
@@ -213,14 +221,17 @@ namespace arangodb { namespace fuerte { namespace php {
         this->asyncWaitGroup = new fu::WaitGroup();
 
         if(!success) {
-            throw Php::Exception("Sending request to ArangoDB failed");
+            ARANGODB_THROW(RuntimeException(), "Sending request to ArangoDB failed in %s on line %d");
+            return;
         }
     }
 
     Php::Value Connection::query(Php::Parameters &params)
     {
-        if(!params[0].instanceOf("ArangoDb\\Vpack"))
-            throw Php::Exception("Expected vpack to be of type Vpack");
+        if(!params[0].instanceOf("ArangoDb\\Vpack")) {
+            ARANGODB_THROW(InvalidArgumentException(), "Expected vpack to be of type Vpack in %s on line %d");
+            return NULL;
+        }
 
         Cursor* cursor = new Cursor(this, (Vpack*)params[0].implementation());
 
