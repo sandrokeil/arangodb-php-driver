@@ -5,6 +5,8 @@
 #include "velocypack/vpack.h"
 #include "velocypack/velocypack-exception-macros.h"
 
+#include "exception.h"
+
 namespace vp = ::arangodb::velocypack;
 
 namespace arangodb { namespace fuerte { namespace php {

@@ -28,6 +28,7 @@ class ExceptionTest extends TestCase
 
         } catch(\Throwable $e) {
             $this->assertInstanceOf(\Exception::class, $e);
+            $this->assertInstanceOf(\ArangoDb\Exception::class, $e);
             $this->assertInstanceOf(\ArangoDb\RuntimeException::class, $e);
             $this->assertInstanceOf(\ArangoDb\InvalidOptionException::class, $e);
         }

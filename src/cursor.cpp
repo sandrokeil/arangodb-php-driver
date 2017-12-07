@@ -9,7 +9,8 @@ namespace arangodb { namespace fuerte { namespace php {
     void Cursor::setOption(int option, int value)
     {
         if(this->options.size() <= option) {
-            throw Php::Exception("Invalid option provided for Cursor");
+            ARANGODB_THROW(InvalidOptionException(), "Invalid option provided for Cursor in %s on line %d");
+            return;
         }
 
         this->options[option] = value;
@@ -24,10 +25,13 @@ namespace arangodb { namespace fuerte { namespace php {
         this->response = response;
 
         if(this->response->getFuerteResponse()->slices().front().get("error").getBool()) {
-            throw Php::Exception(
-                "Error while executing query: " +
-                this->response->getFuerteResponse()->slices().front().get("errorMessage").copyString()
+            ARANGODB_THROW(
+                RuntimeException(),
+                ("Error while executing query in %s on line %d: " +
+                    this->response->getFuerteResponse()->slices().front().get("errorMessage").copyString()).c_str()
             );
+
+            return;
         }
 
         this->hasMore = this->response->getFuerteResponse()->slices().front().get("hasMore").getBool();
@@ -87,7 +91,8 @@ namespace arangodb { namespace fuerte { namespace php {
             vp::Dumper dumper(&sink, &dumperOptions);
             dumper.dump(slice);
         } catch(vp::Exception const& e) {
-            throw Php::Exception(e.what());
+            ARANGODB_THROW(RuntimeException(), e.what());
+            return NULL;
         }
 
         switch(this->options[Cursor::ENTRY_TYPE]) {

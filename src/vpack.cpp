@@ -14,10 +14,12 @@ namespace arangodb { namespace fuerte { namespace php {
             parser.parse(json);
         }
         catch (std::bad_alloc const& e) {
-            throw Php::Exception("Out of memory");
+            ARANGODB_THROW(RuntimeException(), "Out of memory in %s on line %d");
+            return NULL;
         }
         catch (vp::Exception const& e) {
-            throw Php::Exception(e.what());
+            ARANGODB_THROW(RuntimeException(), e.what());
+            return NULL;
         }
 
         instance->builder = *parser.steal();
@@ -33,10 +35,12 @@ namespace arangodb { namespace fuerte { namespace php {
             parser.parse(params[0]);
         }
         catch (std::bad_alloc const& e) {
-            throw Php::Exception("Out of memory");
+            ARANGODB_THROW(RuntimeException(), "Out of memory in %s on line %d");
+            return NULL;
         }
         catch (vp::Exception const& e) {
-            throw Php::Exception(e.what());
+            ARANGODB_THROW(RuntimeException(), e.what());
+            return NULL;
         }
 
         instance->builder = *parser.steal();
@@ -64,7 +68,8 @@ namespace arangodb { namespace fuerte { namespace php {
 
             return json;
         } catch(vp::Exception const& e) {
-            throw Php::Exception(e.what());
+            ARANGODB_THROW(RuntimeException(), e.what());
+            return NULL;
         }
     }
 
