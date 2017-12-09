@@ -106,9 +106,6 @@ extern "C" {
         vpack.method<&arangodb::fuerte::php::Vpack::fromArray>("fromArray", {
             Php::ByVal("array", Php::Type::Array, true)
         });
-        vpack.method<&arangodb::fuerte::php::Vpack::fromArrayNative>("fromArrayNative", {
-            Php::ByVal("array", Php::Type::Array, true)
-        });
         vpack.method<&arangodb::fuerte::php::Vpack::fromJson>("fromJson", {
             Php::ByVal("json", Php::Type::String, true)
         });
