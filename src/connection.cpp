@@ -111,7 +111,14 @@ namespace arangodb { namespace fuerte { namespace php {
             std::move(request->getFuerteRequest())
         );
 
-        return new Response(*result);
+        auto response = new Response(*result);
+
+        auto statusCode = response->getHttpCode();
+        if((!(statusCode >= 200 && statusCode <= 299))/* || response->getFuerteResponse()->slices().front().get("error").getBool()*/) {
+            throwRequestFailedException("This is the error message", statusCode, response->getBody());
+        }
+
+        return response;
     }
 
     void Connection::sendRequestAsync(Request* request, Php::Value& callback)

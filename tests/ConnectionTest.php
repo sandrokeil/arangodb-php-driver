@@ -374,4 +374,34 @@ class ConnectionTest extends TestCase
         $this->assertCount(100, $dataSet2);
         $this->assertTrue($dataSet1 === array_slice($dataSet2, 0, 50));
     }
+
+
+    /**
+     * @test
+     */
+    public function it_throws_request_failed_exception_with_response_data()
+    {
+        $this->connection = TestUtil::getConnection();
+
+        $res = $this->connection->post(
+            '/_api/collection/',
+            TestUtil::getVpackCreateCollection('request_failed_exception_test')
+        );
+
+        try {
+            $this->connection->post(
+                '/_api/collection/',
+                TestUtil::getVpackCreateCollection('request_failed_exception_test')
+            );
+
+            $this->assertTrue(false);
+
+        } catch(\ArangoDb\RequestFailedException $e) {
+            $this->assertNotNull($e->getCode());
+            $this->assertNotNull($e->getHttpCode());
+            $this->assertTrue($e->getCode() === $e->getHttpCode());
+            $this->assertJson($e->getBody());
+            $this->assertTrue(json_decode($e->getBody(), true)['errorMessage'] === 'duplicate name');
+        }
+    }
 }
