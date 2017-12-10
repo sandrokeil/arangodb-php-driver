@@ -24,13 +24,26 @@ namespace arangodb { namespace fuerte { namespace php {
         Response* response = this->connection->sendRequest(&request);
         this->response = response;
 
-        if(this->response->getFuerteResponse()->slices().front().get("error").getBool()) {
-            ARANGODB_THROW(
-                RuntimeException(),
-                ("Error while executing query in %s on line %d: " +
-                    this->response->getFuerteResponse()->slices().front().get("errorMessage").copyString()).c_str()
-            );
+        bool failure = false;
 
+        if (this->response->getFuerteResponse()->slices().front().isObject()
+            && this->response->getFuerteResponse()->slices().front().hasKey("error")
+        ) {
+            failure = this->response->getFuerteResponse()->slices().front().get("error").getBool();
+        }
+
+        auto statusCode = this->response->getHttpCode();
+
+        if((!(statusCode >= 200 && statusCode <= 299)) || failure) {
+            std::string errorMessage = "Response contains an error";
+
+            if(this->response->getFuerteResponse()->slices().front().isObject()
+               && this->response->getFuerteResponse()->slices().front().hasKey("errorMessage")
+            ) {
+                errorMessage = this->response->getFuerteResponse()->slices().front().get("errorMessage").copyString();
+            }
+
+            throwRequestFailedException(errorMessage.c_str(), statusCode, this->response->getBody());
             return;
         }
 
