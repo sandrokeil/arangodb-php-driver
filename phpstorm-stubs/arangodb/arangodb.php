@@ -311,4 +311,41 @@ namespace ArangoDb {
         {
         }
     }
+
+    class Exception extends \Exception
+    {
+
+    }
+
+    class RuntimeException extends Exception
+    {
+
+    }
+
+    class InvalidOptionException extends RuntimeException
+    {
+
+    }
+
+    class RequestFailedException extends RuntimeException
+    {
+        /**
+         * @return int HTTP status code
+         */
+        public function getHttpCode(): int
+        {
+        }
+
+        /**
+         * @return string Response body
+         */
+        public function getBody(): string
+        {
+        }
+    }
+
+    class InvalidArgumentException extends Exception
+    {
+
+    }
 }
