@@ -24,6 +24,8 @@ class ConnectionTest extends TestCase
     {
         if ($this->connection) {
             TestUtil::deleteCollection($this->connection, 'event_streams');
+            TestUtil::deleteCollection($this->connection, 'c6f955fd5efbc2cedbb5f97cfd8890bb98b364c1d');
+            TestUtil::deleteCollection($this->connection, 'request_failed_exception_test');
         }
     }
 
@@ -152,6 +154,7 @@ class ConnectionTest extends TestCase
         $body = json_decode($response->getBody(), true);
 
         $this->assertNotNull($body);
+        $this->assertFalse($body['error']);
         $this->assertTrue(TestUtil::wasSuccessful($response), var_export($body, true));
     }
 
@@ -397,11 +400,12 @@ class ConnectionTest extends TestCase
             $this->assertTrue(false);
 
         } catch(\ArangoDb\RequestFailedException $e) {
-            $this->assertNotNull($e->getCode());
-            $this->assertNotNull($e->getHttpCode());
+            $this->assertSame(409, $e->getCode());
+            $this->assertSame(409, $e->getHttpCode());
             $this->assertTrue($e->getCode() === $e->getHttpCode());
             $this->assertJson($e->getBody());
             $this->assertTrue(json_decode($e->getBody(), true)['errorMessage'] === 'duplicate name');
+            $this->assertSame('duplicate name', $e->getMessage());
         }
     }
 }

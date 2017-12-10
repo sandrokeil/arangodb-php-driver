@@ -58,7 +58,7 @@ final class TestUtil
         return Vpack::fromArray([
             'name' => $collectionName,
             'keyOptions' => [
-                'allowUserKeys' => false,
+                'allowUserKeys' => true,
                 'type' => 'autoincrement',
                 'increment' => 1,
                 'offset' => 1,
