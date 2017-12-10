@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use ArangoDb\Connection;
 
 /**
- * @group connection
+ * @group exception
  */
 class ExceptionTest extends TestCase
 {

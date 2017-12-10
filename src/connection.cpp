@@ -111,7 +111,25 @@ namespace arangodb { namespace fuerte { namespace php {
             std::move(request->getFuerteRequest())
         );
 
-        return new Response(*result);
+        auto response = new Response(*result);
+
+        bool failure = false;
+        if(response->getFuerteResponse()->slices().front().isObject()) {
+            failure = response->getFuerteResponse()->slices().front().get("error").getBool();
+        }
+
+        auto statusCode = response->getHttpCode();
+        if((!(statusCode >= 200 && statusCode <= 299)) || failure) {
+            std::string errorMessage = "Response contains an error";
+
+            if(response->getFuerteResponse()->slices().front().isObject()) {
+                errorMessage = response->getFuerteResponse()->slices().front().get("errorMessage").copyString();
+            }
+
+            throwRequestFailedException(errorMessage.c_str(), statusCode, response->getBody());
+        }
+
+        return response;
     }
 
     void Connection::sendRequestAsync(Request* request, Php::Value& callback)
