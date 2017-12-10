@@ -247,4 +247,23 @@ class CursorTest extends TestCase
         $this->assertCount(100, $dataSet2);
         $this->assertSame($dataSet1, \array_slice($dataSet2, 0, 50));
     }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_if_collection_not_found()
+    {
+        $collection = 'event_streams';
+        $this->connection = TestUtil::getConnection();
+
+        $this->expectException(\ArangoDb\RequestFailedException::class);
+
+        $cursor = $this->connection->query(Vpack::fromArray([
+            'query' => 'FOR c IN @@collection RETURN c',
+            'bindVars' => ['@collection' => $collection]
+        ]));
+
+        $cursor->rewind();
+        $iterations = 0;
+    }
 }
