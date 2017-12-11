@@ -182,7 +182,7 @@ namespace arangodb { namespace fuerte { namespace php {
 
     Php::Value Connection::methodDelete(Php::Parameters &params)
     {
-        Request request(params);
+        Request request(params[0], params[1]);
         request.setHttpMethod(Request::METHOD_DELETE);
 
         return Php::Object("ArangoDb\\Response", this->sendRequest(&request));
@@ -190,7 +190,7 @@ namespace arangodb { namespace fuerte { namespace php {
 
     Php::Value Connection::methodGet(Php::Parameters &params)
     {
-        Request request(params);
+        Request request(params[0], params[1]);
         request.setHttpMethod(Request::METHOD_GET);
 
         return Php::Object("ArangoDb\\Response", this->sendRequest(&request));
@@ -214,7 +214,7 @@ namespace arangodb { namespace fuerte { namespace php {
 
     Php::Value Connection::methodHead(Php::Parameters &params)
     {
-        Request request(params);
+        Request request(params[0], params[1]);
         request.setHttpMethod(Request::METHOD_HEAD);
 
         return Php::Object("ArangoDb\\Response", this->sendRequest(&request));
@@ -230,7 +230,7 @@ namespace arangodb { namespace fuerte { namespace php {
 
     Php::Value Connection::methodOptions(Php::Parameters &params)
     {
-        Request request(params);
+        Request request(params[0], params[1]);
         request.setHttpMethod(Request::METHOD_OPTIONS);
 
         return Php::Object("ArangoDb\\Response", this->sendRequest(&request));

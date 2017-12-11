@@ -33,6 +33,7 @@ namespace arangodb { namespace fuerte { namespace php {
 
         Request(Php::Parameters params);
         Request(std::string path, const Vpack* vpack);
+        Request(string path, map<string, string> queryParams);
         Request(std::string path, const Vpack* vpack, std::map<std::string, std::string> queryParams);
         Request();
 

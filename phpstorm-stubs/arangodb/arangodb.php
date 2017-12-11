@@ -65,10 +65,9 @@ namespace ArangoDb {
          * Sends a HTTP DELETE request
          *
          * @param string $path URI path of ArangoDB Rest API
-         * @param Vpack $vpack Request data
          * @param array $queryParams Map of query params, added to URI path
          */
-        public function delete(string $path, Vpack $vpack, array $queryParams = null): Response
+        public function delete(string $path, array $queryParams = null): Response
         {
         }
 
@@ -76,10 +75,9 @@ namespace ArangoDb {
          * Sends a HTTP GET request
          *
          * @param string $path URI path of ArangoDB Rest API
-         * @param Vpack $vpack Request data
          * @param array|null $queryParams Map of query params added to URI path
          */
-        public function get(string $path, Vpack $vpack, array $queryParams = null): Response
+        public function get(string $path, array $queryParams = null): Response
         {
         }
 
@@ -109,10 +107,9 @@ namespace ArangoDb {
          * Sends a HTTP HEAD request
          *
          * @param string $path URI path of ArangoDB Rest API
-         * @param Vpack $vpack Request data
          * @param array|null $queryParams Map of query params added to URI path
          */
-        public function head(string $path, Vpack $vpack, array $queryParams = null): Response
+        public function head(string $path, array $queryParams = null): Response
         {
         }
 
@@ -131,10 +128,9 @@ namespace ArangoDb {
          * Sends a HTTP OPTIONS request
          *
          * @param string $path URI path of ArangoDB Rest API
-         * @param Vpack $vpack Request data
          * @param array|null $queryParams Map of query params added to URI path
          */
-        public function options(string $path, Vpack $vpack, array $queryParams = null): Response
+        public function options(string $path, array $queryParams = null): Response
         {
         }
 

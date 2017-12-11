@@ -40,7 +40,7 @@ final class TestUtil
     public static function deleteCollection(Connection $connection, string $collection): void
     {
         try {
-            $connection->delete('/_api/collection/' . $collection, Vpack::fromArray([]));
+            $connection->delete('/_api/collection/' . $collection);
         } catch (\Throwable $e) {
             // needed if test deletes collection
         }
