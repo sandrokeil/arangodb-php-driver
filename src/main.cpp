@@ -73,8 +73,13 @@ extern "C" {
             Php::ByVal("vpack", "ArangoDb\\Vpack", true),
             Php::ByVal("queryParams", Php::Type::Array, false)
         };
+        Php::Arguments methodArgsPayloadOptional = {
+            Php::ByVal("path", Php::Type::String, true),
+            Php::ByVal("vpack", "ArangoDb\\Vpack", false, false),
+            Php::ByVal("queryParams", Php::Type::Array, false)
+        };
 
-        connection.method<&arangodb::fuerte::php::Connection::methodDelete>("delete", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodDelete>("delete", methodArgsPayloadOptional);
         connection.method<&arangodb::fuerte::php::Connection::methodGet>("get", methodArgs);
         connection.method<&arangodb::fuerte::php::Connection::methodPost>("post", methodArgsPayload);
         connection.method<&arangodb::fuerte::php::Connection::methodPut>("put", methodArgsPayload);

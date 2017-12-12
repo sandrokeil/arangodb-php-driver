@@ -65,9 +65,10 @@ namespace ArangoDb {
          * Sends a HTTP DELETE request
          *
          * @param string $path URI path of ArangoDB Rest API
+         * @param Vpack $vpack Request data
          * @param array $queryParams Map of query params, added to URI path
          */
-        public function delete(string $path, array $queryParams = null): Response
+        public function delete(string $path, Vpack $vpack = null, array $queryParams = null): Response
         {
         }
 

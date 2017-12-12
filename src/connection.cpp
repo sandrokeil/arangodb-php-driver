@@ -182,9 +182,13 @@ namespace arangodb { namespace fuerte { namespace php {
 
     Php::Value Connection::methodDelete(Php::Parameters &params)
     {
-        Request request(params[0], params[1]);
+        if(!params[1].instanceOf("ArangoDb\\Vpack")) {
+            Request request(params[0]);
+            request.setHttpMethod(Request::METHOD_DELETE);
+            return Php::Object("ArangoDb\\Response", this->sendRequest(&request));
+        }
+        Request request(params);
         request.setHttpMethod(Request::METHOD_DELETE);
-
         return Php::Object("ArangoDb\\Response", this->sendRequest(&request));
     }
 
