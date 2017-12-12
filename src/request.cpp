@@ -10,6 +10,10 @@ namespace arangodb { namespace fuerte { namespace php {
     {
     }
 
+    Request::Request(std::string path, std::map<std::string, std::string> queryParams): path(path), queryParams(queryParams)
+    {
+    }
+
     Request::Request()
     {
     }

@@ -184,4 +184,35 @@ class ConnectionTest extends TestCase
             $this->assertSame('duplicate name', $e->getMessage());
         }
     }
+
+    /**
+     * @test
+     */
+    public function it_sends_get_request_without_params()
+    {
+        $this->connection = TestUtil::getConnection();
+
+        $response = $this->connection->get('/_api/version');
+
+        $body = json_decode($response->getBody(), true);
+
+        $this->assertNotNull($body);
+        $this->assertSame("arango", $body['server']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sends_get_request_with_params()
+    {
+        $this->connection = TestUtil::getConnection();
+
+        $response = $this->connection->get('/_admin/log', ['size' => 2]);
+
+        $body = json_decode($response->getBody(), true);
+
+        $this->assertNotNull($body);
+        $this->assertTrue($body['totalAmount'] > 3);
+        $this->assertCount(2, $body['lid']);
+    }
 }
