@@ -20,6 +20,7 @@ class ConnectionTest extends TestCase
     public function tearDown()
     {
         if ($this->connection) {
+            TestUtil::deleteCollection($this->connection, 'delete_collection');
             TestUtil::deleteCollection($this->connection, 'event_streams');
             TestUtil::deleteCollection($this->connection, 'c6f955fd5efbc2cedbb5f97cfd8890bb98b364c1d');
             TestUtil::deleteCollection($this->connection, 'request_failed_exception_test');
@@ -214,5 +215,31 @@ class ConnectionTest extends TestCase
         $this->assertNotNull($body);
         $this->assertTrue($body['totalAmount'] > 3);
         $this->assertCount(2, $body['lid']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_deletes_without_body()
+    {
+        $collection = 'delete_collection';
+
+        $this->connection = TestUtil::getConnection();
+
+        $response = $this->connection->post(
+            '/_api/collection',
+            TestUtil::getVpackCreateCollection($collection)
+        );
+
+        $body = json_decode($response->getBody(), true);
+
+        $this->assertNotNull($body);
+        $this->assertTrue(TestUtil::wasSuccessful($response), var_export($body, true));
+
+        $response = $this->connection->delete(
+            '/_api/collection/' . $collection
+        );
+
+        $this->assertTrue(TestUtil::wasSuccessful($response));
     }
 }
