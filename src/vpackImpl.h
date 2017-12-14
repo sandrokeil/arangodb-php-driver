@@ -49,6 +49,9 @@ namespace arangodb { namespace fuerte { namespace php {
                 case IS_FALSE:
                     b->add(vpackKey, arangodb::velocypack::Value(false));
                     break;
+                case IS_NULL:
+                    b->add(vpackKey, arangodb::velocypack::Value(arangodb::velocypack::ValueType::Null));
+                    break;
                 case IS_ARRAY:
                     if(HT_IS_PACKED(Z_ARRVAL_P(data)) && HT_IS_WITHOUT_HOLES(Z_ARRVAL_P(data))) {
                         b->add(vpackKey, arangodb::velocypack::Value(arangodb::velocypack::ValueType::Array));
@@ -91,6 +94,9 @@ namespace arangodb { namespace fuerte { namespace php {
                    break;
                case IS_FALSE:
                    b->add(arangodb::velocypack::Value(false));
+                   break;
+               case IS_NULL:
+                   b->add(arangodb::velocypack::Value(arangodb::velocypack::ValueType::Null));
                    break;
                case IS_ARRAY:
                    if(HT_IS_PACKED(Z_ARRVAL_P(data)) && HT_IS_WITHOUT_HOLES(Z_ARRVAL_P(data))) {
