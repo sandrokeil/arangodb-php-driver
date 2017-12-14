@@ -63,7 +63,9 @@ namespace arangodb { namespace fuerte { namespace php {
                         b->close();
                     }
                     break;
-                case IS_OBJECT:
+                case IS_OBJECT: //for now objects will just result in an empty json object
+                    b->add(vpackKey, arangodb::velocypack::Value(arangodb::velocypack::ValueType::Object));
+                    b->close();
                     break;
                 default:
                     break;
@@ -110,6 +112,8 @@ namespace arangodb { namespace fuerte { namespace php {
                    }
                    break;
                case IS_OBJECT:
+                   b->add(arangodb::velocypack::Value(arangodb::velocypack::ValueType::Object));
+                   b->close();
                    break;
                default:
                    break;
