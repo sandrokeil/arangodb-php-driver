@@ -5,7 +5,10 @@
 #include "response.h"
 #include "vpack.h"
 #include "cursor.h"
+
 #include "exception.h"
+#include "vpackImpl.h"
+
 
 extern "C" {
 
@@ -36,6 +39,7 @@ extern "C" {
 
         extension.onStartup([]() {
             arangodb::fuerte::php::registerCustomExceptions();
+            arangodb::fuerte::php::registerVpackImpl();
         });
 
         return extension;
@@ -112,9 +116,6 @@ extern "C" {
         Php::Class<arangodb::fuerte::php::Vpack> vpack("ArangoDb\\Vpack");
 
         vpack.method<&arangodb::fuerte::php::Vpack::__construct>("__construct");
-        vpack.method<&arangodb::fuerte::php::Vpack::fromArray>("fromArray", {
-            Php::ByVal("array", Php::Type::Array, true)
-        });
         vpack.method<&arangodb::fuerte::php::Vpack::fromJson>("fromJson", {
             Php::ByVal("json", Php::Type::String, true)
         });
