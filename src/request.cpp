@@ -1,12 +1,29 @@
 #include "request.h"
 
+#include <utility>
+
 namespace arangodb { namespace fuerte { namespace php {
 
-    Request::Request(std::string path, const Vpack* vpack): path(path), builder(vpack->getBuilder())
+    Request::Request(std::string path, const Vpack* vpack):
+            path(std::move(path)),
+            builder(vpack->getBuilder())
     {
     }
 
-    Request::Request(std::string path, const Vpack* vpack, std::map<std::string, std::string> queryParams): path(path), builder(vpack->getBuilder()), queryParams(queryParams)
+    Request::Request(std::string path, const Vpack* vpack, std::map<std::string, std::string> queryParams):
+            path(std::move(path)),
+            builder(vpack->getBuilder()),
+            queryParams(std::move(queryParams))
+    {
+    }
+
+    Request::Request(std::string path, std::map<std::string, std::string> queryParams):
+            path(std::move(path)),
+            queryParams(std::move(queryParams))
+    {
+    }
+
+    Request::Request(std::string path): path(std::move(path))
     {
     }
 

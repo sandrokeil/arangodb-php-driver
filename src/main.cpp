@@ -70,16 +70,25 @@ extern "C" {
 
         Php::Arguments methodArgs = {
             Php::ByVal("path", Php::Type::String, true),
+            Php::ByVal("queryParams", Php::Type::Array, false)
+        };
+        Php::Arguments methodArgsPayload = {
+            Php::ByVal("path", Php::Type::String, true),
             Php::ByVal("vpack", "ArangoDb\\Vpack", true),
             Php::ByVal("queryParams", Php::Type::Array, false)
         };
+        Php::Arguments methodArgsPayloadOptional = {
+            Php::ByVal("path", Php::Type::String, true),
+            Php::ByVal("vpack", "ArangoDb\\Vpack", false, false),
+            Php::ByVal("queryParams", Php::Type::Array, false)
+        };
 
-        connection.method<&arangodb::fuerte::php::Connection::methodDelete>("delete", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodDelete>("delete", methodArgsPayloadOptional);
         connection.method<&arangodb::fuerte::php::Connection::methodGet>("get", methodArgs);
-        connection.method<&arangodb::fuerte::php::Connection::methodPost>("post", methodArgs);
-        connection.method<&arangodb::fuerte::php::Connection::methodPut>("put", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodPost>("post", methodArgsPayload);
+        connection.method<&arangodb::fuerte::php::Connection::methodPut>("put", methodArgsPayload);
         connection.method<&arangodb::fuerte::php::Connection::methodHead>("head", methodArgs);
-        connection.method<&arangodb::fuerte::php::Connection::methodPatch>("patch", methodArgs);
+        connection.method<&arangodb::fuerte::php::Connection::methodPatch>("patch", methodArgsPayload);
         connection.method<&arangodb::fuerte::php::Connection::methodOptions>("options", methodArgs);
 
         connection.method<&arangodb::fuerte::php::Connection::wait>("wait");

@@ -31,8 +31,10 @@ namespace arangodb { namespace fuerte { namespace php {
         static const int8_t METHOD_PATCH = 5;
         static const int8_t METHOD_OPTIONS = 6;
 
-        Request(Php::Parameters params);
+        explicit Request(Php::Parameters params);
         Request(std::string path, const Vpack* vpack);
+        Request(string path, map<string, string> queryParams);
+        explicit Request(string path);
         Request(std::string path, const Vpack* vpack, std::map<std::string, std::string> queryParams);
         Request();
 

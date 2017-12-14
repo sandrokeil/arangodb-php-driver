@@ -20,6 +20,7 @@ class ConnectionTest extends TestCase
     public function tearDown()
     {
         if ($this->connection) {
+            TestUtil::deleteCollection($this->connection, 'delete_collection');
             TestUtil::deleteCollection($this->connection, 'event_streams');
             TestUtil::deleteCollection($this->connection, 'c6f955fd5efbc2cedbb5f97cfd8890bb98b364c1d');
             TestUtil::deleteCollection($this->connection, 'request_failed_exception_test');
@@ -183,5 +184,62 @@ class ConnectionTest extends TestCase
             $this->assertTrue(json_decode($e->getBody(), true)['errorMessage'] === 'duplicate name');
             $this->assertSame('duplicate name', $e->getMessage());
         }
+    }
+
+    /**
+     * @test
+     */
+    public function it_sends_get_request_without_params()
+    {
+        $this->connection = TestUtil::getConnection();
+
+        $response = $this->connection->get('/_api/version');
+
+        $body = json_decode($response->getBody(), true);
+
+        $this->assertNotNull($body);
+        $this->assertSame("arango", $body['server']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sends_get_request_with_params()
+    {
+        $this->connection = TestUtil::getConnection();
+
+        $response = $this->connection->get('/_admin/log', ['size' => 2]);
+
+        $body = json_decode($response->getBody(), true);
+
+        $this->assertNotNull($body);
+        $this->assertTrue($body['totalAmount'] > 3);
+        $this->assertCount(2, $body['lid']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_deletes_without_body()
+    {
+        $collection = 'delete_collection';
+
+        $this->connection = TestUtil::getConnection();
+
+        $response = $this->connection->post(
+            '/_api/collection',
+            TestUtil::getVpackCreateCollection($collection)
+        );
+
+        $body = json_decode($response->getBody(), true);
+
+        $this->assertNotNull($body);
+        $this->assertTrue(TestUtil::wasSuccessful($response), var_export($body, true));
+
+        $response = $this->connection->delete(
+            '/_api/collection/' . $collection
+        );
+
+        $this->assertTrue(TestUtil::wasSuccessful($response));
     }
 }
