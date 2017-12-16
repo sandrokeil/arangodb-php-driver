@@ -155,6 +155,12 @@ extern "C" {
 
         response.method<&arangodb::fuerte::php::Response::getHttpCode>("getHttpCode");
         response.method<&arangodb::fuerte::php::Response::getBody>("getBody");
+        response.method<&arangodb::fuerte::php::Response::accessResponse>("accessResponse", {
+            Php::ByVal("accessor", Php::Type::String)
+        });
+        response.method<&arangodb::fuerte::php::Response::accessResponseTop>("accessResponseTop", {
+            Php::ByVal("accessor", Php::Type::String)
+        });
 
         extension->add(std::move(response));
     }
