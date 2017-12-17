@@ -24,14 +24,14 @@ namespace arangodb { namespace fuerte { namespace php {
         fu::Response response;
 
         Php::Value sliceToPhpValue(const vp::Slice& slice);
+        Php::Value sliceToJson(const vp::Slice& slice);
 
     public:
         Response(const fu::Response &response);
 
         Php::Value getHttpCode();
         Php::Value getBody();
-        Php::Value accessResponse(Php::Parameters& params);
-        Php::Value accessResponseTop(Php::Parameters& params);
+        Php::Value get(Php::Parameters& params);
 
         fu::Response* getFuerteResponse();
     };

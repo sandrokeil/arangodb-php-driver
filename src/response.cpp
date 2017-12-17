@@ -30,25 +30,37 @@ namespace arangodb { namespace fuerte { namespace php {
         return body;
     }
 
-    Php::Value Response::accessResponse(Php::Parameters& params)
+    Php::Value Response::get(Php::Parameters& params)
     {
-        std::vector<std::string> accessor;
-        std::istringstream accessorStr(params[0]);
+        try {
 
-        for(std::string token; std::getline(accessorStr, token, '.'); ) {
-            accessor.push_back(std::move(token));
+            if(params[0].isString()) {
+                return this->sliceToPhpValue(this->response.slices().front().get(params[0].rawValue()));
+
+            } else if(params[0].isArray()) {
+                vp::Slice tmpSlice(this->response.slices().front());
+
+                for(auto const &value : params[0]) {
+                    if(value.second.isNumeric()) {
+                        tmpSlice = vp::Slice(tmpSlice.at(value.second.numericValue()));
+                    } else if(value.second.isString()) {
+                        tmpSlice = vp::Slice(tmpSlice.get(value.second.rawValue()));
+                    } else {
+                        ARANGODB_THROW(InvalidArgumentException(), "The accessor may only contain strings and integers in %s on line %d");
+                        return NULL;
+                    }
+                }
+
+                return this->sliceToPhpValue(tmpSlice);
+            } else {
+                ARANGODB_THROW(InvalidArgumentException(), "The accessor must be either of type array or of type string in %s on line %d");
+                return NULL;
+            }
+
+        } catch(vp::Exception e) {
+            ARANGODB_THROW(RuntimeException(), e.what());
+            return NULL;
         }
-
-        vp::Slice slice = this->response.slices().front().get(accessor);
-        return this->sliceToPhpValue(slice);
-    }
-
-    Php::Value Response::accessResponseTop(Php::Parameters& params)
-    {
-        std::string accessor = params[0];
-
-        vp::Slice slice = this->response.slices().front().get(accessor);
-        return this->sliceToPhpValue(slice);
     }
 
     Php::Value Response::sliceToPhpValue(const vp::Slice& slice)
@@ -73,16 +85,32 @@ namespace arangodb { namespace fuerte { namespace php {
                 break;
 
             case vp::ValueType::Array:
-                return -1;
-                break;
-
             case vp::ValueType::Object:
-                return -1;
+                return this->sliceToJson(slice);
                 break;
 
             default:
                 return -1;
         }
+    }
+
+
+    Php::Value Response::sliceToJson(const vp::Slice& slice)
+    {
+        std::string json;
+
+        try {
+            vp::Options dumperOptions;
+
+            vp::StringSink sink(&json);
+            vp::Dumper dumper(&sink, &dumperOptions);
+            dumper.dump(slice);
+        } catch(vp::Exception const& e) {
+            ARANGODB_THROW(InvalidArgumentException(), e.what());
+            return NULL;
+        }
+
+        return json;
     }
 
 
