@@ -7,6 +7,8 @@
 
 #include "exception.h"
 
+#include <ext/json/php_json.h>
+
 namespace vp = ::arangodb::velocypack;
 
 namespace arangodb { namespace fuerte { namespace php {
@@ -26,6 +28,7 @@ namespace arangodb { namespace fuerte { namespace php {
         static Php::Value fromJson(Php::Parameters &params);
         Php::Value toHex();
         Php::Value toJson();
+        void toArray();
 
         vp::Slice getSlice();
         const vp::Builder& getBuilder() const;

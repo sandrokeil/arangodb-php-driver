@@ -49,6 +49,16 @@ namespace arangodb { namespace fuerte { namespace php {
         }
     }
 
+    void Vpack::toArray()
+    {
+        std::string json = this->toJson();
+
+        zval* return_value;
+        php_json_decode_ex(return_value, const_cast<char*>(json.c_str()), strlen(json.c_str()), 0, PHP_JSON_PARSER_DEFAULT_DEPTH);
+
+        RETURN_ZVAL(return_value, 1, 0);
+    }
+
     vp::Slice Vpack::getSlice()
     {
         return this->builder.slice();
