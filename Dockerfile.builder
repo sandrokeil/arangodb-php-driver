@@ -14,16 +14,18 @@ RUN buildDeps=' \
     openssl-dev \
     libc-dev \
     pcre-dev \
+    autoconf \
     ' \
     && apk add --update $buildDeps \
     && docker-php-source extract
 
 COPY deps /tmp
 
-RUN cd /tmp/phpcpp \
-        && sed -i 's/`\${PHP_CONFIG} \-\-ldflags`//g' Makefile \
-        && make \
-        && make install
+RUN cd /tmp/velocypack \
+    && mkdir -p build \
+    && cd build \
+    && cmake .. -DCMAKE_CXX_FLAGS=-fPIC \
+    && make install
 
 WORKDIR /app
 VOLUME ["/app"]
@@ -33,4 +35,4 @@ RUN apk add --update bash && rm -rf /tmp/*
 RUN docker-php-source extract
 
 ENTRYPOINT []
-CMD bash -c "cd /app/build && cmake .. -DPHPCPP_ARCH=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-fPIC && make"
+CMD bash -c "cd /app && phpize && ./configure --enable-arangodb && make && make install"
