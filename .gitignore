@@ -4,3 +4,6 @@ deps/*
 vendor/
 composer.lock
 compile_commands.json
+modules
+.libs
+autom4te.cache

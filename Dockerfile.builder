@@ -24,7 +24,11 @@ COPY deps /tmp
 RUN cd /tmp/velocypack \
     && mkdir -p build \
     && cd build \
-    && cmake .. -DCMAKE_CXX_FLAGS=-fPIC \
+    && cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-fPIC \
+    && make install
+
+RUN cd /tmp/fuerte \
+    && cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-fPIC \
     && make install
 
 WORKDIR /app
@@ -32,7 +36,5 @@ VOLUME ["/app"]
 
 RUN apk add --update bash && rm -rf /tmp/*
 
-RUN docker-php-source extract
-
 ENTRYPOINT []
-CMD bash -c "cd /app && phpize && ./configure --enable-arangodb && make && make install"
+CMD bash -c "cd /app && phpize && ./configure && make all -j4"

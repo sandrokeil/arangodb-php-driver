@@ -9,13 +9,7 @@ First install dependencies with
 $ ./get_fuerte
 ```
 
-and PHP dependencies with
-
-```
-$ docker run --rm -it --volume $(pwd):/app prooph/composer:7.1 update
-```
-
-This extension is build with [PHP-CPP](http://www.php-cpp.com/).
+This extension is build with [native Zend Engine](http://www.phpinternalsbook.com/#php-7).
 The build is simple with [Docker Compose](https://docs.docker.com/compose/install/).
 
 ```
@@ -35,14 +29,16 @@ Cleanup
 
 ```
 $ docker-compose down -v
+$ docker-compose run --rm arangodb-builder make clean
+$ docker-compose run --rm arangodb-builder phpize --clean
 ```
 
 ### Debugging
-Check which symbols are in `build/libarangodb.so`. See [nm docs](https://linux.die.net/man/1/nm).
+Check which symbols are in `modules/arangodb.so`. See [nm docs](https://linux.die.net/man/1/nm).
 
 ```
-$ nm -g build/libarangodb.so | grep ArangoDb
-$ ldd build/libarangodb.so
+$ nm -g modules/arangodb.so | grep arangodb
+$ ldd modules/arangodb.so
 ```
 
 ### UI
