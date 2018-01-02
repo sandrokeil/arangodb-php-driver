@@ -1,0 +1,32 @@
+language: php
+php:
+  - 7.2
+  - 7.1
+  - 7.0
+
+env:
+  global:
+    - TEST_PHP_ARGS="-q -s output.txt -g XFAIL,FAIL,BORK,WARN,LEAK,SKIP -x --show-diff"
+    - REPORT_EXIT_STATUS=1
+    - ARANGODB_VERSION=3.2
+
+addons:
+  hosts:
+    - arangodb
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y gdb valgrind
+  - sudo apt-get install -y git build-essential autoconf automake libtool bison re2c cmake libssl-dev libcurl4-openssl-dev libboost-system-dev libboost-thread-dev
+  - "./.travis.scripts/compile.sh"
+
+before_script:
+  - wget https://www.arangodb.com/repositories/travisCI/setup_arangodb_${ARANGODB_VERSION}.sh
+  - chmod 777 setup_arangodb_${ARANGODB_VERSION}.sh
+  - ./setup_arangodb_${ARANGODB_VERSION}.sh
+
+script:
+  - make test
+
+after_script:
+  - killall -s SIGTERM arangod_x86_64
