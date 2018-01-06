@@ -14,6 +14,8 @@ extern "C" {
 
 #include <velocypack/vpack.h>
 
+#include "src/vpack.h"
+
 extern zend_module_entry arangodb_module_entry;
 #define phpext_arangodb_ptr &arangodb_module_entry;
 
