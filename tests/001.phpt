@@ -3,11 +3,11 @@ Test vpack
 --SKIPIF--
 <?php ?>
 --FILE--
-<?php $vpack = new Vpack();
-      var_dump($vpack);
+<?php
+
+$vpack = ArangoDb\Vpack::fromArray(["1" => 100, "2" => 1000000, "c" => "d", "test" => true]);
+echo $vpack->toJson();
+
 ?>
 --EXPECTF--
-0x14 0x0e 0x48 0x74 0x74 0x65 0x65 0x73 0x73 0x74 0x74 0x20 0x7b 0x01
-object(Vpack)#1 (0) {
-}
-
+{"1":100,"2":1000000,"c":"d","test":true}
