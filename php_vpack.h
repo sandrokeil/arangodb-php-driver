@@ -27,7 +27,7 @@ namespace {
     PHP_METHOD(Vpack, fromJson)
     {
         zval object;
-        const char* json;
+        char* json;
         size_t len;
 
         if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &json, &len) == FAILURE) {
@@ -37,7 +37,7 @@ namespace {
         object_init_ex(&object, vpack_ce);
         auto intern = Z_OBJECT_VPACK(Z_OBJ(object));
 
-        intern->from_json(json);
+        intern->from_json(json, len);
 
         RETURN_ZVAL(&object, 1, 0);
     }
@@ -73,7 +73,7 @@ namespace {
         intern = Z_OBJECT_VPACK_P(getThis());
         auto json = intern->to_json();
 
-        RETURN_STRING(json);
+        RETURN_STRING(json.c_str());
     }
 
     PHP_METHOD(Vpack, toHex)
@@ -87,7 +87,7 @@ namespace {
         intern = Z_OBJECT_VPACK_P(getThis());
         auto hex = intern->to_hex();
 
-        RETURN_STRING(hex);
+        RETURN_STRING(hex.c_str());
     }
 
 

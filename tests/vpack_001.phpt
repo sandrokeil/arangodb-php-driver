@@ -1,5 +1,5 @@
 --TEST--
-Test vpack
+Test vpack from array
 --SKIPIF--
 <?php ?>
 --FILE--

@@ -25,10 +25,10 @@ namespace arangodb { namespace fuerte { namespace php {
         Vpack();
         ~Vpack();
 
-        void from_json(const char* json);
+        void from_json(const char* json, size_t size);
         void from_array(HashTable* myht);
-        const char* to_json();
-        const char* to_hex();
+        std::string to_json();
+        std::string to_hex();
 
     private:
         void cast_assoc_array(HashTable* myht);

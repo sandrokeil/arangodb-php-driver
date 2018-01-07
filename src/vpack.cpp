@@ -28,12 +28,12 @@ namespace arangodb { namespace fuerte { namespace php {
     {
     }
 
-    void Vpack::from_json(const char* json)
+    void Vpack::from_json(const char* json, size_t size)
     {
         vp::Parser parser;
 
         try {
-            parser.parse(json);
+            parser.parse(json, size);
         }
         catch(std::bad_alloc const &e) {
             std::cout << "bad_alloc" << std::endl;
@@ -60,7 +60,7 @@ namespace arangodb { namespace fuerte { namespace php {
         }
     }
 
-    const char* Vpack::to_json()
+    std::string Vpack::to_json()
     {
         try {
             std::string json;
@@ -71,14 +71,14 @@ namespace arangodb { namespace fuerte { namespace php {
             vp::Dumper dumper(&sink, &dumperOptions);
             dumper.dump(this->builder.slice());
 
-            return json.c_str();
+            return json;
         }
         catch(vp::Exception const &e) {
             std::cout << "exception" << std::endl;
         }
     }
 
-    const char* Vpack::to_hex()
+    std::string Vpack::to_hex()
     {
         return vp::HexDump(this->builder.slice()).toString().c_str();
     }
