@@ -7,7 +7,6 @@ namespace arangodb { namespace fuerte { namespace php {
     zend_object* Vpack::create_object(zend_class_entry* ce TSRMLS_CC)
     {
         Vpack* intern = (Vpack*)ecalloc(1, sizeof(Vpack) + zend_object_properties_size(ce));
-        std::cout << "memmm: " << sizeof(Vpack) + zend_object_properties_size(ce) << std::endl;
 
         zend_object_std_init(&intern->std, ce TSRMLS_CC);
 
