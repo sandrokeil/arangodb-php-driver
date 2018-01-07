@@ -1,7 +1,7 @@
 #pragma once
 
 extern "C" {
-#include "php.h"
+#include <php.h>
 }
 
 #include <iostream>
@@ -25,9 +25,14 @@ namespace arangodb { namespace fuerte { namespace php {
         Vpack();
         ~Vpack();
 
-        void fromJson(const char* json);
-        const char* toJson();
-        const char* toHex();
+        void from_json(const char* json);
+        void from_array(HashTable* myht);
+        const char* to_json();
+        const char* to_hex();
+
+    private:
+        void cast_assoc_array(HashTable* myht);
+        void cast_numeric_array(HashTable* myht);
     };
 
 }}}
