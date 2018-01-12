@@ -1,7 +1,16 @@
 #include "php_arangodb.h"
 
 #include "php_vpack.h"
+#include "php_request.h"
 
+
+PHP_MINIT_FUNCTION(arangodb)
+{
+    init_arangodb_vpack_ce();
+    init_arangodb_request_ce();
+
+    return SUCCESS;
+}
 
 zend_module_entry arangodb_module_entry = {
 

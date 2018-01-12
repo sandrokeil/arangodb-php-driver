@@ -2,7 +2,7 @@
 
 namespace arangodb { namespace fuerte { namespace php {
 
-    zend_object_handlers Vpack::php_arangodb_handler_vpack = zend_object_handlers();
+    zend_object_handlers Vpack::handler_vpack = zend_object_handlers();
 
     zend_object* Vpack::create_object(zend_class_entry* ce TSRMLS_CC)
     {
@@ -10,7 +10,7 @@ namespace arangodb { namespace fuerte { namespace php {
 
         zend_object_std_init(&intern->std, ce TSRMLS_CC);
 
-        intern->std.handlers = &Vpack::php_arangodb_handler_vpack;
+        intern->std.handlers = &Vpack::handler_vpack;
         return &intern->std;
     }
 
@@ -36,10 +36,10 @@ namespace arangodb { namespace fuerte { namespace php {
             parser.parse(json, size);
         }
         catch(std::bad_alloc const &e) {
-            std::cout << "bad_alloc" << std::endl;
+            /* @todo add exception */
         }
         catch(vp::Exception const &e) {
-            std::cout << "Exception" << std::endl;
+            /* @todo add exception */
         }
 
         this->builder = *parser.steal();
@@ -74,7 +74,7 @@ namespace arangodb { namespace fuerte { namespace php {
             return json;
         }
         catch(vp::Exception const &e) {
-            std::cout << "exception" << std::endl;
+            /* @todo add exception */
         }
     }
 

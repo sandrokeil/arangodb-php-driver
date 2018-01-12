@@ -111,16 +111,15 @@ namespace {
         PHP_FE_END
     };
 
-    PHP_MINIT_FUNCTION(arangodb)
+    void init_arangodb_vpack_ce()
     {
         zend_class_entry ce;
+
         INIT_CLASS_ENTRY(ce, "ArangoDb\\Vpack", vpack_methods);
         vpack_ce = zend_register_internal_class(&ce TSRMLS_CC);
         vpack_ce->create_object = arangodb::fuerte::php::Vpack::create_object;
 
-        memcpy(&arangodb::fuerte::php::Vpack::php_arangodb_handler_vpack, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
-        arangodb::fuerte::php::Vpack::php_arangodb_handler_vpack.offset = XtOffsetOf(arangodb::fuerte::php::Vpack, std);
-
-        return SUCCESS;
+        memcpy(&arangodb::fuerte::php::Vpack::handler_vpack, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
+        arangodb::fuerte::php::Vpack::handler_vpack.offset = XtOffsetOf(arangodb::fuerte::php::Vpack, std);
     }
 }

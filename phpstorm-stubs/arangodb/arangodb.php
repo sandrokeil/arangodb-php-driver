@@ -196,13 +196,14 @@ namespace ArangoDb {
         /**
          * Create Request
          *
+         * @param int $method http method
          * @param string $path URI path of ArangoDB Rest API
          * @param Vpack $vpack Request data
          * @param array|null $queryParams Map of query params added to URI path
          *
          * @return Request
          */
-        public function __construct(string $path, Vpack $vpack, array $queryParams = null)
+        public function __construct(int $method, string $path, Vpack $vpack, array $queryParams = null)
         {
 
         }

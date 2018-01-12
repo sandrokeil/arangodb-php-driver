@@ -45,5 +45,5 @@ if test $PHP_ARANGODB != "no"; then
     PHP_ADD_LIBRARY(stdc++, 1, ARANGODB_SHARED_LIBADD)
     PHP_ADD_LIBRARY_WITH_PATH(velocypack, $VELOCYPACK_LIB_DIR, ARANGODB_SHARED_LIBADD)
     PHP_ADD_LIBRARY_WITH_PATH(fuerte, $FUERTE_LIB_DIR, ARANGODB_SHARED_LIBADD)
-    PHP_NEW_EXTENSION(arangodb, php_arangodb.cpp src/vpack.cpp, $ext_shared)
+    PHP_NEW_EXTENSION(arangodb, php_arangodb.cpp src/vpack.cpp src/request.cpp, $ext_shared)
 fi
