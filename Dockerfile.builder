@@ -34,7 +34,10 @@ RUN cd /tmp/fuerte \
 WORKDIR /app
 VOLUME ["/app"]
 
-RUN apk add --update bash && rm -rf /tmp/*
+RUN apk add --update bash \
+        boost-system \
+        boost-thread \
+    && rm -rf /tmp/*
 
 ENTRYPOINT []
 CMD bash -c "cd /app && phpize && ./configure && make all -j4"

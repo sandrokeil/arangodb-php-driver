@@ -21,6 +21,7 @@ $ docker-compose up -d --no-recreate arangodb
 
 ```
 $ docker-compose run --rm arangodb-builder
+$ docker-compose run --rm arangodb-builder make test
 $ docker-compose build php
 $ docker-compose run --rm php vendor/bin/phpunit
 ```

@@ -18,7 +18,7 @@ if test $PHP_ARANGODB != "no"; then
         break
       fi
     done
-    
+
     for i in /usr /usr/local; do
       if test -f $i/lib/libvelocypack.a; then
         VELOCYPACK_LIB_DIR=$i
@@ -38,6 +38,7 @@ if test $PHP_ARANGODB != "no"; then
     PHP_ADD_INCLUDE($VELOCYPACK_INCLUDE_DIR)
     PHP_ADD_INCLUDE($FUERTE_INCLUDE_DIR)
 
+    LDFLAGS="$LDFLAGS -lboost_system -lcurl -lboost_thread"
     CXXFLAGS="-std=c++11"
     PHP_REQUIRE_CXX()
 
