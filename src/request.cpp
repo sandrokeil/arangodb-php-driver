@@ -19,4 +19,41 @@ namespace arangodb { namespace fuerte { namespace php {
         return (Request *)((char *)obj - XtOffsetOf(Request, std));
     }
 
+
+    void Request::set_http_method(int http_method)
+    {
+        this->http_method = static_cast<fu::RestVerb>(http_method);
+    }
+
+    void Request::set_path(const std::string& path)
+    {
+        this->path = path;
+    }
+
+    void Request::set_vpack(const Vpack* vpack)
+    {
+        this->builder = vpack->builder;
+    }
+
+    void Request::set_query_params(const HashTable* query_params)
+    {
+        zend_string* key;
+        zval* data;
+        this->query_params = std::map<std::string, std::string>();
+
+        ZEND_HASH_FOREACH_STR_KEY_VAL(query_params, key, data) {
+
+            this->query_params[ZSTR_VAL(key)] = Z_STRVAL_P(data);
+
+        } ZEND_HASH_FOREACH_END();
+    }
+
+    std::unique_ptr<fu::Request> Request::get_fuerte_request()
+    {
+        auto request = fu::createRequest(this->http_method, this->path, this->query_params);
+        request->addVPack(this->builder.slice());
+
+        return request;
+    }
+
 }}}

@@ -13,6 +13,8 @@ namespace arangodb { namespace fuerte { namespace php {
     class Vpack
     {
     public:
+        friend class Request;
+
         vp::Builder builder;
         zend_object std;
 
