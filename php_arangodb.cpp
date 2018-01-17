@@ -2,12 +2,14 @@
 
 #include "php_vpack.h"
 #include "php_request.h"
+#include "php_connection.h"
 
 
 PHP_MINIT_FUNCTION(arangodb)
 {
     init_arangodb_vpack_ce();
     init_arangodb_request_ce();
+    init_arangodb_connection_ce();
 
     return SUCCESS;
 }
