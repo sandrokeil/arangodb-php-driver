@@ -44,6 +44,7 @@ namespace {
 
 
     ZEND_BEGIN_ARG_INFO_EX(arangodb_request_construct, 0, 0, 0)
+    //@todo fix arg info
     ZEND_END_ARG_INFO()
 
     zend_function_entry request_methods[] = {
