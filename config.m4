@@ -35,13 +35,9 @@ if test $PHP_ARANGODB != "no"; then
       fi
     done
 
-    BOOST_THREAD=
+    BOOST_THREAD=boost_thread
 
     for i in /usr /usr/local; do
-      if test -f $i/lib/libboost_thread.so; then
-        BOOST_THREAD=boost_thread
-        break
-      fi
       if test -f $i/lib/libboost_thread-mt.so; then
         BOOST_THREAD=boost_thread-mt
         break
