@@ -35,7 +35,7 @@ namespace arangodb { namespace fuerte { namespace php {
         this->builder = vpack->builder;
     }
 
-    void Request::set_query_params(const HashTable* query_params)
+    void Request::set_query_params(HashTable* query_params)
     {
         zend_string* key;
         zval* data;

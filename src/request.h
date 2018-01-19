@@ -35,7 +35,7 @@ namespace arangodb { namespace fuerte { namespace php {
         void set_http_method(int http_method);
         void set_path(const std::string& path);
         void set_vpack(const Vpack* vpack);
-        void set_query_params(const HashTable* query_params);
+        void set_query_params(HashTable* query_params);
 
         std::unique_ptr<fu::Request> get_fuerte_request();
     };
