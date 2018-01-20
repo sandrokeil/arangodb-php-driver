@@ -15,9 +15,9 @@ namespace {
 
     PHP_METHOD(Request, __construct)
     {
-        long method;
+        zend_long method;
         const char* path;
-        int path_length;
+        size_t path_length;
         zval* vpack;
         zval* query_params = NULL;
 
@@ -43,8 +43,11 @@ namespace {
     }
 
 
-    ZEND_BEGIN_ARG_INFO_EX(arangodb_request_construct, 0, 0, 0)
-    //@todo fix arg info
+    ZEND_BEGIN_ARG_INFO_EX(arangodb_request_construct, 0, 0, 3)
+        ZEND_ARG_INFO(0, method)
+        ZEND_ARG_INFO(0, path)
+        ZEND_ARG_INFO(0, vpack)
+        ZEND_ARG_INFO(0, query_params)
     ZEND_END_ARG_INFO()
 
     zend_function_entry request_methods[] = {
