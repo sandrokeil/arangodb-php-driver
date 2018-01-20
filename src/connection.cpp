@@ -105,7 +105,6 @@ namespace arangodb { namespace fuerte { namespace php {
 
     /*Response* */void Connection::send_request(Request* request)
     {
-        this->connect();
         auto result = this->connection->sendRequest(
             std::move(request->get_fuerte_request())
         );
