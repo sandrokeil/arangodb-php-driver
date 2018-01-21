@@ -45,14 +45,14 @@ namespace {
     PHP_METHOD(Vpack, fromArray)
     {
         zval object;
-        zval *arrayValue;
+        zval *array_value;
         HashTable *myht;
 
-        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &arrayValue) == FAILURE) {
+        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &array_value) == FAILURE) {
             return;
         }
 
-        myht = Z_ARRVAL_P(arrayValue);
+        myht = Z_ARRVAL_P(array_value);
 
         object_init_ex(&object, vpack_ce);
         auto intern = Z_OBJECT_VPACK(Z_OBJ(object));
@@ -90,6 +90,29 @@ namespace {
         RETURN_STRING(hex.c_str());
     }
 
+    PHP_METHOD(Vpack, get)
+    {
+        zval *accessor;
+        HashTable *accessor_ht;
+        const char* accessor_string;
+
+        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &accessor) == FAILURE) {
+            return;
+        }
+
+        auto intern = Z_OBJECT_VPACK_P(getThis());
+
+        if(Z_TYPE_P(accessor) == IS_STRING) {
+            accessor_string = Z_STRVAL_P(accessor);
+            intern->get(return_value, accessor_string);
+        } else if(Z_TYPE_P(accessor) == IS_ARRAY) {
+            accessor_ht = Z_ARRVAL_P(accessor);
+            intern->get(return_value, accessor_ht);
+        } else {
+            //@todo exception
+        }
+    }
+
 
     ZEND_BEGIN_ARG_INFO_EX(arangodb_vpack_void, 0, 0, 0)
     ZEND_END_ARG_INFO()
@@ -102,12 +125,17 @@ namespace {
         ZEND_ARG_INFO(0, array)
     ZEND_END_ARG_INFO()
 
+    ZEND_BEGIN_ARG_INFO_EX(arangodb_vpack_get, 0, 0, 1)
+        ZEND_ARG_INFO(0, accessor)
+    ZEND_END_ARG_INFO()
+
     zend_function_entry vpack_methods[] = {
         PHP_ME(Vpack, __construct, arangodb_vpack_void, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
         PHP_ME(Vpack, fromJson, arangodb_vpack_from_json, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
         PHP_ME(Vpack, fromArray, arangodb_vpack_from_array, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
         PHP_ME(Vpack, toJson, arangodb_vpack_void, ZEND_ACC_PUBLIC)
         PHP_ME(Vpack, toHex, arangodb_vpack_void, ZEND_ACC_PUBLIC)
+        PHP_ME(Vpack, get, arangodb_vpack_void, ZEND_ACC_PUBLIC)
         PHP_FE_END
     };
 

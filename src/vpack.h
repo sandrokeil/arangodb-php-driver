@@ -30,9 +30,14 @@ namespace arangodb { namespace fuerte { namespace php {
         std::string to_json();
         std::string to_hex();
 
+        void get(zval* return_value, HashTable* accessor);
+        void get(zval* return_value, const char* accessor);
+
     private:
         void cast_assoc_array(HashTable* myht);
         void cast_numeric_array(HashTable* myht);
+
+        void return_slice_to_php_value(zval* return_value, const vp::Slice& slice);
     };
 
 }}}

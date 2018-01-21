@@ -190,4 +190,71 @@ namespace arangodb { namespace fuerte { namespace php {
         } ZEND_HASH_FOREACH_END();
     }
 
+    void Vpack::get(zval* return_value, HashTable* accessor)
+    {
+        try {
+            zval* value;
+            vp::Slice tmpSlice(this->builder.slice());
+
+            ZEND_HASH_FOREACH_VAL(accessor, value) {
+
+                if((Z_TYPE_P(value) == IS_LONG)) {
+                    tmpSlice = vp::Slice(tmpSlice.at(Z_LVAL_P(value)));
+                } else if(Z_TYPE_P(value) == IS_STRING) {
+                    tmpSlice = vp::Slice(tmpSlice.get(Z_STRVAL_P(value)));
+                } else {
+                    //@todo exception
+                }
+
+            } ZEND_HASH_FOREACH_END();
+
+            this->return_slice_to_php_value(return_value, tmpSlice);
+        }
+        catch(const vp::Exception& e) {
+            //@todo exception
+        }
+    }
+
+    void Vpack::get(zval* return_value, const char* accessor)
+    {
+        try {
+            this->return_slice_to_php_value(return_value, this->builder.slice().get(accessor));
+        }
+        catch(const vp::Exception& e) {
+            //@todo exception
+        }
+    }
+
+    void Vpack::return_slice_to_php_value(zval* return_value, const vp::Slice& slice)
+    {
+        switch(slice.type()) {
+            case vp::ValueType::String:
+                RETURN_STRING(slice.copyString().c_str());
+                break;
+
+            case vp::ValueType::Int:
+            case vp::ValueType::UInt:
+            case vp::ValueType::SmallInt:
+                RETURN_LONG(slice.getInt());
+                break;
+
+            case vp::ValueType::Double:
+                RETURN_DOUBLE(slice.getDouble());
+                break;
+
+            case vp::ValueType::Null:
+                RETURN_NULL();
+                break;
+
+            /*case vp::ValueType::Array:
+            case vp::ValueType::Object:
+                return this->sliceToJson(slice);
+                break;*/
+
+            default:
+                //@todo exception
+                break;
+        }
+    }
+
 }}}
