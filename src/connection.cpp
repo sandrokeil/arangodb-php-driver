@@ -103,13 +103,13 @@ namespace arangodb { namespace fuerte { namespace php {
         return cbuilder;
     }
 
-    /*Response* */void Connection::send_request(Request* request)
+    std::unique_ptr<fu::Response> Connection::send_request(Request* request)
     {
         auto result = this->connection->sendRequest(
             std::move(request->get_fuerte_request())
         );
 
-        //@todo finish this
+        return result;
     }
 
     int Connection::option_string_key_to_int_key(const char* string_key)

@@ -5,6 +5,7 @@ extern "C" {
 }
 
 #include "src/connection.h"
+#include "php_response.h"
 
 namespace {
     zend_class_entry *connection_ce;
@@ -38,13 +39,21 @@ namespace {
     PHP_METHOD(Connection, send)
     {
         zval* request;
+        zval object;
 
         if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "o", &request, request_ce) == FAILURE) {
             return;
         }
 
         auto intern = Z_OBJECT_CONNECTION_P(getThis());
-        intern->send_request(Z_OBJECT_REQUEST_P(request));
+        auto fuerte_response = intern->send_request(Z_OBJECT_REQUEST_P(request));
+
+        object_init_ex(&object, response_ce);
+        auto response = Z_OBJECT_RESPONSE(Z_OBJ(object));
+
+        new (response) arangodb::fuerte::php::Response(*fuerte_response);
+
+        RETURN_ZVAL(&object, 1, 0);
     }
 
 

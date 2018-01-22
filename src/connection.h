@@ -49,7 +49,7 @@ namespace arangodb { namespace fuerte { namespace php {
         void set_thread_count(int thread_count);
 
         void connect();
-        void send_request(Request* request);
+        std::unique_ptr<fu::Response> send_request(Request* request);
 
     private:
         fu::ConnectionBuilder create_connection_builder();
