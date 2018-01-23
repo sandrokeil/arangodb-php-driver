@@ -28,4 +28,27 @@ namespace arangodb { namespace fuerte { namespace php {
         return static_cast<int>(this->response.statusCode());
     }
 
+    void Response::return_body(zval* return_value)
+    {
+        std::string body;
+
+        try {
+            vp::Slice slice = this->response.slices().front();
+            vp::Options dumperOptions;
+
+            vp::StringSink sink(&body);
+            vp::Dumper dumper(&sink, &dumperOptions);
+            dumper.dump(slice);
+        } catch(vp::Exception const& e) {
+            //@todo exception
+        }
+
+        RETURN_STRING(body.c_str());
+    }
+
+    fu::Response* Response::get_fuerte_response()
+    {
+        return &this->response;
+    }
+
 }}}

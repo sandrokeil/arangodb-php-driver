@@ -27,6 +27,8 @@ namespace arangodb { namespace fuerte { namespace php {
 
         void from_json(const char* json, size_t size);
         void from_array(HashTable* myht);
+        void from_slice(const vp::Slice& slice);
+
         std::string to_json();
         std::string to_hex();
 

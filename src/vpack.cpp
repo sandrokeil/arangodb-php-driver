@@ -60,6 +60,11 @@ namespace arangodb { namespace fuerte { namespace php {
         }
     }
 
+    void Vpack::from_slice(const vp::Slice& slice)
+    {
+        this->builder = vp::Builder(slice);
+    }
+
     std::string Vpack::to_json()
     {
         try {

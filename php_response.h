@@ -19,8 +19,34 @@ namespace {
         }
 
         auto intern = Z_OBJECT_RESPONSE_P(getThis());
-
         RETURN_LONG(intern->get_http_code());
+    }
+
+    PHP_METHOD(Response, getBody)
+    {
+        if(zend_parse_parameters_none() == FAILURE) {
+            return;
+        }
+
+        auto intern = Z_OBJECT_RESPONSE_P(getThis());
+        intern->return_body(return_value);
+    }
+
+    PHP_METHOD(Response, getVpack)
+    {
+        zval vpack_object;
+
+        if(zend_parse_parameters_none() == FAILURE) {
+            return;
+        }
+
+        auto intern = Z_OBJECT_RESPONSE_P(getThis());
+
+        object_init_ex(&vpack_object, vpack_ce);
+        auto vpack = Z_OBJECT_VPACK(Z_OBJ(vpack_object));
+        vpack->from_slice(intern->get_fuerte_response()->slices().front());
+
+        RETURN_ZVAL(&vpack_object, 1, 0)
     }
 
     ZEND_BEGIN_ARG_INFO_EX(arangodb_response_void, 0, 0, 0)
@@ -28,6 +54,8 @@ namespace {
 
     zend_function_entry response_methods[] = {
         PHP_ME(Response, getHttpCode, arangodb_response_void, ZEND_ACC_PUBLIC)
+        PHP_ME(Response, getBody, arangodb_response_void, ZEND_ACC_PUBLIC)
+        PHP_ME(Response, getVpack, arangodb_response_void, ZEND_ACC_PUBLIC)
         PHP_FE_END
     };
 

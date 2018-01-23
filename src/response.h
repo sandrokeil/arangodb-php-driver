@@ -28,6 +28,8 @@ namespace arangodb { namespace fuerte { namespace php {
 
         Response(const fu::Response &response);
         int get_http_code();
+        void return_body(zval* return_value);
+        fu::Response* get_fuerte_response();
     };
 
 }}}
