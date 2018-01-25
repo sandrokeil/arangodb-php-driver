@@ -58,10 +58,14 @@ namespace {
     ZEND_BEGIN_ARG_INFO_EX(arangodb_response_void, 0, 0, 0)
     ZEND_END_ARG_INFO()
 
+    ZEND_BEGIN_ARG_INFO_EX(arangodb_response_get, 0, 0, 1)
+        ZEND_ARG_INFO(0, accessor)
+    ZEND_END_ARG_INFO()
+
     zend_function_entry response_methods[] = {
         PHP_ME(Response, getHttpCode, arangodb_response_void, ZEND_ACC_PUBLIC)
         PHP_ME(Response, getBody, arangodb_response_void, ZEND_ACC_PUBLIC)
-        PHP_ME(Response, get, arangodb_response_void, ZEND_ACC_PUBLIC)
+        PHP_ME(Response, get, arangodb_response_get, ZEND_ACC_PUBLIC)
         PHP_FE_END
     };
 

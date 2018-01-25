@@ -53,7 +53,7 @@ namespace {
     ZEND_BEGIN_ARG_INFO_EX(arangodb_request_construct, 0, 0, 3)
         ZEND_ARG_INFO(0, method)
         ZEND_ARG_INFO(0, path)
-        ZEND_ARG_INFO(0, vpack)
+        ZEND_ARG_INFO(0, vpack_value)
         ZEND_ARG_INFO(0, query_params)
     ZEND_END_ARG_INFO()
 

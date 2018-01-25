@@ -33,16 +33,7 @@ namespace arangodb { namespace fuerte { namespace php {
     void Request::set_vpack_from_array(const HashTable* ht)
     {
         this->builder = vp::Builder();
-
-        if(HT_IS_PACKED(ht) && HT_IS_WITHOUT_HOLES(ht)) {
-            this->builder.add(vp::Value(vp::ValueType::Array));
-            this->cast_numeric_array(ht);
-            this->builder.close();
-        } else {
-            this->builder.add(vp::Value(vp::ValueType::Object));
-            this->cast_assoc_array(ht);
-            this->builder.close();
-        }
+        ArrayToVpack::cast_array(ht, &this->builder);
     }
 
     void Request::set_vpack_from_json(const char* json)
@@ -81,112 +72,6 @@ namespace arangodb { namespace fuerte { namespace php {
         request->addVPack(this->builder.slice());
 
         return request;
-    }
-
-    void Request::cast_assoc_array(const HashTable* ht)
-    {
-        zend_string* key;
-        zval* data;
-        zend_ulong index;
-
-        char numberBuffer[20];
-        char* vpackKey;
-
-        ZEND_HASH_FOREACH_KEY_VAL_IND(ht, index, key, data) {
-
-            if(key) {
-                vpackKey = ZSTR_VAL(key);
-            } else {
-                snprintf(numberBuffer, sizeof(numberBuffer), "%d", index);
-                vpackKey = numberBuffer;
-            }
-
-            switch(Z_TYPE_P(data)) {
-                case IS_LONG:
-                    this->builder.add(vpackKey, vp::Value(Z_LVAL_P(data)));
-                    break;
-                case IS_STRING:
-                    this->builder.add(vpackKey, vp::Value(Z_STRVAL_P(data)));
-                    break;
-                case IS_DOUBLE:
-                    this->builder.add(vpackKey, vp::Value(Z_DVAL_P(data)));
-                    break;
-                case IS_TRUE:
-                    this->builder.add(vpackKey, vp::Value(true));
-                    break;
-                case IS_FALSE:
-                    this->builder.add(vpackKey, vp::Value(false));
-                    break;
-                case IS_NULL:
-                    this->builder.add(vpackKey, vp::Value(vp::ValueType::Null));
-                    break;
-                case IS_ARRAY:
-                    if(HT_IS_PACKED(Z_ARRVAL_P(data)) && HT_IS_WITHOUT_HOLES(Z_ARRVAL_P(data))) {
-                        this->builder.add(vpackKey, vp::Value(vp::ValueType::Array));
-                        this->cast_numeric_array(Z_ARRVAL_P(data));
-                        this->builder.close();
-                    } else {
-                        this->builder.add(vpackKey, vp::Value(vp::ValueType::Object));
-                        this->cast_assoc_array(Z_ARRVAL_P(data));
-                        this->builder.close();
-                    }
-                    break;
-                case IS_OBJECT: //for now objects will just result in an empty json object
-                    this->builder.add(vpackKey, vp::Value(vp::ValueType::Object));
-                    this->builder.close();
-                    break;
-                default:
-                    break;
-            }
-
-        } ZEND_HASH_FOREACH_END();
-    }
-
-    void Request::cast_numeric_array(const HashTable* ht)
-    {
-        zval* data;
-
-        ZEND_HASH_FOREACH_VAL(ht, data) {
-
-            switch(Z_TYPE_P(data)) {
-                case IS_LONG:
-                    this->builder.add(vp::Value(Z_LVAL_P(data)));
-                    break;
-                case IS_STRING:
-                    this->builder.add(vp::Value(Z_STRVAL_P(data)));
-                    break;
-                case IS_DOUBLE:
-                    this->builder.add(vp::Value(Z_DVAL_P(data)));
-                    break;
-                case IS_TRUE:
-                    this->builder.add(vp::Value(true));
-                    break;
-                case IS_FALSE:
-                    this->builder.add(vp::Value(false));
-                    break;
-                case IS_NULL:
-                    this->builder.add(vp::Value(vp::ValueType::Null));
-                    break;
-                case IS_ARRAY:
-                    if(HT_IS_PACKED(Z_ARRVAL_P(data)) && HT_IS_WITHOUT_HOLES(Z_ARRVAL_P(data))) {
-                        this->builder.add(vp::Value(vp::ValueType::Array));
-                        this->cast_numeric_array(Z_ARRVAL_P(data));
-                        this->builder.close();
-                    } else {
-                        this->builder.add(vp::Value(vp::ValueType::Object));
-                        this->cast_assoc_array(Z_ARRVAL_P(data));
-                        this->builder.close();
-                    }
-                    break;
-                case IS_OBJECT:
-                    this->builder.add(vp::Value(vp::ValueType::Object));
-                    this->builder.close();
-                    break;
-                default:
-                    break;
-           }
-
-        } ZEND_HASH_FOREACH_END();
     }
 
 }}}

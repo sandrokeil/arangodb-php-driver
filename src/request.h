@@ -4,7 +4,7 @@ extern "C" {
 #include <php.h>
 }
 
-#include <iostream>
+#include "array_to_vpack.h"
 
 #include <velocypack/vpack.h>
 #include <fuerte/fuerte.h>
@@ -22,9 +22,6 @@ namespace arangodb { namespace fuerte { namespace php {
         std::string path;
         vp::Builder builder;
         std::map<std::string, std::string> query_params;
-
-        void cast_assoc_array(const HashTable* ht);
-        void cast_numeric_array(const HashTable* ht);
 
     public:
         zend_object std;

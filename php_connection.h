@@ -50,7 +50,36 @@ namespace {
 
         object_init_ex(&object, response_ce);
         auto response = Z_OBJECT_RESPONSE(Z_OBJ(object));
+        new (response) arangodb::fuerte::php::Response(*fuerte_response);
 
+        RETURN_ZVAL(&object, 1, 0);
+    }
+
+    PHP_METHOD(Connection, post)
+    {
+        zval object;
+        const char* path;
+        size_t path_length;
+        zval* vpack_value;
+        zval* query_params = NULL;
+
+        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz|a", &path, &path_length, &vpack_value, &query_params) == FAILURE) {
+            return;
+        }
+
+        auto intern = Z_OBJECT_CONNECTION_P(getThis());
+        std::unique_ptr<fu::Response> fuerte_response;
+
+        if(Z_TYPE_P(vpack_value) == IS_STRING) {
+            fuerte_response = intern->send(2, path, Z_STRVAL_P(vpack_value), query_params ? Z_ARRVAL_P(query_params) : NULL);
+        } else if(Z_TYPE_P(vpack_value) == IS_ARRAY) {
+            fuerte_response = intern->send(2, path, Z_ARRVAL_P(vpack_value), query_params ? Z_ARRVAL_P(query_params) : NULL);
+        } else {
+            //@todo exception
+        }
+
+        object_init_ex(&object, response_ce);
+        auto response = Z_OBJECT_RESPONSE(Z_OBJ(object));
         new (response) arangodb::fuerte::php::Response(*fuerte_response);
 
         RETURN_ZVAL(&object, 1, 0);
@@ -68,10 +97,17 @@ namespace {
         ZEND_ARG_INFO(0, request)
     ZEND_END_ARG_INFO()
 
+    ZEND_BEGIN_ARG_INFO_EX(arangodb_connection_method_x, 0, 0, 3)
+        ZEND_ARG_INFO(0, path)
+        ZEND_ARG_INFO(0, vpackValue)
+        ZEND_ARG_INFO(0, queryParams)
+    ZEND_END_ARG_INFO()
+
     zend_function_entry connection_methods[] = {
         PHP_ME(Connection, __construct, arangodb_connection_construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
         PHP_ME(Connection, connect, arangodb_connection_void, ZEND_ACC_PUBLIC)
         PHP_ME(Connection, send, arangodb_connection_send, ZEND_ACC_PUBLIC)
+        PHP_ME(Connection, post, arangodb_connection_method_x, ZEND_ACC_PUBLIC)
         PHP_FE_END
     };
 

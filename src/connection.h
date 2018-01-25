@@ -51,6 +51,9 @@ namespace arangodb { namespace fuerte { namespace php {
         void connect();
         std::unique_ptr<fu::Response> send_request(Request* request);
 
+        std::unique_ptr<fu::Response> send(int http_method, const char* path, const HashTable* vpack_value, const HashTable* query_params);
+        std::unique_ptr<fu::Response> send(int http_method, const char* path, const char* vpack_value, const HashTable* query_params);
+
     private:
         fu::ConnectionBuilder create_connection_builder();
         int option_string_key_to_int_key(const char* string_key);
