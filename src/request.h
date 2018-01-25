@@ -4,8 +4,6 @@ extern "C" {
 #include <php.h>
 }
 
-#include "vpack.h"
-
 #include <iostream>
 
 #include <velocypack/vpack.h>
@@ -25,6 +23,9 @@ namespace arangodb { namespace fuerte { namespace php {
         vp::Builder builder;
         std::map<std::string, std::string> query_params;
 
+        void cast_assoc_array(const HashTable* ht);
+        void cast_numeric_array(const HashTable* ht);
+
     public:
         zend_object std;
 
@@ -34,7 +35,8 @@ namespace arangodb { namespace fuerte { namespace php {
 
         void set_http_method(int http_method);
         void set_path(const std::string& path);
-        void set_vpack(const Vpack* vpack);
+        void set_vpack_from_array(const HashTable* ht);
+        void set_vpack_from_json(const char* json);
         void set_query_params(HashTable* query_params);
 
         std::unique_ptr<fu::Request> get_fuerte_request();

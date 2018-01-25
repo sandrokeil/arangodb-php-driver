@@ -19,6 +19,8 @@ namespace arangodb { namespace fuerte { namespace php {
         //@todo find out if it's worth using a std::unique_ptr<fu::Response> here
         fu::Response response;
 
+        void return_slice_to_php_value(zval* return_value, const vp::Slice& slice);
+
     public:
         zend_object std;
 
@@ -30,6 +32,9 @@ namespace arangodb { namespace fuerte { namespace php {
         int get_http_code();
         void return_body(zval* return_value);
         fu::Response* get_fuerte_response();
+
+        void get(zval* return_value, HashTable* accessor);
+        void get(zval* return_value, const char* accessor);
     };
 
 }}}

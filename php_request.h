@@ -18,13 +18,13 @@ namespace {
         zend_long method;
         const char* path;
         size_t path_length;
-        zval* vpack;
+        zval* vpack_value;
         zval* query_params = NULL;
 
-        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsO|a",
+        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsz|a",
             &method,
             &path, &path_length,
-            &vpack, vpack_ce,
+            &vpack_value,
             &query_params) == FAILURE
         ) {
             return;
@@ -35,7 +35,14 @@ namespace {
 
         intern->set_http_method(method);
         intern->set_path(std::string(path, path_length));
-        intern->set_vpack(Z_OBJECT_VPACK_P(vpack));
+
+        if(Z_TYPE_P(vpack_value) == IS_STRING) {
+            intern->set_vpack_from_json(Z_STRVAL_P(vpack_value));
+        } else if(Z_TYPE_P(vpack_value) == IS_ARRAY) {
+            intern->set_vpack_from_array(Z_ARRVAL_P(vpack_value));
+        } else {
+            //@todo exception
+        }
 
         if(query_params != NULL) {
             intern->set_query_params(Z_ARRVAL_P(query_params));

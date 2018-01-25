@@ -32,21 +32,27 @@ namespace {
         intern->return_body(return_value);
     }
 
-    PHP_METHOD(Response, getVpack)
+    PHP_METHOD(Response, get)
     {
-        zval vpack_object;
+        zval *accessor;
+        HashTable *accessor_ht;
+        const char* accessor_string;
 
-        if(zend_parse_parameters_none() == FAILURE) {
+        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &accessor) == FAILURE) {
             return;
         }
 
         auto intern = Z_OBJECT_RESPONSE_P(getThis());
 
-        object_init_ex(&vpack_object, vpack_ce);
-        auto vpack = Z_OBJECT_VPACK(Z_OBJ(vpack_object));
-        vpack->from_slice(intern->get_fuerte_response()->slices().front());
-
-        RETURN_ZVAL(&vpack_object, 1, 0)
+        if(Z_TYPE_P(accessor) == IS_STRING) {
+            accessor_string = Z_STRVAL_P(accessor);
+            intern->get(return_value, accessor_string);
+        } else if(Z_TYPE_P(accessor) == IS_ARRAY) {
+            accessor_ht = Z_ARRVAL_P(accessor);
+            intern->get(return_value, accessor_ht);
+        } else {
+            //@todo exception
+        }
     }
 
     ZEND_BEGIN_ARG_INFO_EX(arangodb_response_void, 0, 0, 0)
@@ -55,7 +61,7 @@ namespace {
     zend_function_entry response_methods[] = {
         PHP_ME(Response, getHttpCode, arangodb_response_void, ZEND_ACC_PUBLIC)
         PHP_ME(Response, getBody, arangodb_response_void, ZEND_ACC_PUBLIC)
-        PHP_ME(Response, getVpack, arangodb_response_void, ZEND_ACC_PUBLIC)
+        PHP_ME(Response, get, arangodb_response_void, ZEND_ACC_PUBLIC)
         PHP_FE_END
     };
 
