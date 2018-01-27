@@ -134,17 +134,62 @@ namespace arangodb { namespace fuerte { namespace php {
     {
         vp::Builder builder;
         ArrayToVpack::cast_array(vpack_value, &builder);
+        std::unique_ptr<fu::Request> request;
 
-        //@todo add query param support
-        auto request = fu::createRequest(static_cast<fu::RestVerb>(http_method), path);
+        if(query_params != NULL) {
+            zend_string* key;
+            zval* data;
+            auto query_params_map = std::map<std::string, std::string>();
+
+            ZEND_HASH_FOREACH_STR_KEY_VAL(query_params, key, data) {
+                query_params_map[ZSTR_VAL(key)] = Z_STRVAL_P(data);
+            } ZEND_HASH_FOREACH_END();
+
+            request = fu::createRequest(static_cast<fu::RestVerb>(http_method), path, query_params_map);
+        } else {
+            request = fu::createRequest(static_cast<fu::RestVerb>(http_method), path);
+
+        }
+
         request->addVPack(builder.slice());
-
         return this->connection->sendRequest(std::move(request));
     }
 
     std::unique_ptr<fu::Response> Connection::send(int http_method, const char* path, const char* vpack_value, const HashTable* query_params)
     {
-        //@todo add the version for the vpack_value provided as json
+        std::unique_ptr<fu::Request> request;
+        vp::Builder builder;
+        vp::Parser parser;
+
+        try {
+            parser.parse(vpack_value);
+        }
+        catch(std::bad_alloc const &e) {
+            /* @todo add exception */
+        }
+        catch(vp::Exception const &e) {
+            /* @todo add exception */
+        }
+
+        builder = *parser.steal();
+
+        if(query_params != NULL) {
+            zend_string* key;
+            zval* data;
+            auto query_params_map = std::map<std::string, std::string>();
+
+            ZEND_HASH_FOREACH_STR_KEY_VAL(query_params, key, data) {
+                query_params_map[ZSTR_VAL(key)] = Z_STRVAL_P(data);
+            } ZEND_HASH_FOREACH_END();
+
+            request = fu::createRequest(static_cast<fu::RestVerb>(http_method), path, query_params_map);
+        } else {
+            request = fu::createRequest(static_cast<fu::RestVerb>(http_method), path);
+
+        }
+
+        request->addVPack(builder.slice());
+        return this->connection->sendRequest(std::move(request));
     }
 
 }}}

@@ -55,34 +55,68 @@ namespace {
         RETURN_ZVAL(&object, 1, 0);
     }
 
+
+    #define PHP_CONNECTION_METHOD_X(http_method)                                                                                        \
+        zval object;                                                                                                                    \
+        const char* path;                                                                                                               \
+        size_t path_length;                                                                                                             \
+        zval* vpack_value;                                                                                                              \
+        zval* query_params = NULL;                                                                                                      \
+                                                                                                                                        \
+        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz|a", &path, &path_length, &vpack_value, &query_params) == FAILURE) {     \
+            return;                                                                                                                     \
+        }                                                                                                                               \
+                                                                                                                                        \
+        auto intern = Z_OBJECT_CONNECTION_P(getThis());                                                                                 \
+        std::unique_ptr<fu::Response> fuerte_response;                                                                                  \
+                                                                                                                                        \
+        if(Z_TYPE_P(vpack_value) == IS_STRING) {                                                                                        \
+            fuerte_response = intern->send(http_method, path, Z_STRVAL_P(vpack_value), query_params ? Z_ARRVAL_P(query_params) : NULL); \
+        } else if(Z_TYPE_P(vpack_value) == IS_ARRAY) {                                                                                  \
+            fuerte_response = intern->send(http_method, path, Z_ARRVAL_P(vpack_value), query_params ? Z_ARRVAL_P(query_params) : NULL); \
+        } else {                                                                                                                        \
+            /* @todo exception */                                                                                                       \
+        }                                                                                                                               \
+                                                                                                                                        \
+        object_init_ex(&object, response_ce);                                                                                           \
+        auto response = Z_OBJECT_RESPONSE(Z_OBJ(object));                                                                               \
+        new (response) arangodb::fuerte::php::Response(*fuerte_response);                                                               \
+                                                                                                                                        \
+        RETURN_ZVAL(&object, 1, 0);
+
+    ZEND_NAMED_FUNCTION(zim_Connection_delete)
+    {
+        PHP_CONNECTION_METHOD_X(0)
+    }
+
+    PHP_METHOD(Connection, get)
+    {
+        PHP_CONNECTION_METHOD_X(1)
+    }
+
     PHP_METHOD(Connection, post)
     {
-        zval object;
-        const char* path;
-        size_t path_length;
-        zval* vpack_value;
-        zval* query_params = NULL;
+        PHP_CONNECTION_METHOD_X(2)
+    }
 
-        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz|a", &path, &path_length, &vpack_value, &query_params) == FAILURE) {
-            return;
-        }
+    PHP_METHOD(Connection, put)
+    {
+        PHP_CONNECTION_METHOD_X(3)
+    }
 
-        auto intern = Z_OBJECT_CONNECTION_P(getThis());
-        std::unique_ptr<fu::Response> fuerte_response;
+    PHP_METHOD(Connection, head)
+    {
+        PHP_CONNECTION_METHOD_X(4)
+    }
 
-        if(Z_TYPE_P(vpack_value) == IS_STRING) {
-            fuerte_response = intern->send(2, path, Z_STRVAL_P(vpack_value), query_params ? Z_ARRVAL_P(query_params) : NULL);
-        } else if(Z_TYPE_P(vpack_value) == IS_ARRAY) {
-            fuerte_response = intern->send(2, path, Z_ARRVAL_P(vpack_value), query_params ? Z_ARRVAL_P(query_params) : NULL);
-        } else {
-            //@todo exception
-        }
+    PHP_METHOD(Connection, patch)
+    {
+        PHP_CONNECTION_METHOD_X(5)
+    }
 
-        object_init_ex(&object, response_ce);
-        auto response = Z_OBJECT_RESPONSE(Z_OBJ(object));
-        new (response) arangodb::fuerte::php::Response(*fuerte_response);
-
-        RETURN_ZVAL(&object, 1, 0);
+    PHP_METHOD(Connection, options)
+    {
+        PHP_CONNECTION_METHOD_X(6)
     }
 
 
@@ -107,7 +141,13 @@ namespace {
         PHP_ME(Connection, __construct, arangodb_connection_construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
         PHP_ME(Connection, connect, arangodb_connection_void, ZEND_ACC_PUBLIC)
         PHP_ME(Connection, send, arangodb_connection_send, ZEND_ACC_PUBLIC)
+        ZEND_RAW_FENTRY("delete", zim_Connection_delete, arangodb_connection_method_x, ZEND_ACC_PUBLIC)
+        PHP_ME(Connection, get, arangodb_connection_method_x, ZEND_ACC_PUBLIC)
         PHP_ME(Connection, post, arangodb_connection_method_x, ZEND_ACC_PUBLIC)
+        PHP_ME(Connection, put, arangodb_connection_method_x, ZEND_ACC_PUBLIC)
+        PHP_ME(Connection, head, arangodb_connection_method_x, ZEND_ACC_PUBLIC)
+        PHP_ME(Connection, patch, arangodb_connection_method_x, ZEND_ACC_PUBLIC)
+        PHP_ME(Connection, options, arangodb_connection_method_x, ZEND_ACC_PUBLIC)
         PHP_FE_END
     };
 
