@@ -3,6 +3,7 @@
 #include "php_request.h"
 #include "php_connection.h"
 #include "php_response.h"
+#include "php_cursor.h"
 
 
 PHP_MINIT_FUNCTION(arangodb)
@@ -10,6 +11,7 @@ PHP_MINIT_FUNCTION(arangodb)
     init_arangodb_request_ce();
     init_arangodb_connection_ce();
     init_arangodb_response_ce();
+    init_arangodb_cursor_ce();
 
     return SUCCESS;
 }

@@ -6,6 +6,7 @@ extern "C" {
 
 #include "src/connection.h"
 #include "php_response.h"
+#include "php_cursor.h"
 
 namespace {
     zend_class_entry *connection_ce;
@@ -119,6 +120,34 @@ namespace {
         PHP_CONNECTION_METHOD_X(6)
     }
 
+    PHP_METHOD(Connection, query)
+    {
+        zval cursor_object;
+        zval* vpack_value;
+        zval* cursor_options = NULL;
+
+        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|a", &vpack_value, &cursor_options) == FAILURE) {
+            return;
+        }
+
+        auto intern = Z_OBJECT_CONNECTION_P(getThis());
+        std::unique_ptr<fu::Response> fuerte_response;
+
+        if(Z_TYPE_P(vpack_value) == IS_STRING) {
+            fuerte_response = intern->send(2, "/_api/cursor", Z_STRVAL_P(vpack_value), NULL);
+        } else if(Z_TYPE_P(vpack_value) == IS_ARRAY) {
+            fuerte_response = intern->send(2, "/_api/cursor", Z_ARRVAL_P(vpack_value), NULL);
+        } else {
+            /* @todo exception */
+        }
+
+        object_init_ex(&cursor_object, cursor_ce);
+        auto cursor = Z_OBJECT_CURSOR(Z_OBJ(cursor_object));
+        new (cursor) arangodb::fuerte::php::Cursor(intern, std::move(fuerte_response));
+
+        RETURN_ZVAL(&cursor_object, 1, 0)
+    }
+
 
     ZEND_BEGIN_ARG_INFO_EX(arangodb_connection_construct, 0, 0, 1)
         ZEND_ARG_INFO(0, options)
@@ -137,6 +166,11 @@ namespace {
         ZEND_ARG_INFO(0, queryParams)
     ZEND_END_ARG_INFO()
 
+    ZEND_BEGIN_ARG_INFO_EX(arangodb_connection_query, 0, 0, 2)
+        ZEND_ARG_INFO(0, vpackValue)
+        ZEND_ARG_INFO(0, cursorOptions)
+    ZEND_END_ARG_INFO()
+
     zend_function_entry connection_methods[] = {
         PHP_ME(Connection, __construct, arangodb_connection_construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
         PHP_ME(Connection, connect, arangodb_connection_void, ZEND_ACC_PUBLIC)
@@ -148,6 +182,7 @@ namespace {
         PHP_ME(Connection, head, arangodb_connection_method_x, ZEND_ACC_PUBLIC)
         PHP_ME(Connection, patch, arangodb_connection_method_x, ZEND_ACC_PUBLIC)
         PHP_ME(Connection, options, arangodb_connection_method_x, ZEND_ACC_PUBLIC)
+        PHP_ME(Connection, query, arangodb_connection_query, ZEND_ACC_PUBLIC)
         PHP_FE_END
     };
 
