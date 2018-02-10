@@ -9,8 +9,7 @@ $collection = 'testCollection';
 
 $request = new ArangoDb\Request(
     ArangoDb\Request::METHOD_POST,
-    '/_api/index',
-    ArangoDb\Vpack::fromArray([
+    '/_api/index', [
         'type' => 'hash',
         'fields' => [
             'real_stream_name',
@@ -18,8 +17,9 @@ $request = new ArangoDb\Request(
         'selectivityEstimate' => 1,
         'unique' => true,
         'sparse' => false,
-    ]),
-    ['collection' => $collection]
+    ], [
+        'collection' => $collection
+    ]
 );
 
 echo (new ReflectionObject($request))->getName();

@@ -7,10 +7,9 @@ Test creating a simple request without the optional query_params
 
 $request = new ArangoDb\Request(
     ArangoDb\Request::METHOD_POST,
-    '/_api/collection',
-    ArangoDb\Vpack::fromArray([
+    '/_api/collection', [
         'name' => 'event_streams',
-    ])
+    ]
 );
 
 echo (new ReflectionObject($request))->getName();
