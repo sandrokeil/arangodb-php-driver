@@ -25,6 +25,7 @@ namespace arangodb { namespace fuerte { namespace php {
 
         int position = 0;
         int batch_size;
+        int batch_count;
         bool has_more;
         zval current_value;
 
@@ -46,6 +47,7 @@ namespace arangodb { namespace fuerte { namespace php {
         zval* current();
         int key();
         void move_forward();
+        int count();
     };
 
 }}}

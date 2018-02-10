@@ -14,16 +14,21 @@ namespace {
     #define Z_OBJECT_CURSOR_P(zo) (arangodb::fuerte::php::Cursor::fetch_object(Z_OBJ_P(zo)))
 
 
-    PHP_METHOD(Cursor, __construct)
+    PHP_METHOD(Cursor, count)
     {
+        if(zend_parse_parameters_none() == FAILURE) {
+            return;
+        }
 
+        auto intern = Z_OBJECT_CURSOR_P(getThis());
+        RETURN_LONG(intern->count());
     }
 
     ZEND_BEGIN_ARG_INFO_EX(arangodb_cursor_void, 0, 0, 0)
     ZEND_END_ARG_INFO()
 
     zend_function_entry cursor_methods[] = {
-        PHP_ME(Cursor, __construct, arangodb_cursor_void, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+        PHP_ME(Cursor, count, arangodb_cursor_void, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
         PHP_FE_END
     };
 

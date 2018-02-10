@@ -28,7 +28,15 @@ namespace arangodb { namespace fuerte { namespace php {
     {
         this->has_more = this->response->slices().front().get("hasMore").getBool();
         this->batch_size = this->response->slices().front().get("result").length();
-        this->id = this->response->slices().front().get("id").copyString();
+
+        if(this->has_more) {
+            this->id = this->response->slices().front().get("id").copyString();
+        }
+
+        this->batch_count = this->batch_size;
+        if(this->response->slices().front().hasKey("count")) {
+            this->batch_count = this->response->slices().front().get("count").getInt();
+        }
     }
 
 
@@ -106,11 +114,21 @@ namespace arangodb { namespace fuerte { namespace php {
         this->position++;
     }
 
+    int Cursor::count()
+    {
+        return this->batch_count;
+    }
+
     void Cursor::load_more()
     {
         this->response = this->connection->send(3, std::string("/_api/cursor/" + this->id).c_str(), "{}", NULL);
         this->has_more = this->response->slices().front().get("hasMore").getBool();
         this->batch_size = this->response->slices().front().get("result").length();
+
+        this->batch_count = this->batch_size;
+        if(this->response->slices().front().hasKey("count")) {
+            this->batch_count = this->response->slices().front().get("count").getInt();
+        }
     }
 
 }}}
