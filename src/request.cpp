@@ -33,7 +33,7 @@ namespace arangodb { namespace fuerte { namespace php {
     void Request::set_vpack_from_array(const HashTable* ht)
     {
         this->builder = vp::Builder();
-        ArrayToVpack::cast_array(ht, &this->builder);
+        VpackConversion::array_to_vpack(ht, &this->builder);
     }
 
     void Request::set_vpack_from_json(const char* json)

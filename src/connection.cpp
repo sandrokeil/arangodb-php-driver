@@ -133,7 +133,7 @@ namespace arangodb { namespace fuerte { namespace php {
     std::unique_ptr<fu::Response> Connection::send(int http_method, const char* path, const HashTable* vpack_value, const HashTable* query_params)
     {
         vp::Builder builder;
-        ArrayToVpack::cast_array(vpack_value, &builder);
+        VpackConversion::array_to_vpack(vpack_value, &builder);
         std::unique_ptr<fu::Request> request;
 
         if(query_params != NULL) {
