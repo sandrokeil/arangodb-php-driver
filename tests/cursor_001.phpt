@@ -14,7 +14,7 @@ $connection->connect();
 $cursor = $connection->query([
     'query' => 'FOR i IN 1..15 RETURN [i, i+1]',
     'batchSize' => 5
-], []);
+]);
 
 foreach($cursor as $key => $val) {
     var_dump($key);

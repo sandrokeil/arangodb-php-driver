@@ -40,6 +40,16 @@ namespace arangodb { namespace fuerte { namespace php {
     }
 
 
+    void Cursor::set_option(int option, int value)
+    {
+        if(this->options.size() <= option) {
+            //@todo exception
+        }
+
+        this->options[option] = value;
+    }
+
+
     zend_object_iterator* Cursor::get_iterator(zend_class_entry *ce, zval *object, int by_ref TSRMLS_DC)
     {
         CursorIterator* cursor_it = NULL;
@@ -87,20 +97,27 @@ namespace arangodb { namespace fuerte { namespace php {
 
     zval* Cursor::current()
     {
-        std::string body;
+        if(this->options[Cursor::ENTRY_TYPE] == Cursor::ENTRY_TYPE_JSON) {
+            std::string body;
 
-        try {
-            vp::Slice slice = this->response->slices().front().get("result").at(this->position);
-            vp::Options dumperOptions;
+            try {
+                vp::Slice slice = this->response->slices().front().get("result").at(this->position);
+                vp::Options dumperOptions;
 
-            vp::StringSink sink(&body);
-            vp::Dumper dumper(&sink, &dumperOptions);
-            dumper.dump(slice);
-        } catch(vp::Exception const& e) {
-            //@todo exception
+                vp::StringSink sink(&body);
+                vp::Dumper dumper(&sink, &dumperOptions);
+                dumper.dump(slice);
+            } catch(vp::Exception const& e) {
+                //@todo exception
+            }
+
+            ZVAL_STRINGL(&this->current_value, body.c_str(), body.size());
+
+        } else if(this->options[Cursor::ENTRY_TYPE] == Cursor::ENTRY_TYPE_ARRAY) {
+            auto slice = this->response->slices().front().get("result").at(this->position);
+            VpackConversion::vpack_to_array(&slice, &this->current_value);
         }
 
-        ZVAL_STRINGL(&this->current_value, body.c_str(), body.size());
         return &this->current_value;
     }
 

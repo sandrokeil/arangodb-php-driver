@@ -145,6 +145,14 @@ namespace {
         auto cursor = Z_OBJECT_CURSOR(Z_OBJ(cursor_object));
         new (cursor) arangodb::fuerte::php::Cursor(intern, std::move(fuerte_response));
 
+        if(cursor_options) {
+            long key;
+            zval* data;
+            ZEND_HASH_FOREACH_NUM_KEY_VAL(Z_ARRVAL_P(cursor_options), key, data) {
+                cursor->set_option(key, Z_LVAL_P(data));
+            } ZEND_HASH_FOREACH_END();
+        }
+
         RETURN_ZVAL(&cursor_object, 1, 0)
     }
 

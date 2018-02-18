@@ -17,11 +17,17 @@ namespace arangodb { namespace fuerte { namespace php {
 
     class Cursor
     {
+    public:
+        static const int ENTRY_TYPE = 0;
+        static const int ENTRY_TYPE_JSON = 100;
+        static const int ENTRY_TYPE_ARRAY = 101;
+
     private:
-        //fu::Response response;
         std::unique_ptr<fu::Response> response;
         Connection* connection;
         std::string id;
+
+        std::vector<int> options = { Cursor::ENTRY_TYPE_JSON };
 
         int position = 0;
         int batch_size;
@@ -42,6 +48,8 @@ namespace arangodb { namespace fuerte { namespace php {
         static void free_current(Cursor* cursor);
 
         Cursor(Connection* connection, std::unique_ptr<fu::Response> response);
+
+        void set_option(int option, int value);
 
         bool valid();
         zval* current();

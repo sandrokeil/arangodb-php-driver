@@ -41,6 +41,13 @@ namespace {
         cursor_ce->create_object = arangodb::fuerte::php::Cursor::create_object;
         cursor_ce->get_iterator = arangodb::fuerte::php::Cursor::get_iterator;
 
+        zend_declare_class_constant_long(cursor_ce, "ENTRY_TYPE", sizeof("ENTRY_TYPE") - 1,
+            arangodb::fuerte::php::Cursor::ENTRY_TYPE TSRMLS_CC);
+        zend_declare_class_constant_long(cursor_ce, "ENTRY_TYPE_JSON", sizeof("ENTRY_TYPE_JSON") - 1,
+            arangodb::fuerte::php::Cursor::ENTRY_TYPE_JSON TSRMLS_CC);
+        zend_declare_class_constant_long(cursor_ce, "ENTRY_TYPE_ARRAY", sizeof("ENTRY_TYPE_ARRAY") - 1,
+            arangodb::fuerte::php::Cursor::ENTRY_TYPE_ARRAY TSRMLS_CC);
+
         memcpy(&arangodb::fuerte::php::Cursor::handler_cursor, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
         arangodb::fuerte::php::Cursor::handler_cursor.offset = XtOffsetOf(arangodb::fuerte::php::Cursor, std);
 
