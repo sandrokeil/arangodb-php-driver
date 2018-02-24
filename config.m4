@@ -57,5 +57,5 @@ if test $PHP_ARANGODB != "no"; then
     PHP_ADD_LIBRARY(curl, 1, ARANGODB_SHARED_LIBADD)
     PHP_ADD_LIBRARY(boost_system, 1, ARANGODB_SHARED_LIBADD)
     PHP_ADD_LIBRARY($BOOST_THREAD, 1, ARANGODB_SHARED_LIBADD)
-    PHP_NEW_EXTENSION(arangodb, php_arangodb.cpp src/request.cpp src/connection.cpp src/response.cpp src/cursor.cpp src/cursor_iterator.cpp src/array_to_vpack.cpp, $ext_shared)
+    PHP_NEW_EXTENSION(arangodb, php_arangodb.cpp src/request.cpp src/connection.cpp src/response.cpp src/cursor.cpp src/cursor_iterator.cpp src/vpack_conversion.cpp, $ext_shared)
 fi

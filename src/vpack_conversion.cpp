@@ -1,4 +1,4 @@
-#include "array_to_vpack.h"
+#include "vpack_conversion.h"
 
 namespace arangodb { namespace fuerte { namespace php {
 

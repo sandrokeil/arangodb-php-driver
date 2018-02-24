@@ -4,7 +4,7 @@ extern "C" {
 #include <php.h>
 }
 
-#include "array_to_vpack.h"
+#include "vpack_conversion.h"
 
 #include <velocypack/vpack.h>
 #include <fuerte/fuerte.h>
