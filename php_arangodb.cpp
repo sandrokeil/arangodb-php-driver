@@ -1,6 +1,7 @@
 #include "php_arangodb.h"
 
 #include "php_arangodb_classes.h"
+#include "php_exception.h"
 #include "php_request.h"
 #include "php_connection.h"
 #include "php_response.h"
@@ -13,6 +14,7 @@ PHP_MINIT_FUNCTION(arangodb)
     init_arangodb_connection_ce();
     init_arangodb_response_ce();
     init_arangodb_cursor_ce();
+    init_custom_exceptions();
 
     return SUCCESS;
 }

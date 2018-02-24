@@ -71,7 +71,8 @@ namespace {
         } else if(Z_TYPE_P(vpack_value) == IS_ARRAY) {                                                                                  \
             fuerte_response = intern->send(http_method, path, Z_ARRVAL_P(vpack_value), query_params ? Z_ARRVAL_P(query_params) : NULL); \
         } else {                                                                                                                        \
-            /* @todo exception */                                                                                                       \
+            ARANGODB_THROW_CE(invalid_argument_exception_ce, 0, "Vpack must be of type string (JSON) or array in %s on line %d");       \
+            return;                                                                                                                     \
         }                                                                                                                               \
                                                                                                                                         \
         object_init_ex(&object, response_ce);                                                                                           \
