@@ -7,10 +7,6 @@ extern "C" {
 #include "src/response.h"
 
 namespace {
-    zend_class_entry *response_ce;
-
-    #define Z_OBJECT_RESPONSE(zo) (arangodb::fuerte::php::Response::fetch_object(zo))
-    #define Z_OBJECT_RESPONSE_P(zo) (arangodb::fuerte::php::Response::fetch_object(Z_OBJ_P(zo)))
 
     PHP_METHOD(Response, getHttpCode)
     {

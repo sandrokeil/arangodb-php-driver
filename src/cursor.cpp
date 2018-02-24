@@ -1,6 +1,6 @@
 #include "cursor.h"
 #include "cursor_iterator.h"
-#include "php_cursor.h"
+#include "php_arangodb_classes.h"
 
 namespace arangodb { namespace fuerte { namespace php {
 

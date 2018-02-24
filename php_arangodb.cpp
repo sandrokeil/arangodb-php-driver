@@ -1,5 +1,6 @@
 #include "php_arangodb.h"
 
+#include "php_arangodb_classes.h"
 #include "php_request.h"
 #include "php_connection.h"
 #include "php_response.h"

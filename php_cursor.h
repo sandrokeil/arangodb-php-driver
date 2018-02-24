@@ -8,11 +8,6 @@ extern "C" {
 #include "src/cursor.h"
 
 namespace {
-    zend_class_entry *cursor_ce;
-
-    #define Z_OBJECT_CURSOR(zo) (arangodb::fuerte::php::Cursor::fetch_object(zo))
-    #define Z_OBJECT_CURSOR_P(zo) (arangodb::fuerte::php::Cursor::fetch_object(Z_OBJ_P(zo)))
-
 
     PHP_METHOD(Cursor, count)
     {

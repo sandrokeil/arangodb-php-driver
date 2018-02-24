@@ -7,11 +7,6 @@ extern "C" {
 #include "src/request.h"
 
 namespace {
-    zend_class_entry *request_ce;
-
-    #define Z_OBJECT_REQUEST(zo) (arangodb::fuerte::php::Request::fetch_object(zo))
-    #define Z_OBJECT_REQUEST_P(zo) (arangodb::fuerte::php::Request::fetch_object(Z_OBJ_P(zo)))
-
 
     PHP_METHOD(Request, __construct)
     {

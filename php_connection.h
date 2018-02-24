@@ -9,11 +9,6 @@ extern "C" {
 #include "php_cursor.h"
 
 namespace {
-    zend_class_entry *connection_ce;
-
-    #define Z_OBJECT_CONNECTION(zo) (arangodb::fuerte::php::Connection::fetch_object(zo))
-    #define Z_OBJECT_CONNECTION_P(zo) (arangodb::fuerte::php::Connection::fetch_object(Z_OBJ_P(zo)))
-
 
     PHP_METHOD(Connection, __construct)
     {
