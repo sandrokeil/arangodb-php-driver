@@ -44,10 +44,12 @@ namespace arangodb { namespace fuerte { namespace php {
             parser.parse(json);
         }
         catch(std::bad_alloc const &e) {
-            /* @todo add exception */
+            ARANGODB_THROW_CE(runtime_exception_ce, 0, "Out of memory in %s on line %d");
+            return;
         }
         catch(vp::Exception const &e) {
-            /* @todo add exception */
+            ARANGODB_THROW_CE(runtime_exception_ce, 0, e.what());
+            return;
         }
 
         this->builder = *parser.steal();

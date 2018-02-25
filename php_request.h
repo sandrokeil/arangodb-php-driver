@@ -36,7 +36,8 @@ namespace {
         } else if(Z_TYPE_P(vpack_value) == IS_ARRAY) {
             intern->set_vpack_from_array(Z_ARRVAL_P(vpack_value));
         } else {
-            //@todo exception
+            ARANGODB_THROW_CE(invalid_argument_exception_ce, 0, "Vpack must be of type string (JSON) or array in %s on line %d");
+            return;
         }
 
         if(query_params != NULL) {

@@ -5,6 +5,8 @@ extern "C" {
 }
 
 #include "vpack_conversion.h"
+#include "php_arangodb_classes.h"
+#include "php_exception.h"
 
 #include <velocypack/vpack.h>
 #include <fuerte/fuerte.h>

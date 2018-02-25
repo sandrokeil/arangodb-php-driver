@@ -47,7 +47,9 @@ namespace {
             accessor_ht = Z_ARRVAL_P(accessor);
             intern->get(return_value, accessor_ht);
         } else {
-            //@todo exception
+            ARANGODB_THROW_CE(invalid_argument_exception_ce, 0,
+                "Accessor must be of type string (top level) or array (nested values) in %s on line %d");
+            return;
         }
     }
 

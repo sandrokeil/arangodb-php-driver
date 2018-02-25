@@ -40,7 +40,8 @@ namespace arangodb { namespace fuerte { namespace php {
             vp::Dumper dumper(&sink, &dumperOptions);
             dumper.dump(slice);
         } catch(vp::Exception const& e) {
-            //@todo exception
+            ARANGODB_THROW_CE(runtime_exception_ce, 0, e.what());
+            return;
         }
 
         RETURN_STRING(body.c_str());
@@ -64,7 +65,8 @@ namespace arangodb { namespace fuerte { namespace php {
                     } else if(Z_TYPE_P(value) == IS_STRING) {
                         tmpSlice = vp::Slice(tmpSlice.get(Z_STRVAL_P(value)));
                     } else {
-                        //@todo exception
+                        ARANGODB_THROW_CE(invalid_argument_exception_ce, 0, "Accessor array may only contain strings and integers in %s on line %d");
+                        return;
                     }
 
                 } ZEND_HASH_FOREACH_END();
@@ -72,7 +74,8 @@ namespace arangodb { namespace fuerte { namespace php {
                 this->return_slice_to_php_value(return_value, tmpSlice);
             }
             catch(const vp::Exception& e) {
-                //@todo exception
+                ARANGODB_THROW_CE(runtime_exception_ce, 0, "Value not found in %s on line %d");
+                return;
             }
         }
 
@@ -82,7 +85,8 @@ namespace arangodb { namespace fuerte { namespace php {
                 this->return_slice_to_php_value(return_value, this->response.slices().front().get(accessor));
             }
             catch(const vp::Exception& e) {
-                //@todo exception
+                ARANGODB_THROW_CE(runtime_exception_ce, 0, "Value not found in %s on line %d");
+                return;
             }
         }
 
@@ -107,14 +111,14 @@ namespace arangodb { namespace fuerte { namespace php {
                     RETURN_NULL();
                     break;
 
-                /*case vp::ValueType::Array:
+                case vp::ValueType::Array:
                 case vp::ValueType::Object:
-                    return this->sliceToJson(slice);
-                    break;*/
+                    VpackConversion::vpack_to_array(&slice, return_value);
+                    break;
 
                 default:
-                    //@todo exception
-                    break;
+                    ARANGODB_THROW_CE(runtime_exception_ce, 0, "Could not convert vpack value to php value in %s on line %d");
+                    return;
             }
         }
 

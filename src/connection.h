@@ -11,6 +11,8 @@ extern "C" {
 #include <thread>
 
 #include "request.h"
+#include "php_arangodb_classes.h"
+#include "php_exception.h"
 
 namespace vp = ::arangodb::velocypack;
 namespace fu = ::arangodb::fuerte;

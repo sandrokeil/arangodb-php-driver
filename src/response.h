@@ -8,6 +8,10 @@ extern "C" {
 #include <fuerte/fuerte.h>
 #include <fuerte/types.h>
 
+#include "vpack_conversion.h"
+#include "php_arangodb_classes.h"
+#include "php_exception.h"
+
 namespace vp = ::arangodb::velocypack;
 namespace fu = ::arangodb::fuerte;
 

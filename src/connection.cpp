@@ -94,7 +94,7 @@ namespace arangodb { namespace fuerte { namespace php {
                     cbuilder.vstVersion((fu::vst::VSTVersion)Z_LVAL_P(data));;
                     break;
                 default:
-                    //@todo exception
+                    ARANGODB_THROW_CE(invalid_option_exception_ce, 0, "Unknown option provided in %s on line %d");
                     break;
             }
 
@@ -125,7 +125,8 @@ namespace arangodb { namespace fuerte { namespace php {
         } else if(strcmp(string_key, "vst_version") == 0) {
             return Connection::OPTION_VST_VERSION;
         } else {
-            //@todo exception
+            ARANGODB_THROW_CE(invalid_option_exception_ce, 0, "Unknown option provided in %s on line %d");
+            return 0;
         }
     }
 
@@ -165,10 +166,12 @@ namespace arangodb { namespace fuerte { namespace php {
             parser.parse(vpack_value);
         }
         catch(std::bad_alloc const &e) {
-            /* @todo add exception */
+            ARANGODB_THROW_CE(runtime_exception_ce, 0, "Out of memory in %s on line %d");
+            return NULL;
         }
         catch(vp::Exception const &e) {
-            /* @todo add exception */
+            ARANGODB_THROW_CE(runtime_exception_ce, 0, e.what());
+            return NULL;
         }
 
         builder = *parser.steal();

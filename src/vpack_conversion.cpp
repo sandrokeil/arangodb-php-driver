@@ -178,7 +178,7 @@ namespace arangodb { namespace fuerte { namespace php {
                     }
                     break;
                 default:
-                    //@todo exception
+                    //@todo exception or just continue?
                     break;
             }
         }
@@ -237,7 +237,7 @@ namespace arangodb { namespace fuerte { namespace php {
                     }
                     break;
                 default:
-                    //@todo exception
+                    //@todo exception or continue?
                     break;
             }
         }

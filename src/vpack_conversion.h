@@ -6,6 +6,9 @@ extern "C" {
 
 #include <velocypack/vpack.h>
 
+#include "php_arangodb_classes.h"
+#include "php_exception.h"
+
 namespace vp = ::arangodb::velocypack;
 
 namespace arangodb { namespace fuerte { namespace php {
