@@ -38,11 +38,21 @@ namespace arangodb { namespace fuerte { namespace php {
 
     void Connection::set_thread_count(int thread_count)
     {
+        if(thread_count < 1) {
+            ARANGODB_THROW_CE(invalid_argument_exception_ce, 0, "Invalid thread_count provided, must be >= 1 in %s on line %d");
+            return;
+        }
+
         this->thread_count = thread_count;
     }
 
     void Connection::set_default_timeout(int default_timeout)
     {
+        if(default_timeout < 1) {
+            ARANGODB_THROW_CE(invalid_argument_exception_ce, 0, "Invalid default_timeout provided, must be >= 1 in %s on line %d");
+            return;
+        }
+
         this->default_timeout = default_timeout;
     }
 
@@ -103,13 +113,33 @@ namespace arangodb { namespace fuerte { namespace php {
         return cbuilder;
     }
 
-    std::unique_ptr<fu::Response> Connection::send_request(Request* request)
+    std::unique_ptr<fu::Response> Connection::send_fuerte_request(std::unique_ptr<fu::Request> request)
     {
+        fu::WaitGroup wg;
+        wg.add();
+
+        std::unique_ptr<fu::Response> response;
+
         auto result = this->connection->sendRequest(
-            std::move(request->get_fuerte_request())
+            std::move(request),
+            [&](fu::Error, std::unique_ptr<fu::Request>, std::unique_ptr<fu::Response> res){
+                response = std::move(res);
+                wg.done();
+            }
         );
 
-        return result;
+        auto success = wg.wait_for(std::chrono::seconds(this->default_timeout));
+        if(!success) {
+            ARANGODB_THROW_CE(request_failed_exception_ce, 0, "Request failed in %s on line %d");
+            return NULL;
+        }
+
+        return response;
+    }
+
+    std::unique_ptr<fu::Response> Connection::send_request(Request* request)
+    {
+        return this->send_fuerte_request(std::move(request->get_fuerte_request()));
     }
 
     int Connection::option_string_key_to_int_key(const char* string_key)
@@ -153,7 +183,7 @@ namespace arangodb { namespace fuerte { namespace php {
         }
 
         request->addVPack(builder.slice());
-        return this->connection->sendRequest(std::move(request));
+        return this->send_fuerte_request(std::move(request));
     }
 
     std::unique_ptr<fu::Response> Connection::send(int http_method, const char* path, const char* vpack_value, const HashTable* query_params)
@@ -192,7 +222,7 @@ namespace arangodb { namespace fuerte { namespace php {
         }
 
         request->addVPack(builder.slice());
-        return this->connection->sendRequest(std::move(request));
+        return this->send_fuerte_request(std::move(request));
     }
 
 }}}

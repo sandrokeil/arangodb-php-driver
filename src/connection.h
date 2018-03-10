@@ -51,8 +51,9 @@ namespace arangodb { namespace fuerte { namespace php {
         void set_thread_count(int thread_count);
 
         void connect();
-        std::unique_ptr<fu::Response> send_request(Request* request);
 
+        std::unique_ptr<fu::Response> send_fuerte_request(std::unique_ptr<fu::Request> request);
+        std::unique_ptr<fu::Response> send_request(Request* request);
         std::unique_ptr<fu::Response> send(int http_method, const char* path, const HashTable* vpack_value, const HashTable* query_params);
         std::unique_ptr<fu::Response> send(int http_method, const char* path, const char* vpack_value, const HashTable* query_params);
 

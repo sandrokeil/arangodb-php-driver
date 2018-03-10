@@ -44,6 +44,10 @@ namespace {
         auto intern = Z_OBJECT_CONNECTION_P(getThis());
         auto fuerte_response = intern->send_request(Z_OBJECT_REQUEST_P(request));
 
+        if(!fuerte_response) {
+            return;
+        }
+
         object_init_ex(&object, response_ce);
         auto response = Z_OBJECT_RESPONSE(Z_OBJ(object));
         new (response) arangodb::fuerte::php::Response(*fuerte_response);
@@ -72,6 +76,10 @@ namespace {
             fuerte_response = intern->send(http_method, path, Z_ARRVAL_P(vpack_value), query_params ? Z_ARRVAL_P(query_params) : NULL); \
         } else {                                                                                                                        \
             ARANGODB_THROW_CE(invalid_argument_exception_ce, 0, "Vpack must be of type string (JSON) or array in %s on line %d");       \
+            return;                                                                                                                     \
+        }                                                                                                                               \
+                                                                                                                                        \
+        if(!fuerte_response) {                                                                                                          \
             return;                                                                                                                     \
         }                                                                                                                               \
                                                                                                                                         \
@@ -134,7 +142,12 @@ namespace {
         } else if(Z_TYPE_P(vpack_value) == IS_ARRAY) {
             fuerte_response = intern->send(2, "/_api/cursor", Z_ARRVAL_P(vpack_value), NULL);
         } else {
-            /* @todo exception */
+            ARANGODB_THROW_CE(invalid_argument_exception_ce, 0, "Vpack must be of type string (JSON) or array in %s on line %d");
+            return;
+        }
+
+        if(!fuerte_response) {
+            return;
         }
 
         object_init_ex(&cursor_object, cursor_ce);
@@ -150,6 +163,28 @@ namespace {
         }
 
         RETURN_ZVAL(&cursor_object, 1, 0)
+    }
+
+    PHP_METHOD(Connection, setThreadCount) {
+        zend_long thread_count;
+
+        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &thread_count) == FAILURE) {
+            return;
+        }
+
+        auto connection = Z_OBJECT_CONNECTION_P(getThis());
+        connection->set_thread_count(static_cast<int>(thread_count));
+    }
+
+    PHP_METHOD(Connection, setDefaultTimeout) {
+        zend_long default_timeout;
+
+        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &default_timeout) == FAILURE) {
+            return;
+        }
+
+        auto connection = Z_OBJECT_CONNECTION_P(getThis());
+        connection->set_default_timeout(static_cast<int>(default_timeout));
     }
 
 
@@ -175,6 +210,14 @@ namespace {
         ZEND_ARG_INFO(0, cursorOptions)
     ZEND_END_ARG_INFO()
 
+    ZEND_BEGIN_ARG_INFO_EX(arangodb_connection_set_thread_count, 0, 0, 1)
+        ZEND_ARG_INFO(0, thread_count)
+    ZEND_END_ARG_INFO()
+
+    ZEND_BEGIN_ARG_INFO_EX(arangodb_connection_set_default_timeout, 0, 0, 1)
+        ZEND_ARG_INFO(0, default_timeout)
+    ZEND_END_ARG_INFO()
+
     zend_function_entry connection_methods[] = {
         PHP_ME(Connection, __construct, arangodb_connection_construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
         PHP_ME(Connection, connect, arangodb_connection_void, ZEND_ACC_PUBLIC)
@@ -187,6 +230,8 @@ namespace {
         PHP_ME(Connection, patch, arangodb_connection_method_x, ZEND_ACC_PUBLIC)
         PHP_ME(Connection, options, arangodb_connection_method_x, ZEND_ACC_PUBLIC)
         PHP_ME(Connection, query, arangodb_connection_query, ZEND_ACC_PUBLIC)
+        PHP_ME(Connection, setThreadCount, arangodb_connection_set_thread_count, ZEND_ACC_PUBLIC)
+        PHP_ME(Connection, setDefaultTimeout, arangodb_connection_set_default_timeout, ZEND_ACC_PUBLIC)
         PHP_FE_END
     };
 
