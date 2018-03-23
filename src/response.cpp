@@ -53,73 +53,104 @@ namespace arangodb { namespace fuerte { namespace php {
     }
 
     void Response::get(zval* return_value, HashTable* accessor)
-        {
-            try {
-                zval* value;
-                vp::Slice tmpSlice(this->response.slices().front());
+    {
+        try {
+            zval* value;
+            vp::Slice tmpSlice(this->response.slices().front());
 
-                ZEND_HASH_FOREACH_VAL(accessor, value) {
+            ZEND_HASH_FOREACH_VAL(accessor, value) {
 
-                    if((Z_TYPE_P(value) == IS_LONG)) {
-                        tmpSlice = vp::Slice(tmpSlice.at(Z_LVAL_P(value)));
-                    } else if(Z_TYPE_P(value) == IS_STRING) {
-                        tmpSlice = vp::Slice(tmpSlice.get(Z_STRVAL_P(value)));
-                    } else {
-                        ARANGODB_THROW_CE(invalid_argument_exception_ce, 0, "Accessor array may only contain strings and integers in %s on line %d");
-                        return;
-                    }
-
-                } ZEND_HASH_FOREACH_END();
-
-                this->return_slice_to_php_value(return_value, tmpSlice);
-            }
-            catch(const vp::Exception& e) {
-                ARANGODB_THROW_CE(runtime_exception_ce, 0, "Value not found in %s on line %d");
-                return;
-            }
-        }
-
-        void Response::get(zval* return_value, const char* accessor)
-        {
-            try {
-                this->return_slice_to_php_value(return_value, this->response.slices().front().get(accessor));
-            }
-            catch(const vp::Exception& e) {
-                ARANGODB_THROW_CE(runtime_exception_ce, 0, "Value not found in %s on line %d");
-                return;
-            }
-        }
-
-        void Response::return_slice_to_php_value(zval* return_value, const vp::Slice& slice)
-        {
-            switch(slice.type()) {
-                case vp::ValueType::String:
-                    RETURN_STRING(slice.copyString().c_str());
-                    break;
-
-                case vp::ValueType::Int:
-                case vp::ValueType::UInt:
-                case vp::ValueType::SmallInt:
-                    RETURN_LONG(slice.getInt());
-                    break;
-
-                case vp::ValueType::Double:
-                    RETURN_DOUBLE(slice.getDouble());
-                    break;
-
-                case vp::ValueType::Null:
-                    RETURN_NULL();
-                    break;
-
-                case vp::ValueType::Array:
-                case vp::ValueType::Object:
-                    VpackConversion::vpack_to_array(&slice, return_value);
-                    break;
-
-                default:
-                    ARANGODB_THROW_CE(runtime_exception_ce, 0, "Could not convert vpack value to php value in %s on line %d");
+                if((Z_TYPE_P(value) == IS_LONG)) {
+                    tmpSlice = vp::Slice(tmpSlice.at(Z_LVAL_P(value)));
+                } else if(Z_TYPE_P(value) == IS_STRING) {
+                    tmpSlice = vp::Slice(tmpSlice.get(Z_STRVAL_P(value)));
+                } else {
+                    ARANGODB_THROW_CE(invalid_argument_exception_ce, 0, "Accessor array may only contain strings and integers in %s on line %d");
                     return;
-            }
+                }
+
+            } ZEND_HASH_FOREACH_END();
+
+            this->return_slice_to_php_value(return_value, tmpSlice);
         }
+        catch(const vp::Exception& e) {
+            ARANGODB_THROW_CE(runtime_exception_ce, 0, "Value not found in %s on line %d");
+            return;
+        }
+    }
+
+    void Response::get(zval* return_value, const char* accessor)
+    {
+        try {
+            this->return_slice_to_php_value(return_value, this->response.slices().front().get(accessor));
+        }
+        catch(const vp::Exception& e) {
+            ARANGODB_THROW_CE(runtime_exception_ce, 0, "Value not found in %s on line %d");
+            return;
+        }
+    }
+
+    void Response::return_slice_to_php_value(zval* return_value, const vp::Slice& slice)
+    {
+        switch(slice.type()) {
+            case vp::ValueType::String:
+                RETURN_STRING(slice.copyString().c_str());
+                break;
+
+            case vp::ValueType::Int:
+            case vp::ValueType::UInt:
+            case vp::ValueType::SmallInt:
+                RETURN_LONG(slice.getInt());
+                break;
+
+            case vp::ValueType::Double:
+                RETURN_DOUBLE(slice.getDouble());
+                break;
+
+            case vp::ValueType::Null:
+                RETURN_NULL();
+                break;
+
+            case vp::ValueType::Array:
+            case vp::ValueType::Object:
+                VpackConversion::vpack_to_array(&slice, return_value);
+                break;
+
+            default:
+                ARANGODB_THROW_CE(runtime_exception_ce, 0, "Could not convert vpack value to php value in %s on line %d");
+                return;
+        }
+    }
+
+    bool Response::assert_success()
+    {
+        bool failure = false;
+
+        if (this->get_fuerte_response()->slices().front().isObject()
+            && this->get_fuerte_response()->slices().front().hasKey("error")
+        ) {
+            failure = this->get_fuerte_response()->slices().front().get("error").getBool();
+        }
+
+        auto status_code = this->get_http_code();
+        if((!(status_code >= 200 && status_code <= 299)) || failure) {
+            std::string error_message = "Response contains an error";
+
+            if(this->get_fuerte_response()->slices().front().isObject()
+               && this->get_fuerte_response()->slices().front().hasKey("errorMessage")
+            ) {
+                error_message = this->get_fuerte_response()->slices().front().get("errorMessage").copyString();
+            }
+
+            //@todo somehow throwing exception inside classes (or triggering it from inside a class for that matter) does not work.
+            //We have to either find a solution for this problem or implement a Error structure that can be returned
+            //in order to be thrown in the layer between the classes and PHP. In this case use the error_message above
+            //as the exceptions error message as soon as this problem is solved properly.
+
+            return false;
+        }
+
+        return true;
+    }
 
 }}}

@@ -39,6 +39,8 @@ namespace arangodb { namespace fuerte { namespace php {
 
         void get(zval* return_value, HashTable* accessor);
         void get(zval* return_value, const char* accessor);
+
+        bool assert_success();
     };
 
 }}}

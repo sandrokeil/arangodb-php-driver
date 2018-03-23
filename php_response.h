@@ -53,6 +53,19 @@ namespace {
         }
     }
 
+    PHP_METHOD(Response, assertSuccess)
+    {
+        if(zend_parse_parameters_none() == FAILURE) {
+            return;
+        }
+
+        auto intern = Z_OBJECT_RESPONSE_P(getThis());
+
+        if(!intern->assert_success()) {
+            ARANGODB_THROW_CE(request_failed_exception_ce, 0, "Response contains an error");
+        }
+    }
+
     ZEND_BEGIN_ARG_INFO_EX(arangodb_response_void, 0, 0, 0)
     ZEND_END_ARG_INFO()
 
@@ -64,6 +77,7 @@ namespace {
         PHP_ME(Response, getHttpCode, arangodb_response_void, ZEND_ACC_PUBLIC)
         PHP_ME(Response, getBody, arangodb_response_void, ZEND_ACC_PUBLIC)
         PHP_ME(Response, get, arangodb_response_get, ZEND_ACC_PUBLIC)
+        PHP_ME(Response, assertSuccess, arangodb_response_void, ZEND_ACC_PUBLIC)
         PHP_FE_END
     };
 
