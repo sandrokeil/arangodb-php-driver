@@ -150,6 +150,12 @@ namespace {
             return;
         }
 
+        //@todo find out if this is sufficient and if error is definitely always(!) set or if assertSuccess would be a better fit.
+        if(fuerte_response->slices().front().get("error").getBool()) {
+            ARANGODB_THROW_CE(request_failed_exception_ce, 0, fuerte_response->slices().front().get("errorMessage").copyString().c_str());
+            return;
+        }
+
         object_init_ex(&cursor_object, cursor_ce);
         auto cursor = Z_OBJECT_CURSOR(Z_OBJ(cursor_object));
         new (cursor) arangodb::fuerte::php::Cursor(intern, std::move(fuerte_response));
