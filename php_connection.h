@@ -60,18 +60,23 @@ namespace {
         zval object;                                                                                                                    \
         const char* path;                                                                                                               \
         size_t path_length;                                                                                                             \
-        zval* vpack_value;                                                                                                              \
+        zval* vpack_value = NULL;                                                                                                       \
         zval* query_params = NULL;                                                                                                      \
                                                                                                                                         \
-        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz|a", &path, &path_length, &vpack_value, &query_params) == FAILURE) {     \
+        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|za", &path, &path_length, &vpack_value, &query_params) == FAILURE) {     \
             return;                                                                                                                     \
         }                                                                                                                               \
                                                                                                                                         \
         auto intern = Z_OBJECT_CONNECTION_P(getThis());                                                                                 \
         std::unique_ptr<fu::Response> fuerte_response;                                                                                  \
                                                                                                                                         \
-        if(Z_TYPE_P(vpack_value) == IS_STRING) {                                                                                        \
-            fuerte_response = intern->send(http_method, path, Z_STRVAL_P(vpack_value), query_params ? Z_ARRVAL_P(query_params) : NULL); \
+        if(vpack_value == NULL || Z_TYPE_P(vpack_value) == IS_STRING) {                                                                 \
+            fuerte_response = intern->send(                                                                                             \
+                http_method,                                                                                                            \
+                path,                                                                                                                   \
+                vpack_value == NULL ? "{}" : Z_STRVAL_P(vpack_value),                                                                   \
+                query_params ? Z_ARRVAL_P(query_params) : NULL                                                                          \
+            );                                                                                                                          \
         } else if(Z_TYPE_P(vpack_value) == IS_ARRAY) {                                                                                  \
             fuerte_response = intern->send(http_method, path, Z_ARRVAL_P(vpack_value), query_params ? Z_ARRVAL_P(query_params) : NULL); \
         } else {                                                                                                                        \
