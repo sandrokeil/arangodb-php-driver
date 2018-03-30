@@ -86,7 +86,6 @@ namespace arangodb { namespace fuerte { namespace php {
         if(this->batch_size > this->position) {
             return true;
         } else if(this->has_more) {
-                        //return false;
             this->load_more();
             this->position = 0;
             return true;
@@ -147,6 +146,11 @@ namespace arangodb { namespace fuerte { namespace php {
         if(this->response->slices().front().hasKey("count")) {
             this->batch_count = this->response->slices().front().get("count").getInt();
         }
+    }
+
+    int Cursor::get_http_code()
+    {
+        return this->response->statusCode();
     }
 
 }}}

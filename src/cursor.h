@@ -58,6 +58,8 @@ namespace arangodb { namespace fuerte { namespace php {
         int key();
         void move_forward();
         int count();
+
+        int get_http_code();
     };
 
 }}}
