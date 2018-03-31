@@ -32,4 +32,36 @@ namespace {
         zend_update_property_string(ce, obj, "message", sizeof("message") - 1, message); \
         zend_update_property_long(ce, obj, "code", sizeof("code") - 1, code); \
         zend_throw_exception_object(obj);
+
+    #define ARANGODB_EXCEPTION_CONVERTER_TRY \
+        try {
+
+    #define ARANGODB_EXCEPTION_CONVERTER_CATCH \
+        } catch(const arangodb::fuerte::php::ArangoDbException& ex) {                       \
+            zend_class_entry* converted_php_exception;                                      \
+                                                                                            \
+            switch(ex.type) {                                                               \
+                case arangodb::fuerte::php::ArangoDbException::EXCEPTION:                   \
+                    converted_php_exception = exception_ce;                                 \
+                    break;                                                                  \
+                case arangodb::fuerte::php::ArangoDbException::RUNTIME_EXCEPTION:           \
+                    converted_php_exception = runtime_exception_ce;                         \
+                    break;                                                                  \
+                case arangodb::fuerte::php::ArangoDbException::INVALID_OPTION_EXCEPTION:    \
+                    converted_php_exception = invalid_option_exception_ce;                  \
+                    break;                                                                  \
+                case arangodb::fuerte::php::ArangoDbException::REQUEST_FAILED_EXCEPTION:    \
+                    converted_php_exception = request_failed_exception_ce;                  \
+                    break;                                                                  \
+                case arangodb::fuerte::php::ArangoDbException::INVALID_ARGUMENT_EXCEPTION:  \
+                    converted_php_exception = invalid_argument_exception_ce;                \
+                    break;                                                                  \
+                default:                                                                    \
+                    converted_php_exception = zend_exception_get_default();                 \
+                    break;                                                                  \
+            }                                                                               \
+                                                                                            \
+            ARANGODB_THROW_CE(converted_php_exception, ex.code, ex.message.c_str());        \
+            return;                                                                         \
+        }
 }

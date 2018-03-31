@@ -10,6 +10,8 @@ namespace {
 
     PHP_METHOD(Request, __construct)
     {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         zend_long method;
         const char* path;
         size_t path_length;
@@ -43,6 +45,8 @@ namespace {
         if(query_params != NULL) {
             intern->set_query_params(Z_ARRVAL_P(query_params));
         }
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
 

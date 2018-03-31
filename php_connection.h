@@ -4,6 +4,7 @@ extern "C" {
 #include <php.h>
 }
 
+#include "src/exception.h"
 #include "src/connection.h"
 #include "php_response.h"
 #include "php_cursor.h"
@@ -57,6 +58,7 @@ namespace {
 
 
     #define PHP_CONNECTION_METHOD_X(http_method)                                                                                        \
+        ARANGODB_EXCEPTION_CONVERTER_TRY                                                                                                \
         zval object;                                                                                                                    \
         const char* path;                                                                                                               \
         size_t path_length;                                                                                                             \
@@ -92,7 +94,8 @@ namespace {
         auto response = Z_OBJECT_RESPONSE(Z_OBJ(object));                                                                               \
         new (response) arangodb::fuerte::php::Response(*fuerte_response);                                                               \
                                                                                                                                         \
-        RETURN_ZVAL(&object, 1, 0);
+        RETURN_ZVAL(&object, 1, 0);                                                                                                     \
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
 
     ZEND_NAMED_FUNCTION(zim_Connection_delete)
     {

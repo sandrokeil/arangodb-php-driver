@@ -168,13 +168,8 @@ namespace arangodb { namespace fuerte { namespace php {
         std::unique_ptr<fu::Request> request;
 
         if(query_params != NULL) {
-            zend_string* key;
-            zval* data;
             auto query_params_map = std::map<std::string, std::string>();
-
-            ZEND_HASH_FOREACH_STR_KEY_VAL(query_params, key, data) {
-                query_params_map[ZSTR_VAL(key)] = Z_STRVAL_P(data);
-            } ZEND_HASH_FOREACH_END();
+            Request::query_params_to_string_map(query_params, &query_params_map);
 
             request = fu::createRequest(static_cast<fu::RestVerb>(http_method), path, query_params_map);
         } else {
@@ -207,13 +202,8 @@ namespace arangodb { namespace fuerte { namespace php {
         builder = *parser.steal();
 
         if(query_params != NULL) {
-            zend_string* key;
-            zval* data;
             auto query_params_map = std::map<std::string, std::string>();
-
-            ZEND_HASH_FOREACH_STR_KEY_VAL(query_params, key, data) {
-                query_params_map[ZSTR_VAL(key)] = Z_STRVAL_P(data);
-            } ZEND_HASH_FOREACH_END();
+            Request::query_params_to_string_map(query_params, &query_params_map);
 
             request = fu::createRequest(static_cast<fu::RestVerb>(http_method), path, query_params_map);
         } else {

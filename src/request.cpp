@@ -20,6 +20,40 @@ namespace arangodb { namespace fuerte { namespace php {
     }
 
 
+    bool Request::query_params_to_string_map(const HashTable* query_params, std::map<std::string, std::string>* query_params_map)
+    {
+        zend_string* key;
+        zval* data;
+
+        ZEND_HASH_FOREACH_STR_KEY_VAL(query_params, key, data) {
+
+            switch(Z_TYPE_P(data)) {
+                case IS_STRING:
+                    (*query_params_map)[ZSTR_VAL(key)] = Z_STRVAL_P(data);
+                    break;
+                case IS_FALSE:
+                    (*query_params_map)[ZSTR_VAL(key)] = "false";
+                    break;
+                case IS_TRUE:
+                    (*query_params_map)[ZSTR_VAL(key)] = "true";
+                    break;
+                case IS_LONG:
+                    (*query_params_map)[ZSTR_VAL(key)] = std::to_string(static_cast<int>(Z_LVAL_P(data)));
+                    break;
+                default:
+                    throw ArangoDbException(
+                        ArangoDbException::INVALID_ARGUMENT_EXCEPTION,
+                        0,
+                        "The queryParams array may only contain strings, booleans or integers"
+                    );
+            }
+
+        } ZEND_HASH_FOREACH_END();
+
+        return true;
+    }
+
+
     void Request::set_http_method(int http_method)
     {
         this->http_method = static_cast<fu::RestVerb>(http_method);
@@ -57,15 +91,8 @@ namespace arangodb { namespace fuerte { namespace php {
 
     void Request::set_query_params(HashTable* query_params)
     {
-        zend_string* key;
-        zval* data;
         this->query_params = std::map<std::string, std::string>();
-
-        ZEND_HASH_FOREACH_STR_KEY_VAL(query_params, key, data) {
-
-            this->query_params[ZSTR_VAL(key)] = Z_STRVAL_P(data);
-
-        } ZEND_HASH_FOREACH_END();
+        Request::query_params_to_string_map(query_params, &this->query_params);
     }
 
     std::unique_ptr<fu::Request> Request::get_fuerte_request()

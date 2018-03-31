@@ -4,6 +4,7 @@ extern "C" {
 #include <php.h>
 }
 
+#include "exception.h"
 #include "vpack_conversion.h"
 #include "php_arangodb_classes.h"
 #include "php_exception.h"
@@ -31,6 +32,8 @@ namespace arangodb { namespace fuerte { namespace php {
         static zend_object_handlers handler_request;
         static zend_object* create_object(zend_class_entry* ce TSRMLS_CC);
         static Request* fetch_object(zend_object* obj);
+
+        static bool query_params_to_string_map(const HashTable* query_params, std::map<std::string, std::string>* query_params_map);
 
         void set_http_method(int http_method);
         void set_path(const std::string& path);
