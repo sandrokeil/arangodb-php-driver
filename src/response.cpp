@@ -92,6 +92,8 @@ namespace arangodb { namespace fuerte { namespace php {
 
     void Response::return_slice_to_php_value(zval* return_value, const vp::Slice& slice)
     {
+        //@todo move all of this to vpack_conversion
+
         switch(slice.type()) {
             case vp::ValueType::String:
                 RETURN_STRING(slice.copyString().c_str());
@@ -114,6 +116,15 @@ namespace arangodb { namespace fuerte { namespace php {
             case vp::ValueType::Array:
             case vp::ValueType::Object:
                 VpackConversion::vpack_to_array(&slice, return_value);
+                break;
+
+            case vp::ValueType::UTCDate:
+            case vp::ValueType::None:
+            case vp::ValueType::Binary:
+            case vp::ValueType::Illegal:
+            case vp::ValueType::MinKey:
+            case vp::ValueType::MaxKey:
+                RETURN_NULL();
                 break;
 
             default:
