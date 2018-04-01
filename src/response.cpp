@@ -29,6 +29,25 @@ namespace arangodb { namespace fuerte { namespace php {
         return static_cast<int>(this->response.statusCode());
     }
 
+    std::string Response::get_body()
+    {
+        std::string body;
+
+        try {
+            vp::Slice slice = this->response.slices().front();
+            vp::Options dumperOptions;
+
+            vp::StringSink sink(&body);
+            vp::Dumper dumper(&sink, &dumperOptions);
+            dumper.dump(slice);
+        } catch(vp::Exception const& e) {
+            ARANGODB_THROW_CE(runtime_exception_ce, 0, e.what());
+            return NULL;
+        }
+
+        return body;
+    }
+
     void Response::return_body(zval* return_value)
     {
         std::string body;
@@ -156,7 +175,9 @@ namespace arangodb { namespace fuerte { namespace php {
 
             throw ArangoDbRequestFailedException(
                 0,
-                error_message
+                error_message,
+                status_code,
+                this->get_body()
             );
         }
     }

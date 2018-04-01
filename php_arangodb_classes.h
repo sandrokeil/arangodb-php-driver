@@ -44,8 +44,8 @@ namespace {
             zval ex_obj;                                                                                            \
             object_init_ex(&ex_obj, request_failed_exception_ce);                                                   \
                                                                                                                     \
-            zend_update_property_long(request_failed_exception_ce, &ex_obj, "httpCode", sizeof("httpCode") - 1, ex.code);        \
-            zend_update_property_string(request_failed_exception_ce, &ex_obj, "body", sizeof("body") - 1, ex.message.c_str());       \
+            zend_update_property_long(request_failed_exception_ce, &ex_obj, "httpCode", sizeof("httpCode") - 1, ex.http_code);        \
+            zend_update_property_string(request_failed_exception_ce, &ex_obj, "body", sizeof("body") - 1, ex.body.c_str());       \
             ARANGODB_THROW(request_failed_exception_ce, ex_obj, ex.code, ex.message.c_str());                       \
             return;                                                                                                 \
         } catch(const arangodb::fuerte::php::ArangoDbRuntimeException& ex) {                                        \
