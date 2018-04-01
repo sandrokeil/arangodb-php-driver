@@ -35,6 +35,8 @@ namespace {
 
     PHP_METHOD(Connection, send)
     {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         zval* request;
         zval object;
 
@@ -54,6 +56,8 @@ namespace {
         new (response) arangodb::fuerte::php::Response(*fuerte_response);
 
         RETURN_ZVAL(&object, 1, 0);
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
 

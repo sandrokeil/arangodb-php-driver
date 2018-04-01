@@ -17,6 +17,48 @@ extern "C" {
 */
 
 namespace {
+
+    PHP_METHOD(RequestFailedException, getBody)
+    {
+        zval *obj, *value;
+
+        if(zend_parse_parameters_none() == FAILURE) {
+            return;
+        }
+
+        obj = getThis();
+
+        value  = zend_read_property(request_failed_exception_ce, obj, "body", sizeof("body") - 1, 1, NULL TSRMLS_CC);
+
+        RETURN_ZVAL(value, 1, 0);
+    }
+
+    PHP_METHOD(RequestFailedException, getHttpCode)
+    {
+        zval *obj, *value;
+
+        if(zend_parse_parameters_none() == FAILURE) {
+            return;
+        }
+
+        obj = getThis();
+
+        value  = zend_read_property(request_failed_exception_ce, obj, "httpCode", sizeof("httpCode") - 1, 1, NULL TSRMLS_CC);
+
+        RETURN_ZVAL(value, 1, 0);
+    }
+
+
+    ZEND_BEGIN_ARG_INFO_EX(arginfo_void, 0, 0, 0)
+    ZEND_END_ARG_INFO()
+
+    const zend_function_entry request_failed_exception_functions[] = {
+        PHP_ME(RequestFailedException, getBody, arginfo_void, ZEND_ACC_PUBLIC)
+        PHP_ME(RequestFailedException, getHttpCode, arginfo_void, ZEND_ACC_PUBLIC)
+        PHP_FE_END
+    };
+
+
     void register_exception()
     {
         zend_class_entry ce;
@@ -41,7 +83,7 @@ namespace {
     void register_request_failed_exception()
     {
         zend_class_entry ce;
-        INIT_CLASS_ENTRY(ce, "ArangoDb\\RequestFailedException", NULL);
+        INIT_CLASS_ENTRY(ce, "ArangoDb\\RequestFailedException", request_failed_exception_functions);
         request_failed_exception_ce = zend_register_internal_class_ex(&ce, runtime_exception_ce);
     }
 

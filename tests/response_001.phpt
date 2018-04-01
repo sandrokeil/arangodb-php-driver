@@ -11,27 +11,14 @@ $connection = new \ArangoDb\Connection([
 
 $connection->connect();
 
-$result = $connection->get('/_api/version/', []);
-echo $result->getBody() . PHP_EOL;
-
 try {
-    $result->assertSuccess();
-} catch(\ArangoDb\RequestFailedException $e) {
-    echo $e->getMessage() . PHP_EOL;
-}
+    $result = $connection->get('/_api/version/', []);
+    echo $result->getBody() . PHP_EOL;
 
-$result = $connection->get('/_api/version', []);
-echo $result->get('server') . PHP_EOL;
-
-try {
-    $result->assertSuccess();
 } catch(\ArangoDb\RequestFailedException $e) {
     echo $e->getMessage() . PHP_EOL;
 }
 
 ?>
 --EXPECTF--
-{"code":404,"error":true,"errorMessage":"unknown path '/_api/version/'","errorNum":404}
-Response contains an error
-arango
-
+unknown path '/_api/version/'

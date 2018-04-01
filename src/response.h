@@ -8,6 +8,7 @@ extern "C" {
 #include <fuerte/fuerte.h>
 #include <fuerte/types.h>
 
+#include "exception.h"
 #include "vpack_conversion.h"
 #include "php_arangodb_classes.h"
 #include "php_exception.h"
@@ -40,7 +41,7 @@ namespace arangodb { namespace fuerte { namespace php {
         void get(zval* return_value, HashTable* accessor);
         void get(zval* return_value, const char* accessor);
 
-        bool assert_success();
+        void assert_success();
     };
 
 }}}

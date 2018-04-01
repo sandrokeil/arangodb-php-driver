@@ -29,39 +29,38 @@ namespace {
 
     #define ARANGODB_THROW_CE(ce, code, message) zend_throw_exception_ex(ce, code, message, __FILE__, __LINE__);
     #define ARANGODB_THROW(ce, obj, code, message) \
-        zend_update_property_string(ce, obj, "message", sizeof("message") - 1, message); \
-        zend_update_property_long(ce, obj, "code", sizeof("code") - 1, code); \
-        zend_throw_exception_object(obj);
+        zend_update_property_string(ce, &obj, "message", sizeof("message") - 1, message); \
+        zend_update_property_long(ce, &obj, "code", sizeof("code") - 1, code); \
+        zend_throw_exception_object(&obj);
 
     #define ARANGODB_EXCEPTION_CONVERTER_TRY \
         try {
 
-    #define ARANGODB_EXCEPTION_CONVERTER_CATCH \
-        } catch(const arangodb::fuerte::php::ArangoDbException& ex) {                       \
-            zend_class_entry* converted_php_exception;                                      \
-                                                                                            \
-            switch(ex.type) {                                                               \
-                case arangodb::fuerte::php::ArangoDbException::EXCEPTION:                   \
-                    converted_php_exception = exception_ce;                                 \
-                    break;                                                                  \
-                case arangodb::fuerte::php::ArangoDbException::RUNTIME_EXCEPTION:           \
-                    converted_php_exception = runtime_exception_ce;                         \
-                    break;                                                                  \
-                case arangodb::fuerte::php::ArangoDbException::INVALID_OPTION_EXCEPTION:    \
-                    converted_php_exception = invalid_option_exception_ce;                  \
-                    break;                                                                  \
-                case arangodb::fuerte::php::ArangoDbException::REQUEST_FAILED_EXCEPTION:    \
-                    converted_php_exception = request_failed_exception_ce;                  \
-                    break;                                                                  \
-                case arangodb::fuerte::php::ArangoDbException::INVALID_ARGUMENT_EXCEPTION:  \
-                    converted_php_exception = invalid_argument_exception_ce;                \
-                    break;                                                                  \
-                default:                                                                    \
-                    converted_php_exception = zend_exception_get_default();                 \
-                    break;                                                                  \
-            }                                                                               \
-                                                                                            \
-            ARANGODB_THROW_CE(converted_php_exception, ex.code, ex.message.c_str());        \
-            return;                                                                         \
+    #define ARANGODB_EXCEPTION_CONVERTER_CATCH                                                                      \
+        } catch(const arangodb::fuerte::php::ArangoDbInvalidOptionException& ex) {                                  \
+            ARANGODB_THROW_CE(invalid_option_exception_ce, ex.code, ex.message.c_str());                            \
+            return;                                                                                                 \
+        } catch(const arangodb::fuerte::php::ArangoDbRequestFailedException& ex) {                                  \
+            zval ex_obj;                                                                                            \
+            object_init_ex(&ex_obj, request_failed_exception_ce);                                                   \
+                                                                                                                    \
+            zend_update_property_long(request_failed_exception_ce, &ex_obj, "httpCode", sizeof("httpCode") - 1, ex.code);        \
+            zend_update_property_string(request_failed_exception_ce, &ex_obj, "body", sizeof("body") - 1, ex.message.c_str());       \
+            ARANGODB_THROW(request_failed_exception_ce, ex_obj, ex.code, ex.message.c_str());                       \
+            return;                                                                                                 \
+        } catch(const arangodb::fuerte::php::ArangoDbRuntimeException& ex) {                                        \
+            ARANGODB_THROW_CE(runtime_exception_ce, ex.code, ex.message.c_str());                                   \
+            return;                                                                                                 \
+        } catch(const arangodb::fuerte::php::ArangoDbInvalidArgumentException& ex) {                                \
+            ARANGODB_THROW_CE(invalid_argument_exception_ce, ex.code, ex.message.c_str());                          \
+            return;                                                                                                 \
+        } catch(const arangodb::fuerte::php::ArangoDbException& ex) {                                               \
+            ARANGODB_THROW_CE(exception_ce, ex.code, ex.message.c_str());                                           \
+            return;                                                                                                 \
+        } catch(const std::exception& ex) {                                                                         \
+            return;                                                                                                 \
+        } catch(...) {                                                                                              \
+            return;                                                                                                 \
         }
+
 }

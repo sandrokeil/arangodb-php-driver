@@ -60,10 +60,7 @@ namespace {
         }
 
         auto intern = Z_OBJECT_RESPONSE_P(getThis());
-
-        if(!intern->assert_success()) {
-            ARANGODB_THROW_CE(request_failed_exception_ce, 0, "Response contains an error");
-        }
+        intern->assert_success();
     }
 
     ZEND_BEGIN_ARG_INFO_EX(arangodb_response_void, 0, 0, 0)

@@ -41,8 +41,7 @@ namespace arangodb { namespace fuerte { namespace php {
                     (*query_params_map)[ZSTR_VAL(key)] = std::to_string(static_cast<int>(Z_LVAL_P(data)));
                     break;
                 default:
-                    throw ArangoDbException(
-                        ArangoDbException::INVALID_ARGUMENT_EXCEPTION,
+                    throw ArangoDbInvalidArgumentException(
                         0,
                         "The queryParams array may only contain strings, booleans or integers"
                     );

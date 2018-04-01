@@ -21,6 +21,7 @@ namespace arangodb { namespace fuerte { namespace php {
 
     Response::Response(const fu::Response &response) : response(response)
     {
+        this->assert_success();
     }
 
     int Response::get_http_code()
@@ -133,7 +134,7 @@ namespace arangodb { namespace fuerte { namespace php {
         }
     }
 
-    bool Response::assert_success()
+    void Response::assert_success()
     {
         bool failure = false;
 
@@ -153,15 +154,11 @@ namespace arangodb { namespace fuerte { namespace php {
                 error_message = this->get_fuerte_response()->slices().front().get("errorMessage").copyString();
             }
 
-            //@todo somehow throwing exception inside classes (or triggering it from inside a class for that matter) does not work.
-            //We have to either find a solution for this problem or implement a Error structure that can be returned
-            //in order to be thrown in the layer between the classes and PHP. In this case use the error_message above
-            //as the exceptions error message as soon as this problem is solved properly.
-
-            return false;
+            throw ArangoDbRequestFailedException(
+                0,
+                error_message
+            );
         }
-
-        return true;
     }
 
 }}}
