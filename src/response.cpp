@@ -116,8 +116,11 @@ namespace arangodb { namespace fuerte { namespace php {
 
         switch(slice.type()) {
             case vp::ValueType::String:
-                RETURN_STRING(slice.copyString().c_str());
-                break;
+                {
+                    std::string slice_string = slice.copyString();
+                    RETURN_STRING(slice_string.c_str());
+                    break;
+                }
 
             case vp::ValueType::Int:
             case vp::ValueType::UInt:
