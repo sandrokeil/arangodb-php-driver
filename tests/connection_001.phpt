@@ -17,11 +17,16 @@ var_dump($res->getHttpCode());
 $res = $connection->delete('/_api/collection/test_collection', []);
 var_dump($res->getHttpCode());
 
-$res = $connection->delete('/_api/collection/test_collection');
-var_dump($res->getBody());
-
+try {
+    $res = $connection->delete('/_api/collection/test_collection');
+    var_dump($res->getBody());
+} catch(\ArangoDb\RequestFailedException $e) {
+    var_dump($e->getMessage());
+    var_dump($e->getBody());
+}
 ?>
 --EXPECTF--
 int(200)
 int(200)
+string(36) "unknown collection 'test_collection'"
 string(95) "{"code":404,"error":true,"errorMessage":"unknown collection 'test_collection'","errorNum":1203}"

@@ -138,6 +138,8 @@ namespace {
 
     PHP_METHOD(Connection, query)
     {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         zval cursor_object;
         zval* vpack_value;
         zval* cursor_options = NULL;
@@ -162,11 +164,8 @@ namespace {
             return;
         }
 
-        //@todo find out if this is sufficient and if error is definitely always(!) set or if assertSuccess would be a better fit.
-        if(fuerte_response->slices().front().get("error").getBool()) {
-            ARANGODB_THROW_CE(request_failed_exception_ce, 0, fuerte_response->slices().front().get("errorMessage").copyString().c_str());
-            return;
-        }
+        auto tmp_response = new arangodb::fuerte::php::Response(*fuerte_response);
+        tmp_response->assert_success();
 
         object_init_ex(&cursor_object, cursor_ce);
         auto cursor = Z_OBJECT_CURSOR(Z_OBJ(cursor_object));
@@ -181,6 +180,8 @@ namespace {
         }
 
         RETURN_ZVAL(&cursor_object, 1, 0)
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Connection, setThreadCount) {
