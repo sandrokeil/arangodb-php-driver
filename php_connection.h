@@ -272,6 +272,8 @@ namespace {
             arangodb::fuerte::php::Connection::OPTION_MAX_CHUNK_SIZE TSRMLS_CC);
         zend_declare_class_constant_long(connection_ce, "VST_VERSION", sizeof("VST_VERSION") - 1,
             arangodb::fuerte::php::Connection::OPTION_VST_VERSION TSRMLS_CC);
+        zend_declare_class_constant_long(connection_ce, "VST_VERSION_10", sizeof("VST_VERSION_10") - 1, 0 TSRMLS_CC);
+        zend_declare_class_constant_long(connection_ce, "VST_VERSION_11", sizeof("VST_VERSION_11") - 1, 1 TSRMLS_CC);
 
         memcpy(&arangodb::fuerte::php::Connection::handler_connection, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
         arangodb::fuerte::php::Connection::handler_connection.offset = XtOffsetOf(arangodb::fuerte::php::Connection, std);
