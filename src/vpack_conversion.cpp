@@ -2,7 +2,7 @@
 
 namespace arangodb { namespace fuerte { namespace php {
 
-    void VpackConversion::cast_assoc_array(const HashTable* ht, vp::Builder* builder)
+    void VpackConversion::cast_assoc_array(HashTable* ht, vp::Builder* builder)
     {
         zend_string* key;
         zval* data;
@@ -61,7 +61,7 @@ namespace arangodb { namespace fuerte { namespace php {
         } ZEND_HASH_FOREACH_END();
     }
 
-    void VpackConversion::cast_numeric_array(const HashTable* ht, vp::Builder* builder)
+    void VpackConversion::cast_numeric_array(HashTable* ht, vp::Builder* builder)
     {
         zval* data;
 
@@ -108,7 +108,7 @@ namespace arangodb { namespace fuerte { namespace php {
         } ZEND_HASH_FOREACH_END();
     }
 
-    void VpackConversion::array_to_vpack(const HashTable* ht, vp::Builder* builder)
+    void VpackConversion::array_to_vpack(HashTable* ht, vp::Builder* builder)
     {
         if(HT_IS_PACKED(ht) && HT_IS_WITHOUT_HOLES(ht)) {
             builder->add(vp::Value(vp::ValueType::Array));

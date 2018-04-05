@@ -20,7 +20,7 @@ namespace arangodb { namespace fuerte { namespace php {
     }
 
 
-    bool Request::query_params_to_string_map(const HashTable* query_params, std::map<std::string, std::string>* query_params_map)
+    bool Request::query_params_to_string_map(HashTable* query_params, std::map<std::string, std::string>* query_params_map)
     {
         zend_string* key;
         zval* data;
@@ -63,7 +63,7 @@ namespace arangodb { namespace fuerte { namespace php {
         this->path = path;
     }
 
-    void Request::set_vpack_from_array(const HashTable* ht)
+    void Request::set_vpack_from_array(HashTable* ht)
     {
         this->builder = vp::Builder();
         VpackConversion::array_to_vpack(ht, &this->builder);
