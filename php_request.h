@@ -32,7 +32,7 @@ namespace {
         intern->set_http_method(method);
 
         auto str_path = std::string(path, path_length);
-        intern->set_path(str_path);
+        //intern->set_path(str_path);
 
         if(Z_TYPE_P(vpack_value) == IS_STRING) {
             intern->set_vpack_from_json(Z_STRVAL_P(vpack_value));
