@@ -26,7 +26,7 @@ namespace {
         ) {
             return;
         }
-
+/*
         auto intern = Z_OBJECT_REQUEST_P(getThis());;
 
         intern->set_http_method(method);
