@@ -30,8 +30,8 @@ namespace {
         auto intern = Z_OBJECT_REQUEST_P(getThis());;
 
         intern->set_http_method(method);
-/*        intern->set_path(std::string(path, path_length));
-/*
+        intern->set_path(std::string(path));
+
         if(Z_TYPE_P(vpack_value) == IS_STRING) {
             intern->set_vpack_from_json(Z_STRVAL_P(vpack_value));
         } else if(Z_TYPE_P(vpack_value) == IS_ARRAY) {
@@ -44,7 +44,7 @@ namespace {
         if(query_params != NULL) {
             intern->set_query_params(Z_ARRVAL_P(query_params));
         }
-*/
+
         ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
