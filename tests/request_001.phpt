@@ -5,8 +5,8 @@ Test creating a simple request without the optional query_params
 --FILE--
 <?php
 
-$request = new ArangoDb\Request(
-    ArangoDb\Request::METHOD_POST,
+$request = new \ArangoDb\Request(
+    \ArangoDb\Request::METHOD_POST,
     '/_api/collection', [
         'name' => 'event_streams',
     ]

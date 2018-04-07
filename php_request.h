@@ -27,8 +27,7 @@ namespace {
             return;
         }
 
-        arangodb::fuerte::php::Request* intern;
-        intern = Z_OBJECT_REQUEST_P(getThis());
+        auto intern = Z_OBJECT_REQUEST_P(getThis());;
 
         intern->set_http_method(method);
         intern->set_path(std::string(path, path_length));

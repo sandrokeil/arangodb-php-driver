@@ -7,8 +7,8 @@ Test creating a simple request with the optional query_params
 
 $collection = 'testCollection';
 
-$request = new ArangoDb\Request(
-    ArangoDb\Request::METHOD_POST,
+$request = new \ArangoDb\Request(
+    \ArangoDb\Request::METHOD_POST,
     '/_api/index', [
         'type' => 'hash',
         'fields' => [
