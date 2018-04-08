@@ -36,7 +36,7 @@ namespace arangodb { namespace fuerte { namespace php {
         static bool query_params_to_string_map(HashTable* query_params, std::map<std::string, std::string>* query_params_map);
 
         void set_http_method(int http_method);
-        void set_path(const std::string& path);
+        void set_path(std::string path);
         void set_vpack_from_array(HashTable* ht);
         void set_vpack_from_json(const char* json);
         void set_query_params(HashTable* query_params);

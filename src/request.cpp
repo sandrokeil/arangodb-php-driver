@@ -58,7 +58,7 @@ namespace arangodb { namespace fuerte { namespace php {
         this->http_method = static_cast<fu::RestVerb>(http_method);
     }
 
-    void Request::set_path(const std::string& path)
+    void Request::set_path(std::string path)
     {
         this->path = path;
     }
