@@ -30,7 +30,7 @@ namespace {
         auto intern = Z_OBJECT_REQUEST_P(getThis());
 
         intern->set_http_method(method);
-        intern->set_path(std::string("test", 4));
+        intern->set_path("test");
 
         if(Z_TYPE_P(vpack_value) == IS_STRING) {
             intern->set_vpack_from_json(Z_STRVAL_P(vpack_value));
