@@ -61,79 +61,159 @@ namespace {
     }
 
 
-    #define PHP_CONNECTION_METHOD_X(http_method)                                                                                        \
-        ARANGODB_EXCEPTION_CONVERTER_TRY                                                                                                \
-        zval object;                                                                                                                    \
-        const char* path;                                                                                                               \
-        size_t path_length;                                                                                                             \
-        zval* vpack_value = NULL;                                                                                                       \
-        zval* query_params = NULL;                                                                                                      \
-                                                                                                                                        \
-        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|za", &path, &path_length, &vpack_value, &query_params) == FAILURE) {     \
-            return;                                                                                                                     \
-        }                                                                                                                               \
-                                                                                                                                        \
-        auto intern = Z_OBJECT_CONNECTION_P(getThis());                                                                                 \
-        std::unique_ptr<fu::Response> fuerte_response;                                                                                  \
-                                                                                                                                        \
-        if(vpack_value == NULL || Z_TYPE_P(vpack_value) == IS_STRING) {                                                                 \
-            fuerte_response = intern->send(                                                                                             \
-                http_method,                                                                                                            \
-                path,                                                                                                                   \
-                vpack_value == NULL ? "{}" : Z_STRVAL_P(vpack_value),                                                                   \
-                query_params ? Z_ARRVAL_P(query_params) : NULL                                                                          \
-            );                                                                                                                          \
-        } else if(Z_TYPE_P(vpack_value) == IS_ARRAY) {                                                                                  \
-            fuerte_response = intern->send(http_method, path, Z_ARRVAL_P(vpack_value), query_params ? Z_ARRVAL_P(query_params) : NULL); \
-        } else {                                                                                                                        \
-            ARANGODB_THROW_CE(invalid_argument_exception_ce, 0, "Vpack must be of type string (JSON) or array in %s on line %d");       \
-            return;                                                                                                                     \
-        }                                                                                                                               \
-                                                                                                                                        \
-        if(!fuerte_response) {                                                                                                          \
-            return;                                                                                                                     \
-        }                                                                                                                               \
-                                                                                                                                        \
-        object_init_ex(&object, response_ce);                                                                                           \
-        auto response = Z_OBJECT_RESPONSE(Z_OBJ(object));                                                                               \
-        new (response) arangodb::fuerte::php::Response(*fuerte_response);                                                               \
-                                                                                                                                        \
-        RETURN_ZVAL(&object, 1, 0);                                                                                                     \
-        ARANGODB_EXCEPTION_CONVERTER_CATCH
+    #define PHP_CONNECTION_METHOD_PARAMS_BODY                       \
+        zval object;                                                \
+        const char* path;                                           \
+        size_t path_length;                                         \
+        zval* vpack_value = NULL;                                   \
+        zval* query_params = NULL;                                  \
+                                                                    \
+        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|za", \
+            &path, &path_length,                                    \
+            &vpack_value,                                           \
+            &query_params                                           \
+        ) == FAILURE) {                                             \
+            return;                                                 \
+        }
+
+    #define PHP_CONNECTION_METHOD_PARAMS                            \
+        zval object;                                                \
+        const char* path;                                           \
+        size_t path_length;                                         \
+        zval* query_params = NULL;                                  \
+                                                                    \
+        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|a",  \
+            &path, &path_length,                                    \
+            &query_params                                           \
+        ) == FAILURE) {                                             \
+            return;                                                 \
+        }
+
+    #define PHP_CONNECTION_METHOD_SEND_BODY(http_method)                    \
+        auto intern = Z_OBJECT_CONNECTION_P(getThis());                     \
+        std::unique_ptr<fu::Response> fuerte_response;                      \
+                                                                            \
+        if(vpack_value == NULL || Z_TYPE_P(vpack_value) == IS_STRING) {     \
+            fuerte_response = intern->send(                                 \
+                http_method,                                                \
+                path,                                                       \
+                vpack_value == NULL ? "{}" : Z_STRVAL_P(vpack_value),       \
+                query_params ? Z_ARRVAL_P(query_params) : NULL              \
+            );                                                              \
+        } else if(Z_TYPE_P(vpack_value) == IS_ARRAY) {                      \
+            fuerte_response = intern->send(                                 \
+                http_method,                                                \
+                path,                                                       \
+                Z_ARRVAL_P(vpack_value),                                    \
+                query_params ? Z_ARRVAL_P(query_params) : NULL              \
+            );                                                              \
+        } else {                                                            \
+            throw arangodb::fuerte::php::ArangoDbInvalidArgumentException(  \
+                0,                                                          \
+                "Vpack must be of type string (JSON) or array"              \
+            );                                                              \
+        }                                                                   \
+                                                                            \
+        if(!fuerte_response) {                                              \
+            return;                                                         \
+        }
+
+    #define PHP_CONNECTION_METHOD_SEND(http_method)                 \
+        auto intern = Z_OBJECT_CONNECTION_P(getThis());             \
+        std::unique_ptr<fu::Response> fuerte_response;              \
+                                                                    \
+        fuerte_response = intern->send(                             \
+            http_method,                                            \
+            path,                                                   \
+            query_params ? Z_ARRVAL_P(query_params) : NULL          \
+        );                                                          \
+                                                                    \
+        if(!fuerte_response) {                                      \
+            return;                                                 \
+        }
+
+    #define PHP_CONNECTION_METHOD_RETURN_RESPONSE(fuerte_response)          \
+        object_init_ex(&object, response_ce);                               \
+        auto response = Z_OBJECT_RESPONSE(Z_OBJ(object));                   \
+        new (response) arangodb::fuerte::php::Response(*fuerte_response);   \
+        RETURN_ZVAL(&object, 1, 0);
+
 
     ZEND_NAMED_FUNCTION(zim_Connection_delete)
     {
-        PHP_CONNECTION_METHOD_X(0)
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
+        PHP_CONNECTION_METHOD_PARAMS_BODY
+        PHP_CONNECTION_METHOD_SEND_BODY(0)
+        PHP_CONNECTION_METHOD_RETURN_RESPONSE(fuerte_response)
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Connection, get)
     {
-        PHP_CONNECTION_METHOD_X(1)
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
+        PHP_CONNECTION_METHOD_PARAMS
+        PHP_CONNECTION_METHOD_SEND(1)
+        PHP_CONNECTION_METHOD_RETURN_RESPONSE(fuerte_response)
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Connection, post)
     {
-        PHP_CONNECTION_METHOD_X(2)
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
+        PHP_CONNECTION_METHOD_PARAMS_BODY
+        PHP_CONNECTION_METHOD_SEND_BODY(2)
+        PHP_CONNECTION_METHOD_RETURN_RESPONSE(fuerte_response)
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Connection, put)
     {
-        PHP_CONNECTION_METHOD_X(3)
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
+        PHP_CONNECTION_METHOD_PARAMS_BODY
+        PHP_CONNECTION_METHOD_SEND_BODY(3)
+        PHP_CONNECTION_METHOD_RETURN_RESPONSE(fuerte_response)
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Connection, head)
     {
-        PHP_CONNECTION_METHOD_X(4)
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
+        PHP_CONNECTION_METHOD_PARAMS
+        PHP_CONNECTION_METHOD_SEND(4)
+        PHP_CONNECTION_METHOD_RETURN_RESPONSE(fuerte_response)
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Connection, patch)
     {
-        PHP_CONNECTION_METHOD_X(5)
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
+        PHP_CONNECTION_METHOD_PARAMS_BODY
+        PHP_CONNECTION_METHOD_SEND_BODY(5)
+        PHP_CONNECTION_METHOD_RETURN_RESPONSE(fuerte_response)
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Connection, options)
     {
-        PHP_CONNECTION_METHOD_X(6)
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
+        PHP_CONNECTION_METHOD_PARAMS
+        PHP_CONNECTION_METHOD_SEND(6)
+        PHP_CONNECTION_METHOD_RETURN_RESPONSE(fuerte_response)
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Connection, query)

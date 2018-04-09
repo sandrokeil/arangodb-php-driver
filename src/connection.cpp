@@ -215,4 +215,20 @@ namespace arangodb { namespace fuerte { namespace php {
         return this->send_fuerte_request(std::move(request));
     }
 
+    std::unique_ptr<fu::Response> Connection::send(int http_method, const char* path, HashTable* query_params)
+    {
+        std::unique_ptr<fu::Request> request;
+
+        if(query_params != NULL) {
+            auto query_params_map = std::map<std::string, std::string>();
+            Request::query_params_to_string_map(query_params, &query_params_map);
+
+            request = fu::createRequest(static_cast<fu::RestVerb>(http_method), path, query_params_map);
+        } else {
+            request = fu::createRequest(static_cast<fu::RestVerb>(http_method), path);
+        }
+
+        return this->send_fuerte_request(std::move(request));
+    }
+
 }}}
