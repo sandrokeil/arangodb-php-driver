@@ -41,8 +41,7 @@ namespace arangodb { namespace fuerte { namespace php {
             vp::Dumper dumper(&sink, &dumperOptions);
             dumper.dump(slice);
         } catch(vp::Exception const& e) {
-            ARANGODB_THROW_CE(runtime_exception_ce, 0, e.what());
-            return NULL;
+            throw ArangoDbRuntimeException(0, e.what());
         }
 
         return body;
@@ -60,8 +59,7 @@ namespace arangodb { namespace fuerte { namespace php {
             vp::Dumper dumper(&sink, &dumperOptions);
             dumper.dump(slice);
         } catch(vp::Exception const& e) {
-            ARANGODB_THROW_CE(runtime_exception_ce, 0, e.what());
-            return;
+            throw ArangoDbRuntimeException(0, e.what());
         }
 
         RETURN_STRING(body.c_str());
@@ -94,8 +92,7 @@ namespace arangodb { namespace fuerte { namespace php {
             this->return_slice_to_php_value(return_value, tmpSlice);
         }
         catch(const vp::Exception& e) {
-            ARANGODB_THROW_CE(runtime_exception_ce, 0, "Value not found in %s on line %d");
-            return;
+            throw ArangoDbRuntimeException(0, "Value not found");
         }
     }
 
@@ -105,8 +102,7 @@ namespace arangodb { namespace fuerte { namespace php {
             this->return_slice_to_php_value(return_value, this->response.slices().front().get(accessor));
         }
         catch(const vp::Exception& e) {
-            ARANGODB_THROW_CE(runtime_exception_ce, 0, "Value not found in %s on line %d");
-            return;
+            throw ArangoDbRuntimeException(0, "Value not found");
         }
     }
 
@@ -151,8 +147,7 @@ namespace arangodb { namespace fuerte { namespace php {
                 break;
 
             default:
-                ARANGODB_THROW_CE(runtime_exception_ce, 0, "Could not convert vpack value to php value in %s on line %d");
-                return;
+                throw ArangoDbRuntimeException(0, "Could not convert vpack value to php value");
         }
     }
 

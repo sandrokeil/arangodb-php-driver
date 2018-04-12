@@ -11,70 +11,98 @@ namespace {
 
     PHP_METHOD(Cursor, count)
     {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         if(zend_parse_parameters_none() == FAILURE) {
             return;
         }
 
         auto intern = Z_OBJECT_CURSOR_P(getThis());
         RETURN_LONG(intern->count());
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Cursor, valid)
     {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         if(zend_parse_parameters_none() == FAILURE) {
             return;
         }
 
         auto intern = Z_OBJECT_CURSOR_P(getThis());
         RETURN_BOOL(intern->valid());
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Cursor, key)
     {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         if(zend_parse_parameters_none() == FAILURE) {
             return;
         }
 
         auto intern = Z_OBJECT_CURSOR_P(getThis());
         RETURN_LONG(intern->key());
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Cursor, current) {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         if(zend_parse_parameters_none() == FAILURE) {
             return;
         }
 
         auto intern = Z_OBJECT_CURSOR_P(getThis());
         RETURN_ZVAL(intern->current(), 0, 0);
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Cursor, next)
     {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         if(zend_parse_parameters_none() == FAILURE) {
             return;
         }
 
         auto intern = Z_OBJECT_CURSOR_P(getThis());
         intern->move_forward();
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Cursor, rewind)
     {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         if(zend_parse_parameters_none() == FAILURE) {
             return;
         }
 
         //@todo probably an error, see cursor_iterator.cpp
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Cursor, getHttpCode)
     {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         if(zend_parse_parameters_none() == FAILURE) {
             return;
         }
 
         auto intern = Z_OBJECT_CURSOR_P(getThis());
         RETURN_LONG(intern->get_http_code());
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     ZEND_BEGIN_ARG_INFO_EX(arangodb_cursor_void, 0, 0, 0)

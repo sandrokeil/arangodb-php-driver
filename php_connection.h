@@ -13,6 +13,8 @@ namespace {
 
     PHP_METHOD(Connection, __construct)
     {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         zval* options;
 
         if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &options) == FAILURE) {
@@ -21,16 +23,22 @@ namespace {
 
         auto intern = Z_OBJECT_CONNECTION_P(getThis());
         intern->set_options(Z_ARRVAL_P(options));
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Connection, connect) 
     {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         if(zend_parse_parameters_none() == FAILURE) {
             return;
         }
 
         auto intern = Z_OBJECT_CONNECTION_P(getThis());
         intern->connect();
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Connection, send)
@@ -236,8 +244,10 @@ namespace {
         } else if(Z_TYPE_P(vpack_value) == IS_ARRAY) {
             fuerte_response = intern->send(2, "/_api/cursor", Z_ARRVAL_P(vpack_value), NULL);
         } else {
-            ARANGODB_THROW_CE(invalid_argument_exception_ce, 0, "Vpack must be of type string (JSON) or array in %s on line %d");
-            return;
+            throw arangodb::fuerte::php::ArangoDbInvalidArgumentException(
+                0,
+                "Vpack must be of type string (JSON) or array"
+            );
         }
 
         if(!fuerte_response) {
@@ -265,6 +275,8 @@ namespace {
     }
 
     PHP_METHOD(Connection, setThreadCount) {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         zend_long thread_count;
 
         if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &thread_count) == FAILURE) {
@@ -273,9 +285,13 @@ namespace {
 
         auto connection = Z_OBJECT_CONNECTION_P(getThis());
         connection->set_thread_count(static_cast<int>(thread_count));
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Connection, setDefaultTimeout) {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         zend_long default_timeout;
 
         if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &default_timeout) == FAILURE) {
@@ -284,6 +300,8 @@ namespace {
 
         auto connection = Z_OBJECT_CONNECTION_P(getThis());
         connection->set_default_timeout(static_cast<int>(default_timeout));
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
 

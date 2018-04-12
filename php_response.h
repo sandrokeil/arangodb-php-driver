@@ -10,26 +10,36 @@ namespace {
 
     PHP_METHOD(Response, getHttpCode)
     {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         if(zend_parse_parameters_none() == FAILURE) {
             return;
         }
 
         auto intern = Z_OBJECT_RESPONSE_P(getThis());
         RETURN_LONG(intern->get_http_code());
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Response, getBody)
     {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         if(zend_parse_parameters_none() == FAILURE) {
             return;
         }
 
         auto intern = Z_OBJECT_RESPONSE_P(getThis());
         intern->return_body(return_value);
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Response, get)
     {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         zval *accessor;
         HashTable *accessor_ht;
         const char* accessor_string;
@@ -47,20 +57,28 @@ namespace {
             accessor_ht = Z_ARRVAL_P(accessor);
             intern->get(return_value, accessor_ht);
         } else {
-            ARANGODB_THROW_CE(invalid_argument_exception_ce, 0,
-                "Accessor must be of type string (top level) or array (nested values) in %s on line %d");
+            throw arangodb::fuerte::php::ArangoDbInvalidArgumentException(
+                0,
+                "Accessor must be of type string (top level) or array (nested values)"
+            );
             return;
         }
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     PHP_METHOD(Response, assertSuccess)
     {
+        ARANGODB_EXCEPTION_CONVERTER_TRY
+
         if(zend_parse_parameters_none() == FAILURE) {
             return;
         }
 
         auto intern = Z_OBJECT_RESPONSE_P(getThis());
         intern->assert_success();
+
+        ARANGODB_EXCEPTION_CONVERTER_CATCH
     }
 
     ZEND_BEGIN_ARG_INFO_EX(arangodb_response_void, 0, 0, 0)

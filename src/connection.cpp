@@ -39,8 +39,7 @@ namespace arangodb { namespace fuerte { namespace php {
     void Connection::set_thread_count(int thread_count)
     {
         if(thread_count < 1) {
-            ARANGODB_THROW_CE(invalid_argument_exception_ce, 0, "Invalid thread_count provided, must be >= 1 in %s on line %d");
-            return;
+            throw ArangoDbInvalidArgumentException(0, "Invalid thread_count provided, must be >= 1");
         }
 
         this->thread_count = thread_count;
@@ -49,8 +48,7 @@ namespace arangodb { namespace fuerte { namespace php {
     void Connection::set_default_timeout(int default_timeout)
     {
         if(default_timeout < 1) {
-            ARANGODB_THROW_CE(invalid_argument_exception_ce, 0, "Invalid default_timeout provided, must be >= 1 in %s on line %d");
-            return;
+            throw ArangoDbInvalidArgumentException(0, "Invalid default_timeout provided, must be >= 1");
         }
 
         this->default_timeout = default_timeout;
@@ -104,7 +102,7 @@ namespace arangodb { namespace fuerte { namespace php {
                     cbuilder.vstVersion((fu::vst::VSTVersion)Z_LVAL_P(data));;
                     break;
                 default:
-                    ARANGODB_THROW_CE(invalid_option_exception_ce, 0, "Unknown option provided in %s on line %d");
+                    throw ArangoDbInvalidOptionException(0, "Unknown option provided");
                     break;
             }
 
@@ -130,8 +128,7 @@ namespace arangodb { namespace fuerte { namespace php {
 
         auto success = wg.wait_for(std::chrono::seconds(this->default_timeout));
         if(!success) {
-            ARANGODB_THROW_CE(request_failed_exception_ce, 0, "Request failed in %s on line %d");
-            return NULL;
+            throw ArangoDbRequestFailedException(0, "Request failed (timeout reached)", NULL, NULL);
         }
 
         return response;
@@ -155,8 +152,7 @@ namespace arangodb { namespace fuerte { namespace php {
         } else if(strcmp(string_key, "vst_version") == 0) {
             return Connection::OPTION_VST_VERSION;
         } else {
-            ARANGODB_THROW_CE(invalid_option_exception_ce, 0, "Unknown option provided in %s on line %d");
-            return 0;
+            throw ArangoDbInvalidOptionException(0, "Unknown option provided");
         }
     }
 
@@ -191,12 +187,10 @@ namespace arangodb { namespace fuerte { namespace php {
             parser.parse(vpack_value);
         }
         catch(std::bad_alloc const &e) {
-            ARANGODB_THROW_CE(runtime_exception_ce, 0, "Out of memory in %s on line %d");
-            return NULL;
+            throw ArangoDbRuntimeException(0, "Out of memory");
         }
         catch(vp::Exception const &e) {
-            ARANGODB_THROW_CE(runtime_exception_ce, 0, e.what());
-            return NULL;
+            throw ArangoDbRuntimeException(0, e.what());
         }
 
         builder = *parser.steal();

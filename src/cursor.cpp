@@ -43,7 +43,7 @@ namespace arangodb { namespace fuerte { namespace php {
     void Cursor::set_option(int option, int value)
     {
         if(this->options.size() <= option) {
-            ARANGODB_THROW_CE(invalid_argument_exception_ce, 0, "Invalid option provided in %s on line %d");
+            throw ArangoDbInvalidArgumentException(0, "Invalid cursor option provided");
         }
 
         this->options[option] = value;
@@ -107,8 +107,7 @@ namespace arangodb { namespace fuerte { namespace php {
                 vp::Dumper dumper(&sink, &dumperOptions);
                 dumper.dump(slice);
             } catch(vp::Exception const& e) {
-                ARANGODB_THROW_CE(invalid_argument_exception_ce, 0, e.what());
-                return &this->current_value; //@todo probably return null
+                throw ArangoDbInvalidArgumentException(0, e.what());
             }
 
             ZVAL_STRINGL(&this->current_value, body.c_str(), body.size());
