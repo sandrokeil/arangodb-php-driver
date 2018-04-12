@@ -58,8 +58,10 @@ namespace {
             ARANGODB_THROW_CE(exception_ce, ex.code, ex.message.c_str());                                           \
             return;                                                                                                 \
         } catch(const std::exception& ex) {                                                                         \
+            ARANGODB_THROW_CE(exception_ce, 0, "An unknown std::exception occurred")                                \
             return;                                                                                                 \
         } catch(...) {                                                                                              \
+            ARANGODB_THROW_CE(exception_ce, 0, "An unknown exception occurred")                                     \
             return;                                                                                                 \
         }
 
