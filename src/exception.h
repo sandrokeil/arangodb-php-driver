@@ -32,6 +32,8 @@ namespace arangodb { namespace fuerte { namespace php {
 
         ArangoDbRequestFailedException(int code, const char* message, int http_code, const std::string& body);
         ArangoDbRequestFailedException(int code, const std::string& message, int http_code, const std::string& body);
+        ArangoDbRequestFailedException(int code, const char* message, int http_code);
+        ArangoDbRequestFailedException(int code, const std::string& message, int http_code);
     };
 
     class ArangoDbInvalidArgumentException : public ArangoDbException

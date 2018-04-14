@@ -22,4 +22,14 @@ namespace arangodb { namespace fuerte { namespace php {
     {
     }
 
+    ArangoDbRequestFailedException::ArangoDbRequestFailedException(int code, const char* message, int http_code):
+        ArangoDbRuntimeException(code, message), http_code(http_code), body("")
+    {
+    }
+
+    ArangoDbRequestFailedException::ArangoDbRequestFailedException(int code, const std::string& message, int http_code):
+        ArangoDbRuntimeException(code, message), http_code(http_code), body("")
+    {
+    }
+
 }}}

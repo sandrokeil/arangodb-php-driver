@@ -128,7 +128,7 @@ namespace arangodb { namespace fuerte { namespace php {
 
         auto success = wg.wait_for(std::chrono::seconds(this->default_timeout));
         if(!success) {
-            throw ArangoDbRequestFailedException(0, "Request failed (timeout reached)", NULL, NULL);
+            throw ArangoDbRequestFailedException(0, "Request failed (timeout reached)", 408);
         }
 
         return response;
