@@ -70,7 +70,6 @@ namespace {
 
 
     #define PHP_CONNECTION_METHOD_PARAMS_BODY                       \
-        zval object;                                                \
         const char* path;                                           \
         size_t path_length;                                         \
         zval* vpack_value = NULL;                                   \
@@ -85,7 +84,6 @@ namespace {
         }
 
     #define PHP_CONNECTION_METHOD_PARAMS                            \
-        zval object;                                                \
         const char* path;                                           \
         size_t path_length;                                         \
         zval* query_params = NULL;                                  \
@@ -141,10 +139,9 @@ namespace {
         }
 
     #define PHP_CONNECTION_METHOD_RETURN_RESPONSE(fuerte_response)          \
-        object_init_ex(&object, response_ce);                               \
-        auto response = Z_OBJECT_RESPONSE(Z_OBJ(object));                   \
+        object_init_ex(return_value, response_ce);                          \
+        auto response = Z_OBJECT_RESPONSE(Z_OBJ_P(return_value));           \
         new (response) arangodb::fuerte::php::Response(*fuerte_response);   \
-        RETURN_ZVAL(&object, 1, 0);
 
 
     ZEND_NAMED_FUNCTION(zim_Connection_delete)
